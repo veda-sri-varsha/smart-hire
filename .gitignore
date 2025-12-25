@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env
+.env.*
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -36,3 +41,4 @@ dist-ssr
 /src/generated/prisma
 
 /src/generated/prisma
+
