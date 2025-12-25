@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./App.css";
 
-
 type User = {
   id: number;
   email: string;
@@ -19,7 +18,7 @@ function App() {
     setCreatedUser(null);
 
     try {
-      const res = await fetch("http://localhost:5000/users", {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
