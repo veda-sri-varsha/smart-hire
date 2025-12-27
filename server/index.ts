@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import { prisma } from "./prisma"; // ✅ import prisma
+import { prisma } from "./prisma";
 import userRoutes from "./routes/user.routes";
 
 const app = express();
@@ -9,10 +9,9 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (_req, res) => {
-	res.send("Backend is alive ✅");
+	res.send("Backend is alive!");
 });
 
-// ✅ Health check route
 app.get("/health", async (_req, res) => {
 	const startTime = Date.now();
 
@@ -33,7 +32,6 @@ app.get("/health", async (_req, res) => {
 
 	const dbStartTime = Date.now();
 	try {
-		// Simple DB ping
 		await prisma.$queryRaw`SELECT 1`;
 		healthStatus.database.status = "connected";
 		healthStatus.database.responseTime = Date.now() - dbStartTime;
@@ -51,11 +49,9 @@ app.get("/health", async (_req, res) => {
 	res.status(statusCode).json(healthStatus);
 });
 
-// mount users router
 app.use("/users", userRoutes);
 
-// ✅ use env port for Render, 5000 for local
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT);
 app.listen(PORT, "0.0.0.0", () => {
-	console.log(`✅ Backend running on http://0.0.0.0:${PORT}`);
+	console.log(`Backend running on http://0.0.0.0:${PORT}`);
 });
