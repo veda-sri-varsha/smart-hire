@@ -13,8 +13,160 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  HR
+  USER
+  COMPANY
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  CONTRACT
+  FREELANCE
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  ARCHIVED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  INTERVIEW
+  OFFERED
+  REJECTED
+  WITHDRAWN
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
+  id              String     @id
+  email           String     @unique
+  password        String
+  name            String?
+  role            Role       @default(USER)
+  status          UserStatus @default(ACTIVE)
+  gender          Gender?
+  phone           String?
+  location        String?
+  profilePicture  String?
+  resumeUrl       String?
+  companyName     String?
+  companyWebsite  String?
+  isEmailVerified Boolean    @default(false)
+  isDeleted       Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  /// Relations
+  jobsPosted      Job[]        @relation("CompanyJobs")
+  applications    Application[]
+  savedJobs       SavedJob[]
+  payments        Payment[]
+
+  @@index([role])
+  @@index([status])
+}
+
+model Job {
+  id              String     @id
+  title           String
+  description     String
+  location        String
+  salaryMin       Int?
+  salaryMax       Int?
+  experienceMin   Int?
+  experienceMax   Int?
+  jobType         JobType
+  skills          String
+  status          JobStatus  @default(OPEN)
+  companyId       String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  /// Relations
+  company         User        @relation("CompanyJobs", fields: [companyId], references: [id])
+  applications    Application[]
+  savedByUsers    SavedJob[]
+
+  @@index([status])
+  @@index([jobType])
+  @@index([companyId])
+}
+
+model Application {
+  id          String             @id
+  userId      String
+  jobId       String
+  resumeUrl   String?
+  coverLetter String?
+  status      ApplicationStatus  @default(APPLIED)
+  appliedAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  /// Relations
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job         Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([status])
+  @@index([userId])
+  @@index([jobId])
+}
+
+model SavedJob {
+  id        String   @id
+  userId    String
+  jobId     String
+  createdAt DateTime @default(now())
+
+  /// Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job       Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+}
+
+model Payment {
+  id          String        @id
+  userId      String
+  amount      Int
+  currency    String        @default("INR")
+  status      PaymentStatus @default(INITIATED)
+  provider    String
+  referenceId String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  /// Relations
+  user        User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
 }
