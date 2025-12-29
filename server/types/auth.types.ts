@@ -32,6 +32,20 @@ export type VerifyEmailRequest = {
 
 export type VerifyEmailResponse = ApiResponse<AuthUserResponse>;
 
+export type ResendOtpRequest = {
+	email: string;
+};
+
+export type ForgotPasswordRequest = {
+	email: string;
+};
+
+export type ContactUsRequest = {
+	name: string;
+	email: string;
+	message: string;
+};
+
 export type AuthUserResponse = {
 	id: string;
 	email: string;
