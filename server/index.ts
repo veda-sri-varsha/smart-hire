@@ -1,7 +1,9 @@
 import cors from "cors";
 import express from "express";
 import { prisma } from "./prisma";
+import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import "dotenv/config";
 
 const app = express();
 
@@ -50,6 +52,7 @@ app.get("/health", async (_req, res) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/auth", authRoutes);
 
 const PORT = Number(process.env.PORT);
 app.listen(PORT, "0.0.0.0", () => {
