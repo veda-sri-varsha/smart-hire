@@ -64,7 +64,7 @@ enum PaymentStatus {
 }
 
 model User {
-  id              String     @id
+  id String @id @default(uuid())
   email           String     @unique
   password        String
   name            String?
@@ -78,9 +78,12 @@ model User {
   companyName     String?
   companyWebsite  String?
   isEmailVerified Boolean    @default(false)
+  verificationOtp Int?
+  verificationOtpExpiry DateTime?
   isDeleted       Boolean    @default(false)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
+
 
   /// Relations
   jobsPosted      Job[]        @relation("CompanyJobs")
@@ -93,7 +96,7 @@ model User {
 }
 
 model Job {
-  id              String     @id
+  id String @id @default(uuid())
   title           String
   description     String
   location        String
@@ -119,7 +122,7 @@ model Job {
 }
 
 model Application {
-  id          String             @id
+  id String @id @default(uuid())
   userId      String
   jobId       String
   resumeUrl   String?
@@ -139,7 +142,7 @@ model Application {
 }
 
 model SavedJob {
-  id        String   @id
+  id String @id @default(uuid())
   userId    String
   jobId     String
   createdAt DateTime @default(now())
@@ -154,7 +157,7 @@ model SavedJob {
 }
 
 model Payment {
-  id          String        @id
+  id String @id @default(uuid())
   userId      String
   amount      Int
   currency    String        @default("INR")
@@ -169,4 +172,12 @@ model Payment {
 
   @@index([userId])
   @@index([status])
+}
+
+model ContactUs {
+  id String @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
 }
