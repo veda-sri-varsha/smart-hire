@@ -1,7 +1,7 @@
 export type SignupRequest = {
+	name: string;
 	email: string;
 	password: string;
-	name?: string;
 };
 
 export type LoginRequest = {
@@ -49,7 +49,7 @@ export type ContactUsRequest = {
 export type AuthUserResponse = {
 	id: string;
 	email: string;
-	name?: string | null;
+	name: string;
 	role: "ADMIN" | "HR" | "USER" | "COMPANY";
 	status: "ACTIVE" | "INACTIVE" | "BLOCKED";
 	isEmailVerified: boolean;
@@ -57,7 +57,11 @@ export type AuthUserResponse = {
 	resumeUrl?: string | null;
 	accessToken: string;
 	refreshToken: string;
+	sessionMessage?: string;
 };
+
+export type SignupInput = SignupRequest;
+export type LoginInput = LoginRequest;
 
 export type ApiResponse<T> = {
 	success: boolean;

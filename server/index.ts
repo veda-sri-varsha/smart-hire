@@ -1,9 +1,9 @@
 import cors from "cors";
 import express from "express";
-import { prisma } from "./prisma";
-import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
+import { prisma } from "./lib/prisma.ts";
+import userRoutes from "./routes/user.routes.ts";
 import "dotenv/config";
+import config from "./config/index.ts";
 
 const app = express();
 
@@ -52,9 +52,8 @@ app.get("/health", async (_req, res) => {
 });
 
 app.use("/users", userRoutes);
-app.use("/auth", authRoutes);
 
-const PORT = Number(process.env.PORT);
+const PORT = config.PORT;
 app.listen(PORT, "0.0.0.0", () => {
 	console.log(`Backend running on http://0.0.0.0:${PORT}`);
 });
