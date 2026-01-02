@@ -1,3 +1,5 @@
+import type ApiResponse from "../utils/api-response";
+
 export type SignupRequest = {
 	name: string;
 	email: string;
@@ -46,6 +48,8 @@ export type ContactUsRequest = {
 	message: string;
 };
 
+export type Role = "ADMIN" | "HR" | "USER" | "COMPANY";
+
 export type AuthUserResponse = {
 	id: string;
 	email: string;
@@ -63,9 +67,9 @@ export type AuthUserResponse = {
 export type SignupInput = SignupRequest;
 export type LoginInput = LoginRequest;
 
-export type ApiResponse<T> = {
-	success: boolean;
-	message?: string;
-	data?: T;
-	error?: string;
-};
+// export type ApiResponse<T> = {
+//   success: boolean;
+//   message?: string;
+//   data?: T;
+//   error?: string;
+// };
