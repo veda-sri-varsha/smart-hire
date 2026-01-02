@@ -4,6 +4,7 @@ import { prisma } from "./lib/prisma.ts";
 import userRoutes from "./routes/user.routes.ts";
 import "dotenv/config";
 import config from "./config/index.ts";
+import authRoutes from "./routes/auth.routes.ts";
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.get("/health", async (_req, res) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/auth", authRoutes);
 
 const PORT = config.PORT;
 app.listen(PORT, "0.0.0.0", () => {

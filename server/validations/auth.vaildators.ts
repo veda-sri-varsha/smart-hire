@@ -28,7 +28,7 @@ const idSchema = z.string().uuid("Invalid ID");
 export const signupSchema = z.object({
 	email: emailSchema,
 	password: passwordSchema,
-	name: z.string().trim().max(100, "Name too long").optional(),
+	name: z.string().trim().max(100, "Name too long"),
 });
 
 export const loginSchema = z.object({
