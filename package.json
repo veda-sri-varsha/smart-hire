@@ -30,6 +30,7 @@
 		"jsonwebtoken": "^9.0.3",
 		"lucide-react": "^0.562.0",
 		"nodemailer": "^7.0.12",
+		"nodemon": "^3.1.11",
 		"pg": "^8.16.3",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
