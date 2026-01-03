@@ -1,8 +1,8 @@
+import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { prisma } from "./lib/prisma.ts";
 import userRoutes from "./routes/user.routes.ts";
-import "dotenv/config";
 import swaggerUi from "swagger-ui-express";
 import config from "./config/index.ts";
 import authRoutes from "./routes/auth.routes.ts";
