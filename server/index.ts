@@ -3,13 +3,27 @@ import express from "express";
 import { prisma } from "./lib/prisma.ts";
 import userRoutes from "./routes/user.routes.ts";
 import "dotenv/config";
+import swaggerUi from "swagger-ui-express";
 import config from "./config/index.ts";
 import authRoutes from "./routes/auth.routes.ts";
+import swaggerSpec from "./swagger";
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+import { generalLimiter } from "./middleware/rate-limiter.middleware";
+import { securityMiddleware } from "./middleware/security.middleware";
+
+app.use(securityMiddleware);
+app.use(
+	cors({
+		origin: config.FRONTEND_URL,
+		credentials: true,
+	}),
+);
+
+app.use(express.json({ limit: "10kb" }));
+
+app.use(generalLimiter);
 
 app.get("/", (_req, res) => {
 	res.send("Backend is alive!");
@@ -54,6 +68,9 @@ app.get("/health", async (_req, res) => {
 
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/docs.json", (_req, res) => res.json(swaggerSpec));
 
 const PORT = config.PORT;
 app.listen(PORT, "0.0.0.0", () => {
