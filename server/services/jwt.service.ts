@@ -23,5 +23,5 @@ export const verifyRefreshToken = async (token: string) => {
 };
 
 export const getRefreshTokenExpiry = (): Date => {
-	return new Date(Date.now() + 60 * 60 * 1000); 
+	return new Date(Date.now() + 60 * 60 * 1000);
 };
