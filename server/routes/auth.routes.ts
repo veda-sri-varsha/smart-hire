@@ -1,9 +1,14 @@
 import { Router } from "express";
-import { login, signup } from "../controllers/auth.controller";
+import { login, resendOtp, signup } from "../controllers/auth.controller";
+import { authLimiter, otpLimiter } from "../middleware/rate-limiter.middleware";
 
 const router = Router();
 
-router.post("/signup", signup);
-router.post("/login", login);
+// Apply auth rate limiter to sensitive auth endpoints
+router.post("/signup", authLimiter, signup);
+router.post("/login", authLimiter, login);
+
+// OTP endpoints have stricter limits
+router.post("/resend-otp", otpLimiter, resendOtp);
 
 export default router;
