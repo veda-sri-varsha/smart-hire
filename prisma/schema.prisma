@@ -81,18 +81,36 @@ model User {
   verificationOtp Int?
   verificationOtpExpiry DateTime?
   isDeleted       Boolean    @default(false)
+  failedLoginAttempts Int      @default(0)
+  lockedUntil         DateTime?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
-
 
   /// Relations
   jobsPosted      Job[]        @relation("CompanyJobs")
   applications    Application[]
   savedJobs       SavedJob[]
   payments        Payment[]
+  sessions        Session[]
 
   @@index([role])
   @@index([status])
+}
+
+model Session {
+  id               String   @id @default(uuid())
+  userId           String
+  refreshTokenHash String
+  ip               String?
+  userAgent        String?
+  expiresAt        DateTime
+  revoked          Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Job {
