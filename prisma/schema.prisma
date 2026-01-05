@@ -80,6 +80,8 @@ model User {
   isEmailVerified Boolean    @default(false)
   verificationOtp Int?
   verificationOtpExpiry DateTime?
+  passwordResetToken String?
+  passwordResetExpiry DateTime?
   isDeleted       Boolean    @default(false)
   failedLoginAttempts Int      @default(0)
   lockedUntil         DateTime?
