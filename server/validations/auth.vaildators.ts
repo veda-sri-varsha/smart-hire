@@ -78,6 +78,8 @@ export const contactUsSchema = z.object({
 		.max(2000, "Message too long"),
 });
 
+
+
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;

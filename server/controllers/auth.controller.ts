@@ -66,8 +66,6 @@ export const login = handler(async (req: Request, res: Response) => {
     isEmailVerified: user.isEmailVerified,
     profilePicture: user.profilePicture ?? null,
     resumeUrl: user.resumeUrl ?? null,
-    accessToken,
-    refreshToken,
   };
 
   return ApiResponse.success<Partial<AuthUserResponse>>(
@@ -82,4 +80,16 @@ export const resendOtp = handler(async (req: Request, res: Response) => {
   await authService.resendOtp(body.email);
 
   return ApiResponse.success("OTP resent if the account exists").send(res, 200);
+});
+
+export const logout = handler(async (req: Request, res: Response) => {
+  const refreshToken = req.cookies?.refreshToken as string | undefined;
+
+  await authService.logout(refreshToken);
+
+  // Clear cookies – use same options (domain, path, sameSite, secure) as when setting
+  res.clearCookie("accessToken", accessTokenCookieOptions());
+  res.clearCookie("refreshToken", refreshTokenCookieOptions());
+
+  return ApiResponse.success("Logged out successfully").send(res, 200);
 });
