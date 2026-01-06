@@ -6,7 +6,7 @@ const router = Router();
 
 // Apply auth rate limiter to sensitive auth endpoints
 router.post("/signup", authLimiter, signup);
-router.post("/logizn", authLimiter, login);
+router.post("/login", authLimiter, login);
 router.post("/logout", authLimiter, logout);
 
 // OTP endpoints have stricter limits
