@@ -1,35 +1,53 @@
-import config from "../config";
+import type { CookieOptions } from "express";
+import config from "../config/index";
 
-const parseDurationToMs = (s: string) => {
-	const match = s.match(/^(\d+)([smhd])$/i);
-	if (!match) return 0;
+const parseDurationToSeconds = (duration: string): number => {
+	const match = duration.match(/^(\d+)([smhd])$/);
+	if (!match) return 15 * 60;
+
 	const value = Number(match[1]);
-	switch (match[2].toLowerCase()) {
+	const unit = match[2];
+
+	switch (unit) {
 		case "s":
-			return value * 1000;
+			return value;
 		case "m":
-			return value * 60 * 1000;
+			return value * 60;
 		case "h":
-			return value * 60 * 60 * 1000;
+			return value * 60 * 60;
 		case "d":
-			return value * 24 * 60 * 60 * 1000;
+			return value * 24 * 60 * 60;
 		default:
-			return 0;
+			return 15 * 60;
 	}
 };
 
-export const accessTokenCookieOptions = () => ({
-	httpOnly: true,
-	secure: process.env.NODE_ENV === "production",
-	sameSite: "strict" as const,
-	path: "/",
-	maxAge: Math.floor(parseDurationToMs(config.ACCESS_TOKEN_EXPIRY) / 1000), // seconds
-});
+const ACCESS_TOKEN_MAX_AGE = parseDurationToSeconds(config.ACCESS_TOKEN_EXPIRY);
+const REFRESH_TOKEN_MAX_AGE = parseDurationToSeconds(
+	config.REFRESH_TOKEN_EXPIRY,
+);
 
-export const refreshTokenCookieOptions = () => ({
+const isProduction = config.NODE_ENV === "production";
+
+export const accessTokenCookieOptions: CookieOptions = {
 	httpOnly: true,
-	secure: process.env.NODE_ENV === "production",
-	sameSite: "strict" as const,
-	path: "/auth/refresh",
-	maxAge: Math.floor(parseDurationToMs(config.REFRESH_TOKEN_EXPIRY) / 1000), // seconds
-});
+	secure: isProduction,
+	sameSite: "strict",
+	path: "/",
+	maxAge: ACCESS_TOKEN_MAX_AGE * 1000,
+};
+
+export const refreshTokenCookieOptions: CookieOptions = {
+	httpOnly: true,
+	secure: isProduction,
+	sameSite: "strict",
+	path: "/api/auth/refresh",
+	maxAge: REFRESH_TOKEN_MAX_AGE * 1000,
+};
+
+export const clearCookieOptions: CookieOptions = {
+	httpOnly: true,
+	secure: isProduction,
+	sameSite: "strict",
+	path: "/",
+};
