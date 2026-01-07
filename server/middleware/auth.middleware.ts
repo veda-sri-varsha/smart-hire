@@ -1,56 +1,47 @@
 import type { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-
+import * as jwtService from "../services/jwt.service";
 import ApiResponse from "../utils/api-response";
+import logger from "../utils/logger";
 
 export interface AuthRequest extends Request {
 	user?: {
 		id: string;
-		role?: "ADMIN" | "HR" | "USER" | "COMPANY";
+		role: "ADMIN" | "HR" | "USER" | "COMPANY";
 	};
 }
 
-const parseCookies = (cookieHeader?: string) => {
-	const cookies: Record<string, string> = {};
-	if (!cookieHeader) return cookies;
-	for (const part of cookieHeader.split(";")) {
-		const [k, ...v] = part.split("=");
-		cookies[k?.trim()] = decodeURIComponent((v || []).join("=") || "");
-	}
-	return cookies;
-};
-
-export const authMiddleware = (
+export const authMiddleware = async (
 	req: AuthRequest,
 	res: Response,
 	next: NextFunction,
-): void => {
-	const authHeader = req.headers.authorization;
-	let token: string | undefined;
-
-	if (authHeader?.startsWith("Bearer ")) {
-		token = authHeader.split(" ")[1];
-	} else {
-		const cookies = parseCookies(req.headers.cookie);
-		if (cookies.accessToken) {
-			token = cookies.accessToken;
-		}
-	}
-
-	if (!token) {
-		ApiResponse.error("Unauthorized").send(res, 401);
-		return;
-	}
-
+): Promise<void> => {
 	try {
-		const decoded = jwt.verify(
-			token,
-			process.env.JWT_ACCESS_SECRET as string,
-		) as { id: string; role?: "ADMIN" | "HR" | "USER" | "COMPANY" };
+		let token: string | undefined;
 
-		req.user = { id: decoded.id, role: decoded.role };
+		const authHeader = req.headers.authorization;
+		if (authHeader?.startsWith("Bearer ")) {
+			token = authHeader.substring(7);
+		} else if (req.cookies?.accessToken) {
+			token = req.cookies.accessToken;
+		}
+
+		if (!token) {
+			ApiResponse.error("Unauthorized - Missing token").send(res, 401);
+			return;
+		}
+
+		const payload = await jwtService.verifyAccessToken(token);
+
+		req.user = {
+			id: payload.id,
+			role: payload.role as "ADMIN" | "HR" | "USER" | "COMPANY",
+		};
+
+		logger.debug("User authenticated", { userId: payload.id });
+
 		next();
-	} catch {
-		ApiResponse.error("Invalid or expired token").send(res, 401);
+	} catch (error) {
+		logger.warn("Token verification failed", { error });
+		ApiResponse.error("Unauthorized - Invalid or expired token").send(res, 401);
 	}
 };
