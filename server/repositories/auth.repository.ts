@@ -1,179 +1,142 @@
 import { prisma } from "../lib/prisma";
 
-type SessionCreateReturn = {
-  id: string;
-  userId: string;
-  refreshTokenHash: string;
-  expiresAt: Date;
-  ip?: string | null;
-  userAgent?: string | null;
-  revoked: boolean;
-  createdAt: Date;
-};
-
-type PrismaSessionClient = {
-  session: {
-    create: (args: {
-      data: {
-        userId: string;
-        refreshTokenHash: string;
-        expiresAt: Date;
-        ip?: string;
-        userAgent?: string;
-      };
-    }) => Promise<SessionCreateReturn>;
-    updateMany: (args: {
-      where: { userId?: string, refreshTokenHash?: string };
-      data: { revoked: boolean };
-    }) => Promise<{ count: number }>;
-  };
-};
-
 export const authRepository = {
-  findUserByEmail: async (email: string) => {
-    return prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        password: true,
-        role: true,
-        status: true,
-        name: true,
-        isEmailVerified: true,
-        profilePicture: true,
-        resumeUrl: true,
-      },
-    });
-  },
+	findUserByEmail: async (email: string) => {
+		return prisma.user.findUnique({
+			where: { email },
+			select: {
+				id: true,
+				email: true,
+				password: true,
+				role: true,
+				status: true,
+				name: true,
+				isEmailVerified: true,
+				profilePicture: true,
+				resumeUrl: true,
+				lockedUntil: true,
+				failedLoginAttempts: true,
+				verificationOtp: true,
+				verificationOtpExpiry: true,
+			},
+		});
+	},
 
-  createUser: async (email: string, name: string, hashedPassword: string) => {
-    return prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-        role: "USER",
-        status: "ACTIVE",
-      },
-    });
-  },
+	createUser: async (
+		email: string,
+		name: string,
+		hashedPassword: string,
+		verificationOtp: number,
+		verificationOtpExpiry: Date,
+	) => {
+		return prisma.user.create({
+			data: {
+				email,
+				name,
+				password: hashedPassword,
+				role: "USER",
+				status: "ACTIVE",
+				isEmailVerified: false,
+				verificationOtp,
+				verificationOtpExpiry,
+			},
+		});
+	},
 
-  saveSession: async (
-    userId: string,
-    refreshTokenHash: string,
-    expiresAt: Date,
-    ip?: string,
-    userAgent?: string
-  ) => {
-    return (prisma as unknown as PrismaSessionClient).session.create({
-      data: { userId, refreshTokenHash, expiresAt, ip, userAgent },
-    });
-  },
+	saveSession: async (
+		userId: string,
+		refreshTokenHash: string,
+		expiresAt: Date,
+		ip?: string,
+		userAgent?: string,
+	) => {
+		return prisma.session.create({
+			data: {
+				userId,
+				refreshTokenHash,
+				expiresAt,
+				ip,
+				userAgent,
+				revoked: false,
+			},
+		});
+	},
 
-  revokeSessionsByUser: async (userId: string) => {
-    return (prisma as unknown as PrismaSessionClient).session.updateMany({
-      where: { userId },
-      data: { revoked: true },
-    });
-  },
+	findSessionsByUserId: async (userId: string) => {
+		return prisma.session.findMany({
+			where: { userId, revoked: false },
+			orderBy: { createdAt: "desc" },
+		});
+	},
 
-  incrementFailedLogin: async (
-    userId: string
-  ): Promise<{ failedLoginAttempts?: number }> => {
-    const rows = await prisma.$queryRaw<Array<{ failedLoginAttempts: number }>>`
-			UPDATE "User"
-			SET "failedLoginAttempts" = COALESCE("failedLoginAttempts", 0) + 1
-			WHERE id = ${userId}
-			RETURNING "failedLoginAttempts";
-		`;
-    return rows[0] ?? { failedLoginAttempts: 0 };
-  },
+	revokeSessionsByUser: async (userId: string) => {
+		const result = await prisma.session.updateMany({
+			where: { userId, revoked: false },
+			data: { revoked: true },
+		});
+		return result.count;
+	},
 
-  resetFailedLogin: async (
-    userId: string
-  ): Promise<{ failedLoginAttempts?: number; lockedUntil?: Date | null }> => {
-    const rows = await prisma.$queryRaw<
-      Array<{ failedLoginAttempts: number; lockedUntil: Date | null }>
-    >`
-			UPDATE "User"
-			SET "failedLoginAttempts" = 0, "lockedUntil" = NULL
-			WHERE id = ${userId}
-			RETURNING "failedLoginAttempts", "lockedUntil";
-		`;
-    return rows[0] ?? { failedLoginAttempts: 0, lockedUntil: null };
-  },
+	revokeSessionById: async (sessionId: string) => {
+		return prisma.session.update({
+			where: { id: sessionId },
+			data: { revoked: true },
+		});
+	},
 
-  lockUser: async (
-    userId: string,
-    until: Date
-  ): Promise<{ lockedUntil?: Date | null }> => {
-    const rows = await prisma.$queryRaw<Array<{ lockedUntil: Date }>>`
-			UPDATE "User"
-			SET "lockedUntil" = ${until}
-			WHERE id = ${userId}
-			RETURNING "lockedUntil";
-		`;
-    return rows[0] ?? { lockedUntil: null };
-  },
+	incrementFailedLogin: async (userId: string) => {
+		return prisma.user.update({
+			where: { id: userId },
+			data: { failedLoginAttempts: { increment: 1 } },
+			select: { failedLoginAttempts: true },
+		});
+	},
 
-  updateUserOtp: async (userId: string, otp: number, expiry: Date) => {
-    return prisma.user.update({
-      where: { id: userId },
-      data: { verificationOtp: otp, verificationOtpExpiry: expiry },
-    });
-  },
+	resetFailedLogin: async (userId: string) => {
+		return prisma.user.update({
+			where: { id: userId },
+			data: { failedLoginAttempts: 0, lockedUntil: null },
+			select: { failedLoginAttempts: true, lockedUntil: true },
+		});
+	},
 
-  findUserById: async (userId: string) => {
-    // Cast to any because Prisma client may need to be regenerated after schema changes
-    return prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        password: true,
-        name: true,
-      },
-    }) as unknown as Promise<unknown>;
-  },
+	lockUser: async (userId: string, until: Date) => {
+		return prisma.user.update({
+			where: { id: userId },
+			data: { lockedUntil: until },
+			select: { lockedUntil: true },
+		});
+	},
 
-  setPasswordResetToken: async (
-    userId: string,
-    token: string,
-    expiry: Date
-  ) => {
-    // Use raw SQL to avoid relying on prisma client types before a migration/generate step
-    await prisma.$executeRaw`
-			UPDATE "User"
-			SET "passwordResetToken" = ${token}, "passwordResetExpiry" = ${expiry}
-			WHERE id = ${userId};
-		`;
-  },
+	updateUserOtp: async (userId: string, otp: number, expiry: Date) => {
+		return prisma.user.update({
+			where: { id: userId },
+			data: { verificationOtp: otp, verificationOtpExpiry: expiry },
+		});
+	},
 
-  findUserByPasswordResetToken: async (token: string) => {
-    // Use raw query to fetch reset token info
-    const rows = (await prisma.$queryRaw`
-			SELECT id, email, password, name, "passwordResetToken", "passwordResetExpiry"
-			FROM "User"
-			WHERE "passwordResetToken" = ${token}
-			LIMIT 1;
-		`) as unknown as Array<unknown>;
-    return rows[0] as unknown;
-  },
+	markEmailVerified: async (userId: string) => {
+		return prisma.user.update({
+			where: { id: userId },
+			data: {
+				isEmailVerified: true,
+				verificationOtp: null,
+				verificationOtpExpiry: null,
+			},
+		});
+	},
 
-  updateUserPassword: async (userId: string, hashedPassword: string) => {
-    // Use raw update to avoid prisma type mismatches prior to client regeneration
-    await prisma.$executeRaw`
-			UPDATE "User"
-			SET "password" = ${hashedPassword}, "passwordResetToken" = NULL, "passwordResetExpiry" = NULL
-			WHERE id = ${userId};
-		`;
-  },
+	findUserById: async (userId: string) => {
+		return prisma.user.findUnique({
+			where: { id: userId },
+			select: { id: true, email: true, password: true, name: true, role: true },
+		});
+	},
 
-  revokeSessionByRefreshHash: async (refreshTokenHash: string) => {
-    return (prisma as unknown as PrismaSessionClient).session.updateMany({
-      where: { refreshTokenHash },
-      data: { revoked: true },
-    });
-  },
+	updateUserPassword: async (userId: string, hashedPassword: string) => {
+		return prisma.user.update({
+			where: { id: userId },
+			data: { password: hashedPassword },
+		});
+	},
 };
