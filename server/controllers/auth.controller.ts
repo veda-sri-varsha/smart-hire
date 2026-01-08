@@ -74,6 +74,8 @@ export const login = handler(async (req: Request, res: Response) => {
 		isEmailVerified: user.isEmailVerified,
 		profilePicture: user.profilePicture ?? null,
 		resumeUrl: user.resumeUrl ?? null,
+		accessToken,
+		refreshToken
 	};
 
 	return ApiResponse.success<{
