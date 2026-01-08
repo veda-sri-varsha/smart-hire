@@ -53,7 +53,7 @@ export type Role = "ADMIN" | "HR" | "USER" | "COMPANY";
 export type AuthUserResponse = {
 	id: string;
 	email: string;
-	name: string;
+	name: string | null;
 	role: "ADMIN" | "HR" | "USER" | "COMPANY";
 	status: "ACTIVE" | "INACTIVE" | "BLOCKED";
 	isEmailVerified: boolean;
@@ -63,9 +63,6 @@ export type AuthUserResponse = {
 	refreshToken: string;
 	sessionMessage?: string;
 };
-
-export type SignupInput = SignupRequest;
-export type LoginInput = LoginRequest;
 
 // export type ApiResponse<T> = {
 //   success: boolean;

@@ -9,7 +9,7 @@ export const sendVerificationOtp = async (
 	otp: string,
 	name: string,
 ): Promise<void> => {
-		console.log("📧 Email config:", { from: config.FROM_EMAIL, to: email, otp }); // ← ADD THIS
+	console.log("📧 Email config:", { from: config.FROM_EMAIL, to: email, otp }); // ← ADD THIS
 	try {
 		await resend.emails.send({
 			from: config.FROM_EMAIL,

@@ -38,18 +38,20 @@ export const signup = handler(async (req: Request, res: Response) => {
 	res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 	res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
-	const safeUser: Partial<AuthUserResponse> = {
-		id: user.id,
+	const safeUser: AuthUserResponse = {
+		id: user.id,   
 		email: user.email,
-		name: user.name ?? undefined,
+		name: user.name,
 		role: user.role,
 		status: user.status,
 		isEmailVerified: user.isEmailVerified,
 		profilePicture: user.profilePicture ?? null,
 		resumeUrl: user.resumeUrl ?? null,
+		refreshToken,
+		accessToken
 	};
 
-	return ApiResponse.success<Partial<AuthUserResponse>>(
+	return ApiResponse.success<AuthUserResponse>(
 		"User registered successfully. Please verify your email.",
 		safeUser,
 	).send(res, 201);
