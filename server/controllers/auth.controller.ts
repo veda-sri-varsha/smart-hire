@@ -39,7 +39,7 @@ export const signup = handler(async (req: Request, res: Response) => {
 	res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
 	const safeUser: AuthUserResponse = {
-		id: user.id,   
+		id: user.id,
 		email: user.email,
 		name: user.name,
 		role: user.role,
@@ -48,7 +48,7 @@ export const signup = handler(async (req: Request, res: Response) => {
 		profilePicture: user.profilePicture ?? null,
 		resumeUrl: user.resumeUrl ?? null,
 		refreshToken,
-		accessToken
+		accessToken,
 	};
 
 	return ApiResponse.success<AuthUserResponse>(
@@ -77,7 +77,7 @@ export const login = handler(async (req: Request, res: Response) => {
 		profilePicture: user.profilePicture ?? null,
 		resumeUrl: user.resumeUrl ?? null,
 		accessToken,
-		refreshToken
+		refreshToken,
 	};
 
 	return ApiResponse.success<{
