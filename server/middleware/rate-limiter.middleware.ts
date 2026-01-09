@@ -16,7 +16,7 @@ export const otpLimiter = rateLimit({
 	legacyHeaders: false,
 });
 
-export const generalLimiter = rateLimit({
+export const generalRateLimiter = rateLimit({
 	windowMs: 60 * 1000, // 1 minute
 	max: 100,
 	message: { error: "Rate limit exceeded" },
