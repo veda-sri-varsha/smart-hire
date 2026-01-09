@@ -5,12 +5,13 @@ import swaggerUi from "swagger-ui-express";
 import config from "./config/index.ts";
 import { prisma } from "./lib/prisma.ts";
 import authRoutes from "./routes/auth.routes.ts";
+import jobRoutes from "./routes/job.routes.ts";
 import userRoutes from "./routes/user.routes.ts";
 import swaggerSpec from "./swagger";
 
 const app = express();
 
-import { generalLimiter } from "./middleware/rate-limiter.middleware";
+import { generalRateLimiter } from "./middleware/rate-limiter.middleware";
 import { securityMiddleware } from "./middleware/security.middleware";
 
 app.use(securityMiddleware);
@@ -23,7 +24,7 @@ app.use(
 
 app.use(express.json({ limit: "10kb" }));
 
-app.use(generalLimiter);
+app.use(generalRateLimiter);
 
 app.get("/", (_req, res) => {
 	res.send("Backend is alive!");
@@ -68,6 +69,7 @@ app.get("/health", async (_req, res) => {
 
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
+app.use("/jobs", jobRoutes);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/docs.json", (_req, res) => res.json(swaggerSpec));
