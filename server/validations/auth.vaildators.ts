@@ -25,11 +25,34 @@ const otpSchema = z
 
 const idSchema = z.string().uuid("Invalid ID");
 
-export const signupSchema = z.object({
-	email: emailSchema,
-	password: passwordSchema,
-	name: z.string().trim().max(100, "Name too long"),
-});
+// export const signupSchema = z.object({
+// 	email: emailSchema,
+// 	password: passwordSchema,
+// 	name: z.string().trim().max(100, "Name too long"),
+// 	role: z.enum(["ADMIN", "HR", "USER", "COMPANY"]).optional(), // optional
+
+// });
+
+export const signupSchema = z
+	.object({
+		name: z.string().min(2),
+		email: z.string().email(),
+		password: z.string().min(8),
+
+		role: z.enum(["USER", "COMPANY"]).optional().default("USER"),
+
+		companyName: z.string().min(2).optional(),
+		companyWebsite: z.string().url().optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.role === "COMPANY" && !data.companyName) {
+			ctx.addIssue({
+				path: ["companyName"],
+				message: "companyName is required when role is COMPANY",
+				code: z.ZodIssueCode.custom,
+			});
+		}
+	});
 
 export const loginSchema = z.object({
 	email: emailSchema,

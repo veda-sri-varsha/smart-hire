@@ -7,6 +7,7 @@ import {
 } from "../lib/mail.service";
 import { authRepository } from "../repositories/auth.repository";
 import * as jwtService from "../services/jwt.service";
+import type { Role } from "../types/auth.types";
 import CustomError from "../utils/customError";
 import logger from "../utils/logger";
 
@@ -25,6 +26,7 @@ export const authService = {
 		name: string,
 		password: string,
 		clientInfo: ClientInfo = {},
+		role?: Role,
 	) => {
 		logger.info("auth.signup.attempt", { email, ip: clientInfo.ip });
 
@@ -37,9 +39,12 @@ export const authService = {
 		const otp = generateOtp();
 		const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
+		const userRole = role ?? "USER";
+
 		const user = await authRepository.createUser(
 			email,
 			name,
+			userRole,
 			hashedPassword,
 			Number(otp),
 			otpExpiry,
