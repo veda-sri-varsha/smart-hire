@@ -25,6 +25,7 @@ export const authRepository = {
 	createUser: async (
 		email: string,
 		name: string,
+		role: "ADMIN" | "HR" | "USER" | "COMPANY",
 		hashedPassword: string,
 		verificationOtp: number,
 		verificationOtpExpiry: Date,
@@ -34,7 +35,7 @@ export const authRepository = {
 				email,
 				name,
 				password: hashedPassword,
-				role: "USER",
+				role,
 				status: "ACTIVE",
 				isEmailVerified: false,
 				verificationOtp,
