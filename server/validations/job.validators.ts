@@ -72,7 +72,6 @@ export const createJobSchema = z
 		},
 	);
 
-
 export const updateJobSchema = createJobSchema.omit({ status: true }).partial();
 
 export const updateJobStatusSchema = z.object({

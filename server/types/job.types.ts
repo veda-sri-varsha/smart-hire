@@ -7,7 +7,7 @@ export type CreateJobRequest = {
 	experienceMin?: number;
 	experienceMax?: number;
 	jobType: "FULL_TIME" | "PART_TIME" | "INTERNSHIP" | "CONTRACT" | "FREELANCE";
-	skills: string; 
+	skills: string;
 	status?: "DRAFT" | "OPEN";
 };
 
