@@ -29,6 +29,8 @@ export const authRepository = {
 		hashedPassword: string,
 		verificationOtp: number,
 		verificationOtpExpiry: Date,
+		companyName?: string,
+		companyWebsite?: string,
 	) => {
 		return prisma.user.create({
 			data: {
@@ -40,6 +42,8 @@ export const authRepository = {
 				isEmailVerified: false,
 				verificationOtp,
 				verificationOtpExpiry,
+				companyName,
+				companyWebsite,
 			},
 		});
 	},

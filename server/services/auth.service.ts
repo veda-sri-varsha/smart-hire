@@ -27,6 +27,8 @@ export const authService = {
 		password: string,
 		clientInfo: ClientInfo = {},
 		role?: Role,
+		companyName?: string,
+		companyWebsite?: string,
 	) => {
 		logger.info("auth.signup.attempt", { email, ip: clientInfo.ip });
 
@@ -35,11 +37,19 @@ export const authService = {
 			throw new CustomError("Email already registered", 409);
 		}
 
+		const userRole = role ?? "USER";
+
+		// ✅ BUSINESS RULE (THIS IS WHAT YOU WANTED)
+		if (userRole === "COMPANY" && !companyName) {
+			throw new CustomError(
+				"companyName is required for COMPANY accounts",
+				400,
+			);
+		}
+
 		const hashedPassword = await argon2.hash(password);
 		const otp = generateOtp();
 		const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-
-		const userRole = role ?? "USER";
 
 		const user = await authRepository.createUser(
 			email,
@@ -48,6 +58,8 @@ export const authService = {
 			hashedPassword,
 			Number(otp),
 			otpExpiry,
+			companyName,
+			companyWebsite,
 		);
 
 		void sendVerificationOtp(user.email, otp, user.name ?? "User").catch(

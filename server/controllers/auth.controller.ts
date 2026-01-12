@@ -25,7 +25,8 @@ const getClientInfo = (req: Request) => ({
 });
 
 export const signup = handler(async (req: Request, res: Response) => {
-	const { email, name, password, role } = signupSchema.parse(req.body);
+	const { email, name, password, role, companyName, companyWebsite } =
+		signupSchema.parse(req.body);
 	const clientInfo = getClientInfo(req);
 
 	const { user, accessToken, refreshToken } = await authService.signup(
@@ -34,6 +35,8 @@ export const signup = handler(async (req: Request, res: Response) => {
 		password,
 		clientInfo,
 		role,
+		companyName,
+		companyWebsite,
 	);
 
 	res.cookie("accessToken", accessToken, accessTokenCookieOptions);
