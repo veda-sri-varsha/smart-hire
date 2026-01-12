@@ -4,6 +4,7 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import config from "./config/index.ts";
 import { prisma } from "./lib/prisma.ts";
+import applicationRoutes from "./routes/application.routes";
 import authRoutes from "./routes/auth.routes.ts";
 import jobRoutes from "./routes/job.routes.ts";
 import userRoutes from "./routes/user.routes.ts";
@@ -70,6 +71,7 @@ app.get("/health", async (_req, res) => {
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/jobs", jobRoutes);
+app.use("/applications", applicationRoutes);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/docs.json", (_req, res) => res.json(swaggerSpec));
