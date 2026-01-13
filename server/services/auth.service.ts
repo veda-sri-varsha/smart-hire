@@ -39,7 +39,6 @@ export const authService = {
 
 		const userRole = role ?? "USER";
 
-		// ✅ BUSINESS RULE (THIS IS WHAT YOU WANTED)
 		if (userRole === "COMPANY" && !companyName) {
 			throw new CustomError(
 				"companyName is required for COMPANY accounts",

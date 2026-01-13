@@ -19,9 +19,6 @@ export const getUsers = async (_req: Request, res: Response) => {
 	res.json({ success: true, data: users });
 };
 
-/**
- * POST /users
- */
 export const createUser = async (req: Request, res: Response) => {
 	const { email, name, password, role } = req.body;
 

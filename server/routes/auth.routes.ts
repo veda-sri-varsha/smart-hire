@@ -16,7 +16,6 @@ import { authLimiter, otpLimiter } from "../middleware/rate-limiter.middleware";
 
 const router = Router();
 
-// Public routes
 router.post("/signup", authLimiter, signup);
 router.post("/login", authLimiter, login);
 router.post("/logout", authMiddleware, logout);
