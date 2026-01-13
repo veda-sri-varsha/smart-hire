@@ -18,20 +18,17 @@ export const errorHandler = (
 		method: req.method,
 	});
 
-	// Zod validation errors
 	if (error instanceof ZodError) {
 		const messages = error.issues.map((err) => err.message).join(", ");
 		ApiResponse.error(messages).send(res, 400);
 		return;
 	}
 
-	// Custom errors
 	if (error instanceof CustomError) {
 		ApiResponse.error(error.message).send(res, error.statusCode);
 		return;
 	}
 
-	// JWT errors
 	if (error.name === "JsonWebTokenError") {
 		ApiResponse.error("Invalid token").send(res, 401);
 		return;
@@ -42,6 +39,5 @@ export const errorHandler = (
 		return;
 	}
 
-	// Default error
 	ApiResponse.error("Internal server error").send(res, 500);
 };

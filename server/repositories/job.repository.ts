@@ -42,7 +42,6 @@ export const jobRepository = {
 		});
 	},
 
-	// Find jobs with filters and pagination
 	findMany: async (filters: JobFilterQuery) => {
 		const page = filters.page ?? 1;
 		const limit = filters.limit ?? 10;
@@ -130,7 +129,6 @@ export const jobRepository = {
 		};
 	},
 
-	// Update job
 	update: async (id: string, data: Prisma.JobUpdateInput) => {
 		logger.info(`Updating job ${id}`);
 		return prisma.job.update({
@@ -150,7 +148,6 @@ export const jobRepository = {
 		});
 	},
 
-	// Update job status
 	updateStatus: async (id: string, status: JobStatus) => {
 		logger.info(`Updating job status ${id} => ${status}`);
 		return prisma.job.update({
@@ -159,7 +156,6 @@ export const jobRepository = {
 		});
 	},
 
-	// Soft delete job
 	delete: async (id: string) => {
 		logger.info(`Archiving job ${id}`);
 		return prisma.job.update({
@@ -168,13 +164,11 @@ export const jobRepository = {
 		});
 	},
 
-	// Hard delete
 	hardDelete: async (id: string) => {
 		logger.warn(`Hard deleting job ${id}`);
 		return prisma.job.delete({ where: { id } });
 	},
 
-	// Get company's jobs
 	findByCompanyId: async (companyId: string, page = 1, limit = 10) => {
 		const skip = (page - 1) * limit;
 
@@ -198,7 +192,6 @@ export const jobRepository = {
 		};
 	},
 
-	// Featured jobs
 	findFeatured: async (limit = 10) => {
 		return prisma.job.findMany({
 			where: { status: JobStatus.OPEN },
