@@ -179,9 +179,12 @@ export const applicationRepository = {
 			_count: true,
 		});
 
-		return stats.reduce((acc, stat) => {
-			acc[stat.status] = stat._count;
-			return acc;
-		}, {} as Record<string, number>);
+		return stats.reduce(
+			(acc, stat) => {
+				acc[stat.status] = stat._count;
+				return acc;
+			},
+			{} as Record<string, number>,
+		);
 	},
 };
