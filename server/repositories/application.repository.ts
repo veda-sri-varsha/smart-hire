@@ -3,6 +3,37 @@ import { prisma } from "../lib/prisma";
 import type { ApplicationFilterQuery } from "../types/application.types";
 import logger from "../utils/logger";
 
+const applicationInclude = {
+	user: {
+		select: {
+			id: true,
+			name: true,
+			email: true,
+			phone: true,
+			profilePicture: true,
+			resumeUrl: true,
+		},
+	},
+	job: {
+		select: {
+			id: true,
+			title: true,
+			location: true,
+			jobType: true,
+			companyId: true,
+			company: {
+				select: {
+					id: true,
+					name: true,
+					companyName: true,
+					profilePicture: true,
+					email: true,
+				},
+			},
+		},
+	},
+};
+
 export const applicationRepository = {
 	create: async (data: {
 		userId: string;
@@ -20,66 +51,14 @@ export const applicationRepository = {
 				coverLetter: data.coverLetter,
 				status: "APPLIED",
 			},
-			include: {
-				user: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						phone: true,
-						profilePicture: true,
-					},
-				},
-				job: {
-					select: {
-						id: true,
-						title: true,
-						company: {
-							select: {
-								id: true,
-								name: true,
-								companyName: true,
-							},
-						},
-					},
-				},
-			},
+			include: applicationInclude,
 		});
 	},
 
 	findById: async (id: string) => {
 		return prisma.application.findUnique({
 			where: { id },
-			include: {
-				user: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						phone: true,
-						profilePicture: true,
-						resumeUrl: true,
-					},
-				},
-				job: {
-					select: {
-						id: true,
-						title: true,
-						description: true,
-						location: true,
-						jobType: true,
-						companyId: true,
-						company: {
-							select: {
-								id: true,
-								name: true,
-								companyName: true,
-								email: true,
-							},
-						},
-					},
-				},
-			},
+			include: applicationInclude,
 		});
 	},
 
@@ -96,11 +75,9 @@ export const applicationRepository = {
 
 	findMany: async (filters: ApplicationFilterQuery) => {
 		const { page = 1, limit = 10, status, jobId, userId } = filters;
-
 		const skip = (page - 1) * limit;
 
 		const where: Prisma.ApplicationWhereInput = {};
-
 		if (status) where.status = status;
 		if (jobId) where.jobId = jobId;
 		if (userId) where.userId = userId;
@@ -111,30 +88,7 @@ export const applicationRepository = {
 				skip,
 				take: limit,
 				orderBy: { appliedAt: "desc" },
-				include: {
-					user: {
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							phone: true,
-							profilePicture: true,
-						},
-					},
-					job: {
-						select: {
-							id: true,
-							title: true,
-							company: {
-								select: {
-									id: true,
-									name: true,
-									companyName: true,
-								},
-							},
-						},
-					},
-				},
+				include: applicationInclude,
 			}),
 			prisma.application.count({ where }),
 		]);
@@ -157,18 +111,7 @@ export const applicationRepository = {
 				skip,
 				take: limit,
 				orderBy: { appliedAt: "desc" },
-				include: {
-					user: {
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							phone: true,
-							profilePicture: true,
-							resumeUrl: true,
-						},
-					},
-				},
+				include: applicationInclude,
 			}),
 			prisma.application.count({ where: { jobId } }),
 		]);
@@ -191,24 +134,7 @@ export const applicationRepository = {
 				skip,
 				take: limit,
 				orderBy: { appliedAt: "desc" },
-				include: {
-					job: {
-						select: {
-							id: true,
-							title: true,
-							location: true,
-							jobType: true,
-							company: {
-								select: {
-									id: true,
-									name: true,
-									companyName: true,
-									profilePicture: true,
-								},
-							},
-						},
-					},
-				},
+				include: applicationInclude,
 			}),
 			prisma.application.count({ where: { userId } }),
 		]);
@@ -237,37 +163,13 @@ export const applicationRepository = {
 		return prisma.application.update({
 			where: { id },
 			data: { status },
-			include: {
-				user: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-					},
-				},
-				job: {
-					select: {
-						id: true,
-						title: true,
-						company: {
-							select: {
-								id: true,
-								name: true,
-								companyName: true,
-							},
-						},
-					},
-				},
-			},
+			include: applicationInclude,
 		});
 	},
 
 	delete: async (id: string) => {
 		logger.info(`Deleting application ${id}`);
-
-		return prisma.application.delete({
-			where: { id },
-		});
+		return prisma.application.delete({ where: { id } });
 	},
 
 	getJobStats: async (jobId: string) => {
@@ -277,12 +179,9 @@ export const applicationRepository = {
 			_count: true,
 		});
 
-		return stats.reduce(
-			(acc, stat) => {
-				acc[stat.status] = stat._count;
-				return acc;
-			},
-			{} as Record<string, number>,
-		);
+		return stats.reduce((acc, stat) => {
+			acc[stat.status] = stat._count;
+			return acc;
+		}, {} as Record<string, number>);
 	},
 };
