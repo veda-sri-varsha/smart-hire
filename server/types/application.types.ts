@@ -4,26 +4,23 @@ export type CreateApplicationRequest = {
 	coverLetter?: string;
 };
 
+export type ApplicationStatus =
+	| "APPLIED"
+	| "SHORTLISTED"
+	| "INTERVIEW"
+	| "OFFERED"
+	| "REJECTED"
+	| "WITHDRAWN";
+
 export type UpdateApplicationStatusRequest = {
-	status:
-		| "APPLIED"
-		| "SHORTLISTED"
-		| "INTERVIEW"
-		| "OFFERED"
-		| "REJECTED"
-		| "WITHDRAWN";
+	status: ApplicationStatus;
 };
+
 
 export type ApplicationFilterQuery = {
 	page?: number;
 	limit?: number;
-	status?:
-		| "APPLIED"
-		| "SHORTLISTED"
-		| "INTERVIEW"
-		| "OFFERED"
-		| "REJECTED"
-		| "WITHDRAWN";
+	status?: ApplicationStatus;
 	jobId?: string;
 	userId?: string;
 };
