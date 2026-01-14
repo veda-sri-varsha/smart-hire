@@ -30,8 +30,10 @@ export const applicationService = {
 			throw new CustomError("You cannot apply to your own job posting", 400);
 		}
 
-		const existingApplication =
-			await applicationRepository.findByUserAndJob(userId, data.jobId);
+		const existingApplication = await applicationRepository.findByUserAndJob(
+			userId,
+			data.jobId,
+		);
 
 		if (existingApplication) {
 			throw new CustomError("You have already applied for this job", 409);
@@ -105,11 +107,7 @@ export const applicationService = {
 			);
 		}
 
-		const result = await applicationRepository.findByJobId(
-			jobId,
-			page,
-			limit,
-		);
+		const result = await applicationRepository.findByJobId(jobId, page, limit);
 
 		return {
 			applications: result.applications,
