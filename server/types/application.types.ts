@@ -1,6 +1,6 @@
 export type CreateApplicationRequest = {
 	jobId: string;
-	resumeUrl?: string; 
+	resumeUrl?: string;
 	coverLetter?: string;
 };
 
@@ -15,7 +15,6 @@ export type ApplicationStatus =
 export type UpdateApplicationStatusRequest = {
 	status: ApplicationStatus;
 };
-
 
 export type ApplicationFilterQuery = {
 	page?: number;
