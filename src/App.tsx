@@ -1,69 +1,53 @@
-import "./App.css";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "./api/auth";
+import "./App.css";
 
-type User = { id: number; email: string; name: string | null };
+const App = () => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [message, setMessage] = useState(""); // Show success/error
+	const navigate = useNavigate();
 
-function App() {
-	const [email, setEmail] = useState<string>("");
-	const [name, setName] = useState<string>("");
-	const [createdUser, setCreatedUser] = useState<User | null>(null);
-	const [error, setError] = useState<string>("");
-
-	const createUser = async () => {
-		setError("");
-		setCreatedUser(null);
+	const handleLogin = async () => {
 		try {
-			const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email, name }),
-			});
-			if (!res.ok) {
-				const errBody: { message?: string } = await res
-					.json()
-					.catch(() => ({}));
-				throw new Error(errBody.message || "Failed to create user");
-			}
-			const data: { success: boolean; data: User } = await res.json();
-			setCreatedUser(data.data);
-		} catch (e) {
-			if (e instanceof Error) {
-				setError(e.message);
-			} else {
-				setError("Something went wrong");
-			}
+			const res = await login({ email, password });
+			console.log(res.data);
+
+			setMessage("Login successful! Redirecting...");
+			setTimeout(() => navigate("/dashboard"), 1500);
+		} catch (err: any) {
+			setMessage(err?.response?.data?.message || "Login failed");
 		}
 	};
 
 	return (
-		<div className="space-y-4 p-6">
-			<h1 className="text-3xl font-bold text-blue-500">
-				Create User (Prisma + Express)
-			</h1>
+		<div className="app-container">
+			<h1>Hello, World!</h1>
+
 			<input
+				className="input-field"
 				placeholder="Email"
 				value={email}
 				onChange={(e) => setEmail(e.target.value)}
-				className="max-w-sm"
 			/>
 			<input
-				placeholder="Name (optional)"
-				value={name}
-				onChange={(e) => setName(e.target.value)}
-				className="max-w-sm"
+				className="input-field"
+				placeholder="Password"
+				type="password"
+				value={password}
+				onChange={(e) => setPassword(e.target.value)}
 			/>
-			<button type="button" onClick={createUser}>
-				Save to Database
+
+			<button type="button" onClick={handleLogin} className="action-button">
+				Login
 			</button>
-			{error !== "" && <p className="text-red-500">{error}</p>}
-			{createdUser !== null && (
-				<p>
-					<strong>Created:</strong> {createdUser.id}–{createdUser.email}–{" "}
-					{createdUser.name ?? "(no name)"}
-				</p>
-			)}
+
+			{message && <p className="message">{message}</p>}
 		</div>
 	);
-}
+};
 
 export default App;
