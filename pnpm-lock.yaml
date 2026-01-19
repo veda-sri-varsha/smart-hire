@@ -17,6 +17,9 @@ importers:
       '@prisma/client':
         specifier: ^7.2.0
         version: 7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
+      '@tanstack/react-query':
+        specifier: ^5.90.6
+        version: 5.90.6(react@19.2.3)
       '@tanstack/react-router':
         specifier: ^1.151.3
         version: 1.151.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1246,6 +1249,14 @@ packages:
   '@tanstack/history@1.151.1':
     resolution: {integrity: sha512-Z/eymNBuUGHYIea7nNX3xR5feqx418ChlwWOKklVpCVzEQ5Q3kNTUw+WK4HYUKxF+1uXFN01Dbuhhl7SmW1LJA==}
     engines: {node: '>=12'}
+
+  '@tanstack/query-core@5.90.6':
+    resolution: {integrity: sha512-AnZSLF26R8uX+tqb/ivdrwbVdGemdEDm1Q19qM6pry6eOZ6bEYiY7mWhzXT1YDIPTNEVcZ5kYP9nWjoxDLiIVw==}
+
+  '@tanstack/react-query@5.90.6':
+    resolution: {integrity: sha512-gB1sljYjcobZKxjPbKSa31FUTyr+ROaBdoH+wSSs9Dk+yDCmMs+TkTV3PybRRVLC7ax7q0erJ9LvRWnMktnRAw==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tanstack/react-router@1.151.3':
     resolution: {integrity: sha512-Xb8444OgVpmwCl9hpUA+N/X0dsik/WWYWdldIYNAcmBAl1ZYYXm8kKnfjgHS2aMZzPnqN1BjKocKgc5jg3lK9Q==}
@@ -4560,6 +4571,13 @@ snapshots:
   '@standard-schema/spec@1.1.0': {}
 
   '@tanstack/history@1.151.1': {}
+
+  '@tanstack/query-core@5.90.6': {}
+
+  '@tanstack/react-query@5.90.6(react@19.2.3)':
+    dependencies:
+      '@tanstack/query-core': 5.90.6
+      react: 19.2.3
 
   '@tanstack/react-router@1.151.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
