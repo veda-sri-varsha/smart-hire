@@ -1,0 +1,72 @@
+.header {
+  background-color: #4b4b4b;
+  color: #ffffff;
+  padding: 0.75rem 0;
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  &__logo-icon {
+    font-size: 1.2rem;
+  }
+
+  &__nav {
+    display: flex;
+    gap: 2rem;
+
+    a {
+      color: #e5e5e5;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #2dd4bf;
+      }
+    }
+  }
+
+  &__auth {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .login {
+      color: #e5e5e5;
+      font-size: 0.9rem;
+      text-decoration: none;
+
+      &:hover {
+        color: #2dd4bf;
+      }
+    }
+
+    .register {
+      background-color: #14b8a6;
+      color: #ffffff;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #0d9488;
+      }
+    }
+  }
+}
