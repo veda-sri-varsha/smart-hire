@@ -1,15 +1,11 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./App.css"; 
-import Header from "./components/Header";
+import Providers from "./app/providers";
+import "./global.scss";
 
 const rootElement = document.getElementById("root");
-if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <Header/>
-      <App />
-    </React.StrictMode>
-  );
+
+if (!rootElement) {
+	throw new Error("Root element not found");
 }
+
+ReactDOM.createRoot(rootElement).render(<Providers />);
