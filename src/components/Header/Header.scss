@@ -18,6 +18,7 @@
     gap: 0.5rem;
     font-size: 1.1rem;
     font-weight: 600;
+    cursor: pointer;
   }
 
   &__logo-icon {
@@ -27,6 +28,7 @@
   &__nav {
     display: flex;
     gap: 2rem;
+    font-weight: 600;
 
     a {
       color: #e5e5e5;
@@ -44,6 +46,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    font-weight: 600;
 
     .login {
       color: #e5e5e5;
