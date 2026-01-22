@@ -1,5 +1,14 @@
-import styles from "./Button.module.scss";
+import styles from "../ui/Button.module.scss";
 
-export default function Button({ children }: { children: React.ReactNode }) {
-	return <button className={styles.button}>{children}</button>;
+type ButtonProps = {
+	children: React.ReactNode;
+	type?: "button" | "submit" | "reset";
+};
+
+export default function Button({ children, type = "button" }: ButtonProps) {
+	return (
+		<button type={type} className={styles.button}>
+			{children}
+		</button>
+	);
 }
