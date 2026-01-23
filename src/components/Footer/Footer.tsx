@@ -10,8 +10,10 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div>
-          <JobIcon />
-          <h3>Job</h3>
+          <div className={styles.brandHeader}>
+            <JobIcon />
+            <h3>Job</h3>
+          </div>
           <p>Quis enim pellentesque viverra tellus eget malesuada facilisis.</p>
         </div>
 
