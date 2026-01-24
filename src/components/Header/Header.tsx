@@ -6,7 +6,9 @@ const Header = () => {
 		<header className="header">
 			<div className="header__container">
 				<div className="header__logo">
-					<span className="header__logo-icon"><JobIcon /></span>
+					<span className="header__logo-icon">
+						<JobIcon />
+					</span>
 					<span className="header__logo-text">Job Portal</span>
 				</div>
 
