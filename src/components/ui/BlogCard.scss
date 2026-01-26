@@ -1,0 +1,25 @@
+.blog-card {
+  max-width: 480px;
+
+  .date {
+    font-size: 11px;
+    color: #9ca3af;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    color: #0a0a0a;
+  }
+
+  a {
+    font-size: 13px;
+    color: #0fb9b1;
+    text-decoration: none;
+    font-weight: 500;
+  }
+}
