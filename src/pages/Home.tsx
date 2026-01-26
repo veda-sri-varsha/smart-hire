@@ -1,13 +1,19 @@
+import BrowseByCategory from "@/components/Category/BrowseByCategory";
 import Hero from "@/components/Hero/Hero";
-import RecentJobs from "@/components/RecentJobs";
-import Testimonials from "@/components/Testimonials";
+import HeroSection from "@/components/Hero/HeroSection";
+import NewsBlog from "@/components/Hero/NewsBlog";
+import RecentJobs from "@/components/JobListing/RecentJobs";
+import Testimonials from "@/components/Testimonials/Testimonials";
 
 export default function Home() {
-	return (
-		<>
-			<Hero />
-			<RecentJobs />
-			<Testimonials />
-		</>
-	);
+  return (
+    <>
+      <Hero />
+      <RecentJobs />
+      <BrowseByCategory />
+      <HeroSection />
+      <Testimonials />
+      <NewsBlog />
+    </>
+  );
 }
