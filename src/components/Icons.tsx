@@ -466,3 +466,4 @@ export const LinearIcon = () => (
 		/>
 	</svg>
 );
+
