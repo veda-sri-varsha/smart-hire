@@ -6,14 +6,14 @@ import RecentJobs from "@/components/JobListing/RecentJobs";
 import Testimonials from "@/components/Testimonials/Testimonials";
 
 export default function Home() {
-  return (
-    <>
-      <Hero />
-      <RecentJobs />
-      <BrowseByCategory />
-      <HeroSection />
-      <Testimonials />
-      <NewsBlog />
-    </>
-  );
+	return (
+		<>
+			<Hero />
+			<RecentJobs />
+			<BrowseByCategory />
+			<HeroSection />
+			<Testimonials />
+			<NewsBlog />
+		</>
+	);
 }
