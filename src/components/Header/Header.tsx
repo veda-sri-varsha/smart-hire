@@ -13,7 +13,7 @@ const Header = () => {
 					<span className="header__logo-icon">
 						<JobIcon />
 					</span>
-					<span className="header__logo-text">Job Portal</span>
+					<span className="header__logo-text">Smart Hire</span>
 				</div>
 
 				<nav className="header__nav">

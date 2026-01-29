@@ -1,5 +1,6 @@
 .header {
   background-color: #4b4b4b;
+  // background-image: url();
   color: #ffffff;
   padding: 0.75rem 0;
 
@@ -73,6 +74,46 @@
 
       &:hover {
         background-color: #0d9488;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0;              
+    height: 56px;            
+    display: flex;
+    align-items: center;
+
+    &__container {
+      height: 100%;
+      padding: 0 1rem;
+    }
+
+    &__logo {
+      font-size: 1rem;
+
+      &-icon {
+        font-size: 1.1rem;
+      }
+    }
+
+    &__nav {
+      display: none; // correct
+    }
+
+    &__auth {
+      gap: 0.5rem;
+
+      .login {
+        font-size: 0.75rem;
+      }
+
+      .register {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 4px;
       }
     }
   }

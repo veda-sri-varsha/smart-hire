@@ -107,14 +107,12 @@
   }
 }
 
-/* FULL WIDTH BLACK STRIP */
 .logoStrip {
   width: 100%;
   background: #000000;
-  padding: 1.25rem 0; // matches screenshot height
+  padding: 1.25rem 0;
 }
 
-/* CENTERED CONTENT */
 .logoContainer {
   max-width: 1100px;
   margin: 0 auto;
@@ -125,10 +123,9 @@
   gap: 3rem;
 }
 
-/* LOGO STYLE */
 .logo {
   height: 26px;
   width: auto;
   opacity: 0.95;
-  filter: brightness(0) invert(1); // force white if svg isn't
+  filter: brightness(0) invert(1);
 }
