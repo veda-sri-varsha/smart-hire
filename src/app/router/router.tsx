@@ -8,8 +8,8 @@ import Login from "@/pages/Auth/Login";
 import Register from "@/pages/Auth/Register";
 import ContactUs from "@/pages/ContactUs/ContactUs";
 import Home from "@/pages/Home";
-import Jobs from "@/pages/Jobs/Jobs";
 import JobDetails from "@/pages/Job-Details/JobDetails";
+import Jobs from "@/pages/Jobs/Jobs";
 import MainLayout from "../../layouts/MainLayout";
 
 const rootRoute = createRootRoute({
