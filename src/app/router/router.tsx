@@ -4,9 +4,12 @@ import {
 	createRouter,
 } from "@tanstack/react-router";
 import AboutUs from "@/pages/AboutUs/About";
+import Login from "@/pages/Auth/Login";
+import Register from "@/pages/Auth/Register";
 import ContactUs from "@/pages/ContactUs/ContactUs";
 import Home from "@/pages/Home";
 import Jobs from "@/pages/Jobs/Jobs";
+import JobDetails from "@/pages/Job-Details/JobDetails";
 import MainLayout from "../../layouts/MainLayout";
 
 const rootRoute = createRootRoute({
@@ -37,11 +40,32 @@ const ContactUsRoute = createRoute({
 	component: ContactUs,
 });
 
+const loginRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/login",
+	component: Login,
+});
+
+const registerRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/register",
+	component: Register,
+});
+
+const jobDetailsRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/jobs/$jobId",
+	component: JobDetails,
+});
+
 const routeTree = rootRoute.addChildren([
 	indexRoute,
 	jobsRoute,
+	jobDetailsRoute,
 	AboutUsRoute,
 	ContactUsRoute,
+	loginRoute,
+	registerRoute,
 ]);
 
 export const router = createRouter({ routeTree });
