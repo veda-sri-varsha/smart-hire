@@ -1,11 +1,9 @@
-import axios from "axios";
 import type {
 	JobFilterQuery,
 	JobResponse,
 	PaginatedJobsResponse,
 } from "../../server/types/job.types";
-
-const API_URL = "http://localhost:8000/jobs";
+import apiClient from "./client";
 
 // Backend wraps responses in: { success: true, message: '...', data: {...} }
 interface ApiWrapper<T> {
@@ -25,16 +23,13 @@ export const getJobs = async (
 			}
 		});
 	}
-	const response = await axios.get<ApiWrapper<PaginatedJobsResponse>>(
-		`${API_URL}?${params.toString()}`,
-		{ withCredentials: true },
+	const response = await apiClient.get<ApiWrapper<PaginatedJobsResponse>>(
+		`/jobs?${params.toString()}`,
 	);
 	return response.data.data;
 };
 
 export const getJobById = async (id: string): Promise<JobResponse> => {
-	const response = await axios.get<ApiWrapper<JobResponse>>(`${API_URL}/${id}`, {
-		withCredentials: true,
-	});
+	const response = await apiClient.get<ApiWrapper<JobResponse>>(`/jobs/${id}`);
 	return response.data.data;
 };
