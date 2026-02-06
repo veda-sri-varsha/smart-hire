@@ -1,29 +1,133 @@
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+
+import { applyToJob } from "@/api/applications";
+import { getJobs } from "@/api/jobs";
+import ApplyModal from "@/components/ApplyModal/ApplyModal";
+import JobSidebar from "@/components/JobListing/JobSidebar";
+import { companiesData } from "@/constants/Jobs";
+import { useAuth } from "@/context/AuthContext";
+
+import type { JobResponse } from "../../../server/types/job.types";
 import "./Jobs.scss";
-import { companiesData, jobsData } from "@/constants/Jobs";
 
 const Jobs = () => {
+	const [jobs, setJobs] = useState<JobResponse[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const [selectedJob, setSelectedJob] = useState<JobResponse | null>(null);
+	const [appliedJobs, setAppliedJobs] = useState<string[]>([]); // track applied jobs
+
+	const { isAuthenticated } = useAuth();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const fetchJobs = async () => {
+			try {
+				const response = await getJobs();
+				setJobs(response.jobs);
+			} catch (err) {
+				console.error("Failed to fetch jobs:", err);
+				setError("Failed to load jobs. Please try again later.");
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchJobs();
+	}, []);
+
+	const handleApplyClick = (job: JobResponse) => {
+		if (!isAuthenticated) {
+			navigate({ to: "/login" });
+			return;
+		}
+		setSelectedJob(job);
+	};
+
+	const handleSubmitApplication = async (data: {
+		resumeUrl?: string;
+		coverLetter?: string;
+	}) => {
+		if (!selectedJob) return;
+
+		try {
+			await applyToJob({
+				jobId: selectedJob.id,
+				resumeUrl: data.resumeUrl,
+				coverLetter: data.coverLetter,
+			});
+			setAppliedJobs([...appliedJobs, selectedJob.id]); // mark job as applied
+			alert("Application submitted successfully!");
+			setSelectedJob(null); // close modal
+		} catch (err) {
+			console.error(err);
+			alert("Failed to submit application. You may have already applied.");
+		}
+	};
+
 	return (
 		<div className="jobs-page">
-			<h1 className="jobs-page__title">Jobs</h1>
-			<div className="jobs-page__list">
-				{jobsData.map((job) => (
-					<div key={job.id} className="job-card">
-						<h2 className="job-card__title">{job.title}</h2>
-						<p className="job-card__type">{job.type}</p>
-						<p className="job-card__location">{job.location}</p>
-						<p className="job-card__salary">{job.salary}</p>
-						<button type="button" className="job-card__apply">
-							Apply
-						</button>
-					</div>
-				))}
+			<div className="jobs-page__header">
+				<h1 className="jobs-page__title">Jobs</h1>
+			</div>
+
+			<div className="jobs-page__content">
+				<JobSidebar />
+
+				<div className="jobs-page__list">
+					{loading && <p>Loading jobs...</p>}
+					{error && <p className="error-message">{error}</p>}
+
+					{!loading &&
+						!error &&
+						jobs.map((job) => (
+							<div key={job.id} className="job-card">
+								<div className="job-card__info">
+									<h2 className="job-card__title">{job.title}</h2>
+									<div className="job-card__meta">
+										<span>{job.jobType.replace("_", " ")}</span>
+										<span>•</span>
+										<span>{job.location}</span>
+										<span>•</span>
+										<span className="job-card__salary">
+											${job.salaryMin} - ${job.salaryMax}
+										</span>
+									</div>
+									<div className="job-card__tags">
+										{job.skills.split(",").map((skill) => (
+											<span key={skill} className="tag">
+												{skill.trim()}
+											</span>
+										))}
+									</div>
+								</div>
+								<div className="job-card__actions">
+									<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
+										<button type="button" className="view-btn">
+											View Details
+										</button>
+									</Link>
+									<button
+										type="button"
+										className={`apply-btn ${appliedJobs.includes(job.id) ? "applied" : ""}`}
+										onClick={() => handleApplyClick(job)}
+										disabled={appliedJobs.includes(job.id)}
+									>
+										{appliedJobs.includes(job.id) ? "Applied ✓" : "Apply Now"}
+									</button>
+								</div>
+							</div>
+						))}
+
+					{!loading && !error && jobs.length === 0 && <p>No jobs found.</p>}
+				</div>
 			</div>
 
 			<section className="top-companies">
 				<h2 className="top-companies__title">Top Company</h2>
 				<p className="top-companies__subtitle">
-					At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. Blandit
-					a massa elementum
+					At eu lobortis pretium tincidunt amet lacus ut aenean aliquet.
 				</p>
 				<div className="top-companies__list">
 					{companiesData.map((company) => (
@@ -42,6 +146,16 @@ const Jobs = () => {
 					))}
 				</div>
 			</section>
+
+			{/* Apply Modal */}
+			{selectedJob && (
+				<ApplyModal
+					jobTitle={selectedJob.title}
+					isOpen={!!selectedJob}
+					onClose={() => setSelectedJob(null)}
+					onSubmit={handleSubmitApplication}
+				/>
+			)}
 		</div>
 	);
 };
