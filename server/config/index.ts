@@ -13,6 +13,9 @@ const envSchema = z.object({
 	VITE_SERVER_URL: z.string().url(),
 	RESEND_API_KEY: z.string().min(1),
 	FROM_EMAIL: z.email().min(1, "FROM_EMAIL is required"),
+	CLOUDINARY_CLOUD_NAME: z.string().optional(),
+	CLOUDINARY_API_KEY: z.string().optional(),
+	CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
