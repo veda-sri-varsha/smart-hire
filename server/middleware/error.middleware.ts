@@ -18,6 +18,8 @@ export const errorHandler = (
 		method: req.method,
 	});
 
+	console.error("FULL ERROR DETAILS:", error); // Ensure it prints to console during dev
+
 	if (error instanceof ZodError) {
 		const messages = error.issues.map((err) => err.message).join(", ");
 		ApiResponse.error(messages).send(res, 400);
@@ -39,5 +41,6 @@ export const errorHandler = (
 		return;
 	}
 
-	ApiResponse.error("Internal server error").send(res, 500);
+	// Return the actual error message during debugging
+	ApiResponse.error(error.message || "Internal server error").send(res, 500);
 };

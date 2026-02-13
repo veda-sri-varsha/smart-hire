@@ -19,6 +19,13 @@ export const authMiddleware = async (
 		let token: string | undefined;
 
 		const authHeader = req.headers.authorization;
+
+		// Log presence of authentication info for debugging
+		logger.debug("Auth attempt", {
+			hasAuthHeader: Boolean(authHeader),
+			hasCookie: Boolean(req.cookies?.accessToken),
+		});
+
 		if (authHeader?.startsWith("Bearer ")) {
 			token = authHeader.substring(7);
 		} else if (req.cookies?.accessToken) {
