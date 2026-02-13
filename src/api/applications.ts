@@ -1,6 +1,6 @@
 import type {
 	ApplicationResponse,
-	CreateApplicationRequest,
+	// CreateApplicationRequest,
 } from "../../server/types/application.types";
 import apiClient, { getAuthHeader } from "./client";
 
@@ -12,27 +12,30 @@ interface ApiWrapper<T> {
 }
 
 export const applyToJob = async (
-	data: CreateApplicationRequest,
+	formData: FormData,
 ): Promise<ApplicationResponse> => {
 	const response = await apiClient.post<ApiWrapper<ApplicationResponse>>(
 		`/applications`,
-		data,
-		{ headers: getAuthHeader() },
+		formData,
+		{
+			headers: {
+				...getAuthHeader(),
+				"Content-Type": "multipart/form-data",
+			},
+		},
 	);
+
 	return response.data.data;
 };
 
-export const uploadResume = async (file: File): Promise<string> => {
-	const form = new FormData();
-	form.append("file", file);
-
-	const response = await apiClient.post<{ url: string }>(`/uploads`, form, {
-		headers: {
-			...getAuthHeader(),
-			"Content-Type": "multipart/form-data",
+export const checkApplicationStatus = async (
+	jobId: string,
+): Promise<boolean> => {
+	const response = await apiClient.get<ApiWrapper<{ hasApplied: boolean }>>(
+		`/applications/check/${jobId}`,
+		{
+			headers: getAuthHeader(),
 		},
-	});
-
-	// expect backend to return { url: 'https://...' }
-	return response.data.url;
+	);
+	return response.data.data.hasApplied;
 };
