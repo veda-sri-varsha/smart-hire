@@ -1,186 +1,191 @@
 import { applicationRepository } from "../repositories/application.repository";
 import { jobRepository } from "../repositories/job.repository";
 import type {
-	ApplicationResponse,
-	CreateApplicationRequest,
-	PaginatedApplicationsResponse,
-	UpdateApplicationStatusRequest,
+  ApplicationResponse,
+  CreateApplicationRequest,
+  PaginatedApplicationsResponse,
+  UpdateApplicationStatusRequest,
 } from "../types/application.types";
 import CustomError from "../utils/customError";
 import logger from "../utils/logger";
 
 export const applicationService = {
-	createApplication: async (
-		userId: string,
-		data: CreateApplicationRequest,
-	): Promise<ApplicationResponse> => {
-		logger.info(`User ${userId} applying for job ${data.jobId}`);
+  createApplication: async (
+    userId: string,
+    data: CreateApplicationRequest,
+  ): Promise<ApplicationResponse> => {
+    logger.info(`User ${userId} applying for job ${data.jobId}`);
 
-		const job = await jobRepository.findById(data.jobId);
-		if (!job) throw new CustomError("Job not found", 404);
+    const job = await jobRepository.findById(data.jobId);
+    if (!job) throw new CustomError("Job not found", 404);
 
-		if (job.status !== "OPEN") {
-			throw new CustomError(
-				"This job is no longer accepting applications",
-				400,
-			);
-		}
+    if (job.status !== "OPEN") {
+      throw new CustomError(
+        "This job is no longer accepting applications",
+        400,
+      );
+    }
 
-		if (job.companyId === userId) {
-			throw new CustomError("You cannot apply to your own job posting", 400);
-		}
+    if (job.companyId === userId) {
+      throw new CustomError("You cannot apply to your own job posting", 400);
+    }
 
-		const existingApplication = await applicationRepository.findByUserAndJob(
-			userId,
-			data.jobId,
-		);
+    const existingApplication = await applicationRepository.findByUserAndJob(
+      userId,
+      data.jobId,
+    );
 
-		if (existingApplication) {
-			throw new CustomError("You have already applied for this job", 409);
-		}
+    if (existingApplication) {
+      throw new CustomError("You have already applied for this job", 409);
+    }
 
-		return applicationRepository.create({
-			userId,
-			jobId: data.jobId,
-			resumeUrl: data.resumeUrl,
-			coverLetter: data.coverLetter,
-		});
-	},
+    return applicationRepository.create({
+      userId,
+      jobId: data.jobId,
+      resumeUrl: data.resumeUrl, // ← Comes from controller (S3 upload)
+      coverLetter: data.coverLetter,
+    });
+  },
 
-	getApplicationById: async (
-		id: string,
-		userId: string,
-		userRole: string,
-	): Promise<ApplicationResponse> => {
-		const application = await applicationRepository.findById(id);
-		if (!application) throw new CustomError("Application not found", 404);
+  checkApplication: async (userId: string, jobId: string): Promise<boolean> => {
+    const application = await applicationRepository.findByUserAndJob(userId, jobId);
+    return !!application;
+  },
 
-		const isOwner = application.userId === userId;
-		const isCompany = application.job.companyId === userId;
-		const isAdmin = userRole === "ADMIN";
+  getApplicationById: async (
+    id: string,
+    userId: string,
+    userRole: string,
+  ): Promise<ApplicationResponse> => {
+    const application = await applicationRepository.findById(id);
+    if (!application) throw new CustomError("Application not found", 404);
 
-		if (!isOwner && !isCompany && !isAdmin) {
-			throw new CustomError(
-				"You don't have permission to view this application",
-				403,
-			);
-		}
+    const isOwner = application.userId === userId;
+    const isCompany = application.job.companyId === userId;
+    const isAdmin = userRole === "ADMIN";
 
-		return application;
-	},
+    if (!isOwner && !isCompany && !isAdmin) {
+      throw new CustomError(
+        "You don't have permission to view this application",
+        403,
+      );
+    }
 
-	getUserApplications: async (
-		userId: string,
-		page = 1,
-		limit = 10,
-	): Promise<PaginatedApplicationsResponse> => {
-		const result = await applicationRepository.findByUserId(
-			userId,
-			page,
-			limit,
-		);
+    return application;
+  },
 
-		return {
-			applications: result.applications,
-			pagination: {
-				page: result.page,
-				limit: result.limit,
-				total: result.total,
-				totalPages: result.totalPages,
-			},
-		};
-	},
+  getUserApplications: async (
+    userId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<PaginatedApplicationsResponse> => {
+    const result = await applicationRepository.findByUserId(
+      userId,
+      page,
+      limit,
+    );
 
-	getJobApplications: async (
-		jobId: string,
-		companyId: string,
-		page = 1,
-		limit = 10,
-	): Promise<PaginatedApplicationsResponse> => {
-		const job = await jobRepository.findById(jobId);
-		if (!job) throw new CustomError("Job not found", 404);
+    return {
+      applications: result.applications,
+      pagination: {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+        totalPages: result.totalPages,
+      },
+    };
+  },
 
-		if (job.companyId !== companyId) {
-			throw new CustomError(
-				"You can only view applications for your own jobs",
-				403,
-			);
-		}
+  getJobApplications: async (
+    jobId: string,
+    companyId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<PaginatedApplicationsResponse> => {
+    const job = await jobRepository.findById(jobId);
+    if (!job) throw new CustomError("Job not found", 404);
 
-		const result = await applicationRepository.findByJobId(jobId, page, limit);
+    if (job.companyId !== companyId) {
+      throw new CustomError(
+        "You can only view applications for your own jobs",
+        403,
+      );
+    }
 
-		return {
-			applications: result.applications,
-			pagination: {
-				page: result.page,
-				limit: result.limit,
-				total: result.total,
-				totalPages: result.totalPages,
-			},
-		};
-	},
+    const result = await applicationRepository.findByJobId(jobId, page, limit);
 
-	updateApplicationStatus: async (
-		id: string,
-		companyId: string,
-		data: UpdateApplicationStatusRequest,
-	): Promise<ApplicationResponse> => {
-		const application = await applicationRepository.findById(id);
-		if (!application) throw new CustomError("Application not found", 404);
+    return {
+      applications: result.applications,
+      pagination: {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+        totalPages: result.totalPages,
+      },
+    };
+  },
 
-		if (application.job.companyId !== companyId) {
-			throw new CustomError(
-				"You can only update applications for your own jobs",
-				403,
-			);
-		}
+  updateApplicationStatus: async (
+    id: string,
+    companyId: string,
+    data: UpdateApplicationStatusRequest,
+  ): Promise<ApplicationResponse> => {
+    const application = await applicationRepository.findById(id);
+    if (!application) throw new CustomError("Application not found", 404);
 
-		if (application.status === "WITHDRAWN") {
-			throw new CustomError(
-				"Cannot update status of withdrawn application",
-				400,
-			);
-		}
+    if (application.job.companyId !== companyId) {
+      throw new CustomError(
+        "You can only update applications for your own jobs",
+        403,
+      );
+    }
 
-		return applicationRepository.updateStatus(id, data.status);
-	},
+    if (application.status === "WITHDRAWN") {
+      throw new CustomError(
+        "Cannot update status of withdrawn application",
+        400,
+      );
+    }
 
-	withdrawApplication: async (
-		id: string,
-		userId: string,
-	): Promise<{ message: string }> => {
-		const application = await applicationRepository.findById(id);
-		if (!application) throw new CustomError("Application not found", 404);
+    return applicationRepository.updateStatus(id, data.status);
+  },
 
-		if (application.userId !== userId) {
-			throw new CustomError("You can only withdraw your own applications", 403);
-		}
+  withdrawApplication: async (
+    id: string,
+    userId: string,
+  ): Promise<{ message: string }> => {
+    const application = await applicationRepository.findById(id);
+    if (!application) throw new CustomError("Application not found", 404);
 
-		if (["OFFERED", "REJECTED"].includes(application.status)) {
-			throw new CustomError("Cannot withdraw application at this stage", 400);
-		}
+    if (application.userId !== userId) {
+      throw new CustomError("You can only withdraw your own applications", 403);
+    }
 
-		await applicationRepository.updateStatus(id, "WITHDRAWN");
+    if (["OFFERED", "REJECTED"].includes(application.status)) {
+      throw new CustomError("Cannot withdraw application at this stage", 400);
+    }
 
-		return { message: "Application withdrawn successfully" };
-	},
+    await applicationRepository.updateStatus(id, "WITHDRAWN");
 
-	getJobApplicationStats: async (jobId: string, companyId: string) => {
-		const job = await jobRepository.findById(jobId);
-		if (!job) throw new CustomError("Job not found", 404);
+    return { message: "Application withdrawn successfully" };
+  },
 
-		if (job.companyId !== companyId) {
-			throw new CustomError(
-				"You can only view statistics for your own jobs",
-				403,
-			);
-		}
+  getJobApplicationStats: async (jobId: string, companyId: string) => {
+    const job = await jobRepository.findById(jobId);
+    if (!job) throw new CustomError("Job not found", 404);
 
-		const stats = await applicationRepository.getJobStats(jobId);
+    if (job.companyId !== companyId) {
+      throw new CustomError(
+        "You can only view statistics for your own jobs",
+        403,
+      );
+    }
 
-		return {
-			total: Object.values(stats).reduce((sum, count) => sum + count, 0),
-			byStatus: stats,
-		};
-	},
+    const stats = await applicationRepository.getJobStats(jobId);
+
+    return {
+      total: Object.values(stats).reduce((sum, count) => sum + count, 0),
+      byStatus: stats,
+    };
+  },
 };

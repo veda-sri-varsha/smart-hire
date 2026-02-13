@@ -49,9 +49,9 @@ export const jobRepository = {
 
 		const where: Prisma.JobWhereInput = {};
 
-		// if (filters.jobType) {
-		//   where.jobType = filters.jobType;
-		// }
+		if (filters.jobType) {
+			where.jobType = filters.jobType as any; // Temporary fix or specific Enum if available
+		}
 
 		if (filters.location) {
 			where.location = {

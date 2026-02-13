@@ -10,6 +10,10 @@ import ContactUs from "@/pages/ContactUs/ContactUs";
 import Home from "@/pages/Home";
 import JobDetails from "@/pages/Job-Details/JobDetails";
 import Jobs from "@/pages/Jobs/Jobs";
+import AdminDashboard from "@/pages/Admin/Dashboard";
+import AdminUsers from "@/pages/Admin/Users";
+import AdminJobs from "@/pages/Admin/Jobs";
+import AdminSettings from "@/pages/Admin/Settings";
 import MainLayout from "../../layouts/MainLayout";
 
 const rootRoute = createRootRoute({
@@ -58,6 +62,30 @@ const jobDetailsRoute = createRoute({
 	component: JobDetails,
 });
 
+const adminRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/admin",
+	component: AdminDashboard,
+});
+
+const adminUsersRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/admin/users",
+	component: AdminUsers,
+});
+
+const adminJobsRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/admin/jobs",
+	component: AdminJobs,
+});
+
+const adminSettingsRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/admin/settings",
+	component: AdminSettings,
+});
+
 const routeTree = rootRoute.addChildren([
 	indexRoute,
 	jobsRoute,
@@ -66,6 +94,10 @@ const routeTree = rootRoute.addChildren([
 	ContactUsRoute,
 	loginRoute,
 	registerRoute,
+	adminRoute,
+	adminUsersRoute,
+	adminJobsRoute,
+	adminSettingsRoute,
 ]);
 
 export const router = createRouter({ routeTree });

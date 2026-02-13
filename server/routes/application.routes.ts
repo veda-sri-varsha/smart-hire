@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+	checkApplicationStatus,
 	createApplication,
 	getApplicationById,
 	getJobApplicationStats,
@@ -11,6 +12,7 @@ import {
 import { authMiddleware } from "../middleware/auth.middleware";
 import { generalRateLimiter } from "../middleware/rate-limiter.middleware";
 import { authorizeRoles } from "../middleware/role.middleware";
+import { upload } from "../middleware/upload.middleware";
 
 const router = Router();
 
@@ -18,8 +20,16 @@ const router = Router();
 router.use(authMiddleware);
 
 // USER routes
-router.post("/", authorizeRoles("USER"), generalRateLimiter, createApplication);
+router.post(
+	"/",
+	authorizeRoles("USER"),
+	generalRateLimiter,
+	upload.single("resume"),
+	createApplication,
+);
+
 router.get("/my", authorizeRoles("USER"), getMyApplications);
+router.get("/check/:jobId", authorizeRoles("USER"), checkApplicationStatus);
 router.delete("/:id", authorizeRoles("USER"), withdrawApplication);
 
 // COMPANY routes
