@@ -6,7 +6,7 @@ import {
 	SlackIcon,
 	Spotify,
 	UserIcon,
-} from "../Icons";
+} from "../../Icons/Icons";
 import Button from "../ui/Button";
 import styles from "./Hero.module.scss";
 
@@ -22,18 +22,38 @@ export default function Hero() {
 						Connecting Talent with Opportunity: Your Gateway to Career Success
 					</p>
 
-					<div className={styles.searchBox}>
-						<input placeholder="Job Title or Company" />
-						<select title="Location">
-							<option>Select Location</option>
+					<form
+						className={styles.searchBox}
+						onSubmit={(e) => {
+							e.preventDefault();
+							const form = e.currentTarget;
+							const search = (
+								form.elements.namedItem("search") as HTMLInputElement
+							).value;
+							if (search) {
+								window.location.href = `/jobs?title=${encodeURIComponent(search)}`;
+							} else {
+								window.location.href = `/jobs`;
+							}
+						}}
+					>
+						<input name="search" placeholder="Job Title or Company" />
+						<select title="Location" name="location">
+							<option value="">Select Location</option>
+							<option value="New York">New York</option>
+							<option value="London">London</option>
+							<option value="Remote">Remote</option>
 						</select>
-						<select title="Category">
-							<option>Select Category</option>
+						<select title="Category" name="category">
+							<option value="">Select Category</option>
+							<option value="Design">Design</option>
+							<option value="Engineering">Engineering</option>
+							<option value="Marketing">Marketing</option>
 						</select>
-						<Button>
+						<Button type="submit">
 							<span>Search Job</span>
 						</Button>
-					</div>
+					</form>
 
 					<div className={styles.stats}>
 						<div>

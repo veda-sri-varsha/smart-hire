@@ -1,9 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import styles from "@/components/Footer/Footer.module.css";
 import Button from "@/components/ui/Button";
-
 import { companyLinks, jobCategories } from "@/constants/FooterLinks";
-import { JobIcon } from "../Icons";
+import { JobIcon } from "../../Icons/Icons";
+import styles from "./Footer.module.scss";
 
 export default function Footer() {
 	return (
@@ -12,7 +11,7 @@ export default function Footer() {
 				<div>
 					<div className={styles.brandHeader}>
 						<JobIcon />
-						<h3>Job</h3>
+						<h3>Smart Hire</h3>
 					</div>
 					<p>Quis enim pellentesque viverra tellus eget malesuada facilisis.</p>
 				</div>
@@ -41,7 +40,10 @@ export default function Footer() {
 
 				<div>
 					<h4>Newsletter</h4>
-					<form>
+					<form
+						className={styles.newsletter}
+						onSubmit={(e) => e.preventDefault()}
+					>
 						<input placeholder="Email Address" aria-label="Email Address" />
 						<Button type="submit">Subscribe now</Button>
 					</form>

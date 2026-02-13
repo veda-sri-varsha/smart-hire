@@ -1,0 +1,117 @@
+.pageBanner {
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    padding: 80px 20px;
+    width: 100%;
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: #fff;
+    }
+}
+
+.mainContent {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 2rem;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    &Content {
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            span {
+                background: #f1f5f9;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                color: #475569;
+                font-weight: 500;
+
+                &.type {
+                    color: #0aa89e;
+                    background: #e0f2f1;
+                }
+            }
+        }
+    }
+}
+
+.applyBtn {
+    background-color: #0aa89e;
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    // &:hover {
+    //     background-color: color.adjust(#0aa89e, $lightness: -5%);
+    // }
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    section {
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            color: #4b5563;
+
+            li {
+                margin-bottom: 0.5rem;
+                line-height: 1.6;
+            }
+        }
+    }
+}

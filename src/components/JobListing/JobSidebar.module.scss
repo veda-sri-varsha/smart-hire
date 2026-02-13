@@ -1,0 +1,114 @@
+@use "../../global.scss" as *;
+@use "sass:color";
+
+.sidebar {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    min-width: 300px;
+    height: fit-content;
+
+    @media (max-width: 768px) {
+        min-width: auto;
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+
+    .filterGroup {
+        margin-bottom: 2rem;
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+
+        .inputWrapper {
+            position: relative;
+
+            input {
+                width: 100%;
+                padding: 0.75rem 1rem 0.75rem 2.5rem;
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+                font-size: 0.9rem;
+
+                &:focus {
+                    outline: none;
+                    border-color: #0aa89e;
+                }
+            }
+
+            .icon {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1rem;
+                opacity: 0.5;
+            }
+        }
+
+        .checkboxList {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+
+            .checkbox {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: #4b5563;
+
+                input {
+                    width: 16px;
+                    height: 16px;
+                    accent-color: #0aa89e;
+                }
+            }
+        }
+
+        .salaryHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+
+            span {
+                color: #0aa89e;
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+        }
+
+        .rangeInput {
+            width: 100%;
+            accent-color: #0aa89e;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+            .tag {
+                padding: 0.4rem 0.8rem;
+                background: #f3f4f6;
+                border-radius: 6px;
+                font-size: 0.8rem;
+                color: #4b5563;
+                cursor: pointer;
+                transition: all 0.2s;
+
+                &:hover {
+                    background: #e0f2f1;
+                    color: #0aa89e;
+                }
+            }
+        }
+    }
+}

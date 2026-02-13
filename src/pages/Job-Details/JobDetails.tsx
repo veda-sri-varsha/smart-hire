@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { applyToJob } from "@/api/applications";
+import { applyToJob, checkApplicationStatus } from "@/api/applications";
 import { getJobById } from "@/api/jobs";
 import ApplyModal from "@/components/ApplyModal/ApplyModal";
+import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import type { JobResponse } from "../../../server/types/job.types";
 import styles from "./JobDetails.module.scss";
@@ -36,6 +37,21 @@ export default function JobDetails() {
 		fetchJob();
 	}, [jobId]);
 
+	useEffect(() => {
+		const checkStatus = async () => {
+			if (!jobId || !isAuthenticated) return;
+			try {
+				const hasApplied = await checkApplicationStatus(jobId);
+				if (hasApplied) {
+					setApplyStatus("success");
+				}
+			} catch (err) {
+				console.error("Failed to check application status", err);
+			}
+		};
+		checkStatus();
+	}, [jobId, isAuthenticated]);
+
 	const handleApplyClick = () => {
 		if (!isAuthenticated) {
 			navigate({ to: "/login" });
@@ -45,18 +61,25 @@ export default function JobDetails() {
 	};
 
 	const handleSubmitApplication = async (data: {
-		resumeUrl?: string;
+		resumeFile: File;
 		coverLetter?: string;
 	}) => {
 		if (!job) return;
 
-		await applyToJob({
-			jobId: job.id,
-			resumeUrl: data.resumeUrl,
-			coverLetter: data.coverLetter,
-		});
+		try {
+			const formData = new FormData();
+			formData.append("jobId", job.id);
+			formData.append("coverLetter", data.coverLetter || "");
+			formData.append("resume", data.resumeFile);
 
-		setApplyStatus("success");
+			await applyToJob(formData);
+
+			setApplyStatus("success");
+			setIsModalOpen(false);
+		} catch (err) {
+			console.error("Failed to submit application:", err);
+			throw err;
+		}
 	};
 
 	if (loading) return <div className={styles.container}>Loading...</div>;
@@ -82,14 +105,15 @@ export default function JobDetails() {
 							<span className={styles.location}>{job.location}</span>
 						</div>
 					</div>
-					<button
-						type="button"
+					<Button
+						variant="primary"
 						className={styles.applyBtn}
 						onClick={handleApplyClick}
 						disabled={applyStatus === "success"}
 					>
 						{applyStatus === "success" ? "Applied ✓" : "Apply Now"}
-					</button>
+					</Button>
+
 				</div>
 
 				<div className={styles.content}>
@@ -127,7 +151,6 @@ export default function JobDetails() {
 				</div>
 			</div>
 
-			{/* Apply Modal */}
 			<ApplyModal
 				jobTitle={job.title}
 				isOpen={isModalOpen}

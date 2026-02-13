@@ -26,12 +26,20 @@
 }
 
 @media (max-width: 1024px) {
+  .browse-category {
+    padding: 60px 24px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 640px) {
+  .browse-category {
+    padding: 40px 16px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }

@@ -10,7 +10,7 @@
     h1 {
       font-size: 2.5rem;
       font-weight: 700;
-      color:#ccc;
+      color: #ccc;
     }
   }
 
@@ -21,6 +21,8 @@
     gap: 50px;
     padding: 60px 20px;
     flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
 
     .contact-left {
       flex: 1;
@@ -87,7 +89,8 @@
             }
           }
 
-          input, textarea {
+          input,
+          textarea {
             padding: 12px 15px;
             border-radius: 8px;
             border: 1px solid #ccc;
@@ -114,17 +117,15 @@
   }
 
   .contact-map {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 50px 20px;
+    width: 100%;
+    margin-top: 60px;
+    padding: 0;
 
     iframe {
       width: 100%;
-      max-width: 900px;
-      height: 400px;
+      height: 500px;
       border: none;
-      border-radius: 12px;
+      filter: grayscale(0.2);
     }
   }
 

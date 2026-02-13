@@ -55,6 +55,8 @@
     justify-content: space-between;
     margin-bottom: 60px;
     text-align: center;
+    flex-wrap: wrap; // Allow wrapping
+    gap: 20px;
 
     div {
       h3 {
@@ -103,6 +105,40 @@
       font-size: 14px;
       font-weight: 500;
       white-space: nowrap;
+    }
+  }
+}
+
+// Mobile Responsiveness
+@media (max-width: 1024px) {
+  .hero {
+    padding: 60px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 40px 20px;
+
+    .hero-top {
+      h1 {
+        font-size: 32px;
+      }
+    }
+
+    .hero-stats {
+      justify-content: space-around;
+    }
+
+    .hero-cta {
+      flex-direction: column;
+      text-align: center;
+      padding: 30px;
+      gap: 20px;
+
+      button {
+        width: 100%;
+      }
     }
   }
 }

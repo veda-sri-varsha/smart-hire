@@ -8,6 +8,7 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 24px;
+    background: #fff;
 
     h2 {
       font-size: 28px;
@@ -48,5 +49,29 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .news-blog {
+    padding: 48px 20px;
+
+    .header {
+      flex-direction: column;
+      gap: 12px;
+
+      .view-all {
+        margin-top: 0;
+      }
+    }
+
+    .tags {
+      flex-wrap: wrap;
+    }
+
+    .blog-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
   }
 }

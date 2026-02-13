@@ -8,11 +8,13 @@ import JobSidebar from "@/components/JobListing/JobSidebar";
 import { companiesData } from "@/constants/Jobs";
 import { useAuth } from "@/context/AuthContext";
 
-import type { JobResponse } from "../../../server/types/job.types";
+import type { JobFilterQuery, JobResponse } from "../../../server/types/job.types";
 import "./Jobs.scss";
+import Button from "@/components/ui/Button";
 
 const Jobs = () => {
 	const [jobs, setJobs] = useState<JobResponse[]>([]);
+	const [filters, setFilters] = useState<JobFilterQuery>({});
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +27,7 @@ const Jobs = () => {
 	useEffect(() => {
 		const fetchJobs = async () => {
 			try {
-				const response = await getJobs();
+				const response = await getJobs(filters);
 				setJobs(response.jobs);
 			} catch (err) {
 				console.error("Failed to fetch jobs:", err);
@@ -35,7 +37,7 @@ const Jobs = () => {
 			}
 		};
 		fetchJobs();
-	}, []);
+	}, [filters]);
 
 	const handleApplyClick = (job: JobResponse) => {
 		if (!isAuthenticated) {
@@ -46,23 +48,47 @@ const Jobs = () => {
 	};
 
 	const handleSubmitApplication = async (data: {
-		resumeUrl?: string;
+		resumeFile: File;
 		coverLetter?: string;
 	}) => {
 		if (!selectedJob) return;
 
 		try {
-			await applyToJob({
-				jobId: selectedJob.id,
-				resumeUrl: data.resumeUrl,
-				coverLetter: data.coverLetter,
-			});
-			setAppliedJobs([...appliedJobs, selectedJob.id]); // mark job as applied
+			if (!selectedJob) return;
+
+			const formData = new FormData();
+			formData.append("jobId", selectedJob.id);
+			formData.append(
+				"coverLetter",
+				data.coverLetter || "Excited to apply for this role!",
+			);
+			formData.append("resume", data.resumeFile);
+
+			await applyToJob(formData);
+
+			setAppliedJobs([...appliedJobs, selectedJob.id]);
 			alert("Application submitted successfully!");
-			setSelectedJob(null); // close modal
-		} catch (err) {
+			setSelectedJob(null);
+		} catch (err: unknown) {
 			console.error(err);
-			alert("Failed to submit application. You may have already applied.");
+			let errorMessage = "Failed to submit application.";
+			if (err instanceof Error) {
+				errorMessage = err.message;
+			} else if (typeof err === "object" && err !== null && "response" in err) {
+				const response = (
+					err as {
+						response?: {
+							data?: Record<string, unknown>;
+						};
+					}
+				).response;
+				if (response?.data?.error) {
+					errorMessage = String(response.data.error);
+				} else if (response?.data?.message) {
+					errorMessage = String(response.data.message);
+				}
+			}
+			alert(errorMessage);
 		}
 	};
 
@@ -73,7 +99,7 @@ const Jobs = () => {
 			</div>
 
 			<div className="jobs-page__content">
-				<JobSidebar />
+				<JobSidebar filters={filters} onFilterChange={setFilters} />
 
 				<div className="jobs-page__list">
 					{loading && <p>Loading jobs...</p>}
@@ -104,18 +130,18 @@ const Jobs = () => {
 								</div>
 								<div className="job-card__actions">
 									<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
-										<button type="button" className="view-btn">
+										<Button type="button" className="view-btn">
 											View Details
-										</button>
+										</Button>
 									</Link>
-									<button
+									<Button
 										type="button"
 										className={`apply-btn ${appliedJobs.includes(job.id) ? "applied" : ""}`}
 										onClick={() => handleApplyClick(job)}
 										disabled={appliedJobs.includes(job.id)}
 									>
 										{appliedJobs.includes(job.id) ? "Applied ✓" : "Apply Now"}
-									</button>
+									</Button>
 								</div>
 							</div>
 						))}
@@ -139,15 +165,14 @@ const Jobs = () => {
 							/>
 							<h3 className="company-card__name">{company.name}</h3>
 							<p className="company-card__desc">{company.description}</p>
-							<button type="button" className="company-card__jobs">
+							<Button type="button" className="company-card__jobs">
 								{company.openJobs} open jobs
-							</button>
+							</Button>
 						</div>
 					))}
 				</div>
 			</section>
 
-			{/* Apply Modal */}
 			{selectedJob && (
 				<ApplyModal
 					jobTitle={selectedJob.title}
