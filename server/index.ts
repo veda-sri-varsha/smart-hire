@@ -8,12 +8,14 @@ import applicationRoutes from "./routes/application.routes";
 import authRoutes from "./routes/auth.routes.ts";
 import jobRoutes from "./routes/job.routes.ts";
 import userRoutes from "./routes/user.routes.ts";
+import adminRoutes from "./routes/admin.routes.ts";
 import swaggerSpec from "./swagger";
 
 const app = express();
 
 import { generalRateLimiter } from "./middleware/rate-limiter.middleware";
 import { securityMiddleware } from "./middleware/security.middleware";
+import { errorHandler } from "./middleware/error.middleware";
 
 app.use(securityMiddleware);
 app.use(
@@ -72,11 +74,43 @@ app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/jobs", jobRoutes);
 app.use("/applications", applicationRoutes);
+app.use("/admin", adminRoutes);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/docs.json", (_req, res) => res.json(swaggerSpec));
 
+app.use(errorHandler);
+
 const PORT = config.PORT;
 app.listen(PORT, "0.0.0.0", () => {
 	console.log(`Backend running on http://0.0.0.0:${PORT}`);
+	checkAdmin();
 });
+
+async function checkAdmin() {
+	try {
+		console.log("Checking admin users on startup...");
+		// @ts-ignore
+		const admins = await prisma.user.findMany({
+			where: { role: "ADMIN" },
+		});
+
+		if (admins.length > 0) {
+			for (const admin of admins) {
+				console.log(`Found Admin: ${admin.email}, Verified: ${admin.isEmailVerified}`);
+				if (!admin.isEmailVerified) {
+					console.log(`Verifying email for admin: ${admin.email}`);
+					await prisma.user.update({
+						where: { id: admin.id },
+						data: { isEmailVerified: true },
+					});
+					console.log(`Verified email for admin: ${admin.email}`);
+				}
+			}
+		} else {
+			console.log("No admin users found.");
+		}
+	} catch (error) {
+		console.error("Error checking admins:", error);
+	}
+}
