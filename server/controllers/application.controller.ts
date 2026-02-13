@@ -2,6 +2,7 @@ import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware";
 import { applicationService } from "../services/application.service";
 import ApiResponse from "../utils/api-response";
+import { uploadToCloudinary } from "../utils/cloudinary";
 import CustomError from "../utils/customError";
 import handler from "../utils/handler";
 import {
@@ -10,6 +11,25 @@ import {
 	updateApplicationStatusSchema,
 } from "../validations/application.validators";
 
+// export const createApplication = handler(
+// 	async (req: AuthRequest, res: Response) => {
+// 		if (!req.user) {
+// 			throw new CustomError("Unauthorized", 401);
+// 		}
+
+// 		const data = createApplicationSchema.parse(req.body);
+// 		const application = await applicationService.createApplication(
+// 			req.user.id,
+// 			data,
+// 		);
+
+// 		return ApiResponse.success(
+// 			"Application submitted successfully",
+// 			application,
+// 		).send(res, 201);
+// 	},
+// );
+
 export const createApplication = handler(
 	async (req: AuthRequest, res: Response) => {
 		if (!req.user) {
@@ -17,15 +37,42 @@ export const createApplication = handler(
 		}
 
 		const data = createApplicationSchema.parse(req.body);
+
+		let resumeUrl: string | undefined;
+
+		if (req.file) {
+			resumeUrl = await uploadToCloudinary(req.file);
+		}
 		const application = await applicationService.createApplication(
 			req.user.id,
-			data,
+			{
+				...data,
+				resumeUrl,
+			},
 		);
 
 		return ApiResponse.success(
 			"Application submitted successfully",
 			application,
 		).send(res, 201);
+	},
+);
+
+export const checkApplicationStatus = handler(
+	async (req: AuthRequest, res: Response) => {
+		if (!req.user) {
+			throw new CustomError("Unauthorized", 401);
+		}
+
+		const { jobId } = req.params;
+		const hasApplied = await applicationService.checkApplication(
+			req.user.id,
+			jobId,
+		);
+
+		return ApiResponse.success("Application status checked", {
+			hasApplied,
+		}).send(res, 200);
 	},
 );
 
