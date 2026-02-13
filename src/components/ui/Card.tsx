@@ -1,15 +1,18 @@
+import type { LucideIcon } from "lucide-react";
 import "./Card.scss";
 
 interface Props {
 	title: string;
 	jobs: number;
-	icon: string;
+	icon: LucideIcon;
 }
 
-export const CategoryCard = ({ title, jobs, icon }: Props) => {
+export const CategoryCard = ({ title, jobs, icon: Icon }: Props) => {
 	return (
 		<div className="category-card">
-			<img src={`/icons/${icon}.svg`} alt={title} />
+			<div className="icon-wrapper">
+				<Icon size={32} />
+			</div>
 			<h3>{title}</h3>
 			<span>{jobs} jobs</span>
 		</div>

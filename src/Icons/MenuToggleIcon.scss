@@ -1,0 +1,16 @@
+.menu-toggle-icon line {
+	transition: transform 0.25s ease, opacity 0.2s ease;
+	transform-origin: center;
+}
+
+.menu-toggle-icon--open line:nth-child(2) {
+	transform: rotate(45deg) translateY(6px);
+}
+
+.menu-toggle-icon--open line:nth-child(3) {
+	opacity: 0;
+}
+
+.menu-toggle-icon--open line:nth-child(4) {
+	transform: rotate(-45deg) translateY(-6px);
+}
