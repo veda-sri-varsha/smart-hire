@@ -48,12 +48,9 @@ export default function AuthCard({ initialMode = "login" }: AuthCardProps) {
 			}
 			// Redirect to home or dashboard on success
 			navigate({ to: "/" });
-		} catch (err: any) {
+		} catch (err) {
 			console.error("Auth error:", err);
-			const message =
-				err.response?.data?.message ||
-				err.message ||
-				"Authentication failed. Please check your credentials.";
+			const message = "Authentication failed. Please check your credentials.";
 			setError(message);
 		} finally {
 			setLoading(false);
