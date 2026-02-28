@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import { applyToJob, checkApplicationStatus } from "@/api/applications";
 import { getJobById } from "@/api/jobs";
 import ApplyModal from "@/components/ApplyModal/ApplyModal";
@@ -10,47 +12,31 @@ import styles from "./JobDetails.module.scss";
 
 export default function JobDetails() {
 	const { jobId } = useParams({ from: "/jobs/$jobId" });
-	const [job, setJob] = useState<JobResponse | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
 	const { isAuthenticated } = useAuth();
 	const navigate = useNavigate();
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [applyStatus, setApplyStatus] = useState<"idle" | "success" | "error">(
-		"idle",
-	);
 
-	useEffect(() => {
-		const fetchJob = async () => {
-			if (!jobId) return;
-			try {
-				const data = await getJobById(jobId);
-				setJob(data);
-			} catch (err) {
-				console.error("Failed to fetch job details:", err);
-				setError("Failed to load job details.");
-			} finally {
-				setLoading(false);
-			}
-		};
+	const {
+		data: job,
+		isLoading,
+		isError,
+	} = useQuery<JobResponse, Error>({
+		queryKey: ["job", jobId],
+		queryFn: async () => {
+			if (!jobId) throw new Error("Job ID missing");
+			return getJobById(jobId);
+		},
+		enabled: !!jobId,
+	});
 
-		fetchJob();
-	}, [jobId]);
-
-	useEffect(() => {
-		const checkStatus = async () => {
-			if (!jobId || !isAuthenticated) return;
-			try {
-				const hasApplied = await checkApplicationStatus(jobId);
-				if (hasApplied) {
-					setApplyStatus("success");
-				}
-			} catch (err) {
-				console.error("Failed to check application status", err);
-			}
-		};
-		checkStatus();
-	}, [jobId, isAuthenticated]);
+	const { data: hasApplied } = useQuery<boolean, Error>({
+		queryKey: ["applicationStatus", jobId],
+		queryFn: async () => {
+			if (!jobId || !isAuthenticated) return false;
+			return checkApplicationStatus(jobId);
+		},
+		enabled: !!jobId && isAuthenticated,
+	});
 
 	const handleApplyClick = () => {
 		if (!isAuthenticated) {
@@ -66,25 +52,24 @@ export default function JobDetails() {
 	}) => {
 		if (!job) return;
 
+		const formData = new FormData();
+		formData.append("jobId", job.id);
+		formData.append("coverLetter", data.coverLetter || "");
+		formData.append("resume", data.resumeFile);
+
 		try {
-			const formData = new FormData();
-			formData.append("jobId", job.id);
-			formData.append("coverLetter", data.coverLetter || "");
-			formData.append("resume", data.resumeFile);
-
 			await applyToJob(formData);
-
-			setApplyStatus("success");
 			setIsModalOpen(false);
+			alert("Application submitted successfully!");
 		} catch (err) {
 			console.error("Failed to submit application:", err);
-			throw err;
+			alert("Failed to submit application. Please try again.");
 		}
 	};
 
-	if (loading) return <div className={styles.container}>Loading...</div>;
-	if (error || !job)
-		return <div className={styles.container}>{error || "Job not found"}</div>;
+	if (isLoading) return <div className={styles.container}>Loading...</div>;
+	if (isError || !job)
+		return <div className={styles.container}>Job not found.</div>;
 
 	return (
 		<div className={styles.container}>
@@ -109,9 +94,9 @@ export default function JobDetails() {
 						variant="primary"
 						className={styles.applyBtn}
 						onClick={handleApplyClick}
-						disabled={applyStatus === "success"}
+						disabled={hasApplied ?? false} // boolean type
 					>
-						{applyStatus === "success" ? "Applied ✓" : "Apply Now"}
+						{hasApplied ? "Applied ✓" : "Apply Now"}
 					</Button>
 				</div>
 
@@ -142,7 +127,7 @@ export default function JobDetails() {
 					<section>
 						<h2>Skills</h2>
 						<ul>
-							{job.skills.split(",").map((skill) => (
+							{job.skills.split(",").map((skill: string) => (
 								<li key={skill}>{skill.trim()}</li>
 							))}
 						</ul>
