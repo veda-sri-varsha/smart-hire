@@ -58,6 +58,6 @@ router.delete(
 	deleteJob,
 );
 
-router.get("/:id", generalRateLimiter, getJobById);
+// router.get("/:id", generalRateLimiter, getJobById);
 
 export default router;
