@@ -1,12 +1,12 @@
 import {
-	Wheat,
+	Banknote,
 	Factory,
-	ShoppingBag,
+	GraduationCap,
 	HardHat,
 	Hotel,
-	GraduationCap,
-	Banknote,
-	Truck
+	ShoppingBag,
+	Truck,
+	Wheat,
 } from "lucide-react";
 import "./BrowseByCategory.scss";
 import CategoryCard from "../ui/Card";
@@ -27,7 +27,8 @@ const BrowseByCategory = () => {
 		<section className="browse-category">
 			<h2>Browse by Category</h2>
 			<p className="subtitle">
-				Explore thousands of job opportunities across diverse industry sectors and find your next career move.
+				Explore thousands of job opportunities across diverse industry sectors
+				and find your next career move.
 			</p>
 
 			<div className="grid">

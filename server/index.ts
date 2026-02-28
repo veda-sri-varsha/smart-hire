@@ -4,18 +4,18 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import config from "./config/index.ts";
 import { prisma } from "./lib/prisma.ts";
+import adminRoutes from "./routes/admin.routes.ts";
 import applicationRoutes from "./routes/application.routes";
 import authRoutes from "./routes/auth.routes.ts";
 import jobRoutes from "./routes/job.routes.ts";
 import userRoutes from "./routes/user.routes.ts";
-import adminRoutes from "./routes/admin.routes.ts";
 import swaggerSpec from "./swagger";
 
 const app = express();
 
+import { errorHandler } from "./middleware/error.middleware";
 import { generalRateLimiter } from "./middleware/rate-limiter.middleware";
 import { securityMiddleware } from "./middleware/security.middleware";
-import { errorHandler } from "./middleware/error.middleware";
 
 app.use(securityMiddleware);
 app.use(
@@ -90,14 +90,15 @@ app.listen(PORT, "0.0.0.0", () => {
 async function checkAdmin() {
 	try {
 		console.log("Checking admin users on startup...");
-		// @ts-ignore
 		const admins = await prisma.user.findMany({
 			where: { role: "ADMIN" },
 		});
 
 		if (admins.length > 0) {
 			for (const admin of admins) {
-				console.log(`Found Admin: ${admin.email}, Verified: ${admin.isEmailVerified}`);
+				console.log(
+					`Found Admin: ${admin.email}, Verified: ${admin.isEmailVerified}`,
+				);
 				if (!admin.isEmailVerified) {
 					console.log(`Verifying email for admin: ${admin.email}`);
 					await prisma.user.update({

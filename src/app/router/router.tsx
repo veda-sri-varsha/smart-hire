@@ -4,16 +4,16 @@ import {
 	createRouter,
 } from "@tanstack/react-router";
 import AboutUs from "@/pages/AboutUs/About";
+import AdminDashboard from "@/pages/Admin/Dashboard";
+import AdminJobs from "@/pages/Admin/Jobs";
+import AdminSettings from "@/pages/Admin/Settings";
+import AdminUsers from "@/pages/Admin/Users";
 import Login from "@/pages/Auth/Login";
 import Register from "@/pages/Auth/Register";
 import ContactUs from "@/pages/ContactUs/ContactUs";
 import Home from "@/pages/Home";
 import JobDetails from "@/pages/Job-Details/JobDetails";
 import Jobs from "@/pages/Jobs/Jobs";
-import AdminDashboard from "@/pages/Admin/Dashboard";
-import AdminUsers from "@/pages/Admin/Users";
-import AdminJobs from "@/pages/Admin/Jobs";
-import AdminSettings from "@/pages/Admin/Settings";
 import MainLayout from "../../layouts/MainLayout";
 
 const rootRoute = createRootRoute({

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import styles from "./ApplyModal.module.scss";
 import Button from "../ui/Button";
 import Textarea from "../ui/Textarea";
+import styles from "./ApplyModal.module.scss";
 
 interface ApplyModalProps {
 	jobTitle: string;

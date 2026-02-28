@@ -113,7 +113,6 @@ export default function JobDetails() {
 					>
 						{applyStatus === "success" ? "Applied ✓" : "Apply Now"}
 					</Button>
-
 				</div>
 
 				<div className={styles.content}>

@@ -42,9 +42,10 @@ export default function About() {
 				<h2>Connecting Elite Talent with the Future of Work</h2>
 				<p>
 					At Smart Hire, we believe that everyone deserves a career they love.
-					Our platform leverages advanced matching intelligence to connect high-potential
-					professionals with world-class companies. We're on a mission to make the recruiting
-					journey seamless, transparent, and rewarding for both candidates and employers.
+					Our platform leverages advanced matching intelligence to connect
+					high-potential professionals with world-class companies. We're on a
+					mission to make the recruiting journey seamless, transparent, and
+					rewarding for both candidates and employers.
 				</p>
 			</section>
 
@@ -57,19 +58,31 @@ export default function About() {
 				<div className="steps">
 					<div className="step">
 						<h4>Create Account</h4>
-						<p>Build your professional profile in minutes and join our talent network.</p>
+						<p>
+							Build your professional profile in minutes and join our talent
+							network.
+						</p>
 					</div>
 					<div className="step">
 						<h4>Upload Resume</h4>
-						<p>Our intelligent system parses your skills to match you with top roles.</p>
+						<p>
+							Our intelligent system parses your skills to match you with top
+							roles.
+						</p>
 					</div>
 					<div className="step">
 						<h4>Find Jobs</h4>
-						<p>Explore thousands of opportunities tailored specifically to your career goals.</p>
+						<p>
+							Explore thousands of opportunities tailored specifically to your
+							career goals.
+						</p>
 					</div>
 					<div className="step">
 						<h4>Apply Job</h4>
-						<p>Apply to your dream roles with a single click and track your progress live.</p>
+						<p>
+							Apply to your dream roles with a single click and track your
+							progress live.
+						</p>
 					</div>
 				</div>
 			</section>
@@ -81,7 +94,8 @@ export default function About() {
 					</button>
 					<h2>
 						Success Begins With
-						<br />The Right Opportunity
+						<br />
+						The Right Opportunity
 					</h2>
 
 					<div className="video-footer">
@@ -119,9 +133,10 @@ export default function About() {
 									<span className="icon">{open ? "×" : "+"}</span>
 								</button>
 
-								{(open) && (
+								{open && (
 									<div className="faq-answer">
-										{faq.a || "Our team is working on providing a detailed answer for this question. In the meantime, please contact our support for more information."}
+										{faq.a ||
+											"Our team is working on providing a detailed answer for this question. In the meantime, please contact our support for more information."}
 									</div>
 								)}
 							</div>
@@ -136,7 +151,10 @@ export default function About() {
 					<br />
 					With The Best
 				</h2>
-				<p>Excellence is at the core of everything we do. Join the leading job portal today.</p>
+				<p>
+					Excellence is at the core of everything we do. Join the leading job
+					portal today.
+				</p>
 
 				<div className="best-points">
 					<div>✓ Quality Jobs</div>

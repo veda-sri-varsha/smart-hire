@@ -39,7 +39,7 @@ export const signupSchema = z
 		email: z.string().email(),
 		password: z.string().min(8),
 
-		role: z.enum(["USER", "COMPANY","HR" ,"ADMIN"]).optional().default("USER"),
+		role: z.enum(["USER", "COMPANY", "HR", "ADMIN"]).optional().default("USER"),
 
 		companyName: z.string().min(2).optional(),
 		companyWebsite: z.string().url().optional(),

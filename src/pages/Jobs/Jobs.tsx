@@ -8,7 +8,10 @@ import JobSidebar from "@/components/JobListing/JobSidebar";
 import { companiesData } from "@/constants/Jobs";
 import { useAuth } from "@/context/AuthContext";
 
-import type { JobFilterQuery, JobResponse } from "../../../server/types/job.types";
+import type {
+	JobFilterQuery,
+	JobResponse,
+} from "../../../server/types/job.types";
 import "./Jobs.scss";
 import Button from "@/components/ui/Button";
 

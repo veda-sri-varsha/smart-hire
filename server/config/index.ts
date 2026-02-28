@@ -9,7 +9,7 @@ const envSchema = z.object({
 	JWT_REFRESH_SECRET: z.string().min(32),
 	ACCESS_TOKEN_EXPIRY: z.string().default("15m"),
 	REFRESH_TOKEN_EXPIRY: z.string().default("7d"),
-	FRONTEND_URL: z.url().default("http://localhost:3000"),
+	FRONTEND_URL: z.url().default("http://localhost:5173/"),
 	VITE_SERVER_URL: z.string().url(),
 	RESEND_API_KEY: z.string().min(1),
 	FROM_EMAIL: z.email().min(1, "FROM_EMAIL is required"),

@@ -4,7 +4,6 @@ import type {
 } from "../../server/types/application.types";
 import apiClient, { getAuthHeader } from "./client";
 
-// Backend wraps responses in: { success: true, message: '...', data: {...} }
 interface ApiWrapper<T> {
 	success: boolean;
 	message?: string;
