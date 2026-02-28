@@ -1,46 +1,41 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { applyToJob } from "@/api/applications";
 import { getJobs } from "@/api/jobs";
 import ApplyModal from "@/components/ApplyModal/ApplyModal";
 import JobSidebar from "@/components/JobListing/JobSidebar";
+import Button from "@/components/ui/Button";
 import { companiesData } from "@/constants/Jobs";
 import { useAuth } from "@/context/AuthContext";
-
 import type {
 	JobFilterQuery,
 	JobResponse,
 } from "../../../server/types/job.types";
 import "./Jobs.scss";
-import Button from "@/components/ui/Button";
 
 const Jobs = () => {
-	const [jobs, setJobs] = useState<JobResponse[]>([]);
 	const [filters, setFilters] = useState<JobFilterQuery>({});
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-
 	const [selectedJob, setSelectedJob] = useState<JobResponse | null>(null);
-	const [appliedJobs, setAppliedJobs] = useState<string[]>([]); // track applied jobs
+	const [appliedJobs, setAppliedJobs] = useState<string[]>(() => {
+		const saved = localStorage.getItem("appliedJobs");
+		return saved ? JSON.parse(saved) : [];
+	});
 
 	const { isAuthenticated } = useAuth();
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		const fetchJobs = async () => {
-			try {
-				const response = await getJobs(filters);
-				setJobs(response.jobs);
-			} catch (err) {
-				console.error("Failed to fetch jobs:", err);
-				setError("Failed to load jobs. Please try again later.");
-			} finally {
-				setLoading(false);
-			}
-		};
-		fetchJobs();
-	}, [filters]);
+	// Fetch jobs with TanStack Query
+	const {
+		data: jobs = [],
+		isLoading,
+		isError,
+		error,
+	} = useQuery<JobResponse[]>({
+		queryKey: ["jobs", filters],
+		queryFn: () => getJobs(filters).then((res) => res.jobs),
+	});
 
 	const handleApplyClick = (job: JobResponse) => {
 		if (!isAuthenticated) {
@@ -57,8 +52,6 @@ const Jobs = () => {
 		if (!selectedJob) return;
 
 		try {
-			if (!selectedJob) return;
-
 			const formData = new FormData();
 			formData.append("jobId", selectedJob.id);
 			formData.append(
@@ -69,27 +62,23 @@ const Jobs = () => {
 
 			await applyToJob(formData);
 
-			setAppliedJobs([...appliedJobs, selectedJob.id]);
+			const updatedApplied = [...appliedJobs, selectedJob.id];
+			setAppliedJobs(updatedApplied);
+			localStorage.setItem("appliedJobs", JSON.stringify(updatedApplied));
+
 			alert("Application submitted successfully!");
 			setSelectedJob(null);
 		} catch (err: unknown) {
 			console.error(err);
 			let errorMessage = "Failed to submit application.";
-			if (err instanceof Error) {
-				errorMessage = err.message;
-			} else if (typeof err === "object" && err !== null && "response" in err) {
+			if (err instanceof Error) errorMessage = err.message;
+			else if (typeof err === "object" && err !== null && "response" in err) {
 				const response = (
-					err as {
-						response?: {
-							data?: Record<string, unknown>;
-						};
-					}
+					err as { response?: { data?: Record<string, unknown> } }
 				).response;
-				if (response?.data?.error) {
-					errorMessage = String(response.data.error);
-				} else if (response?.data?.message) {
+				if (response?.data?.error) errorMessage = String(response.data.error);
+				else if (response?.data?.message)
 					errorMessage = String(response.data.message);
-				}
 			}
 			alert(errorMessage);
 		}
@@ -105,56 +94,57 @@ const Jobs = () => {
 				<JobSidebar filters={filters} onFilterChange={setFilters} />
 
 				<div className="jobs-page__list">
-					{loading && <p>Loading jobs...</p>}
-					{error && <p className="error-message">{error}</p>}
+					{isLoading && <p>Loading jobs...</p>}
+					{isError && (
+						<p className="error-message">
+							{(error as Error)?.message || "Failed to load jobs."}
+						</p>
+					)}
+					{!isLoading && jobs.length === 0 && <p>No jobs found.</p>}
 
-					{!loading &&
-						!error &&
-						jobs.map((job) => (
-							<div key={job.id} className="job-card">
-								<div className="job-card__info">
-									<h2 className="job-card__title">{job.title}</h2>
-									<div className="job-card__meta">
-										<span>{job.jobType.replace("_", " ")}</span>
-										<span>•</span>
-										<span>{job.location}</span>
-										<span>•</span>
-										<span className="job-card__salary">
-											${job.salaryMin} - ${job.salaryMax}
-										</span>
-									</div>
-									<div className="job-card__tags">
-										{job.skills.split(",").map((skill) => (
-											<span key={skill} className="tag">
-												{skill.trim()}
-											</span>
-										))}
-									</div>
+					{jobs.map((job: JobResponse) => (
+						<div key={job.id} className="job-card">
+							<div className="job-card__info">
+								<h2 className="job-card__title">{job.title}</h2>
+								<div className="job-card__meta">
+									<span>{job.jobType.replace("_", " ")}</span>
+									<span>•</span>
+									<span>{job.location}</span>
+									<span>•</span>
+									<span className="job-card__salary">
+										${job.salaryMin} - ${job.salaryMax}
+									</span>
 								</div>
-								<div className="job-card__actions">
-									<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
-										<Button type="button" className="view-btn">
-											View Details
-										</Button>
-									</Link>
-									<Button
-										type="button"
-										className={`apply-btn ${appliedJobs.includes(job.id) ? "applied" : ""}`}
-										onClick={() => handleApplyClick(job)}
-										disabled={appliedJobs.includes(job.id)}
-									>
-										{appliedJobs.includes(job.id) ? "Applied ✓" : "Apply Now"}
-									</Button>
+								<div className="job-card__tags">
+									{job.skills.split(",").map((skill: string) => (
+										<span key={skill} className="tag">
+											{skill.trim()}
+										</span>
+									))}
 								</div>
 							</div>
-						))}
-
-					{!loading && !error && jobs.length === 0 && <p>No jobs found.</p>}
+							<div className="job-card__actions">
+								<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
+									<Button type="button" className="view-btn">
+										View Details
+									</Button>
+								</Link>
+								<Button
+									type="button"
+									className={`apply-btn ${appliedJobs.includes(job.id) ? "applied" : ""}`}
+									onClick={() => handleApplyClick(job)}
+									disabled={appliedJobs.includes(job.id)}
+								>
+									{appliedJobs.includes(job.id) ? "Applied ✓" : "Apply Now"}
+								</Button>
+							</div>
+						</div>
+					))}
 				</div>
 			</div>
 
 			<section className="top-companies">
-				<h2 className="top-companies__title">Top Company</h2>
+				<h2 className="top-companies__title">Top Companies</h2>
 				<p className="top-companies__subtitle">
 					At eu lobortis pretium tincidunt amet lacus ut aenean aliquet.
 				</p>
