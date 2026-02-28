@@ -1,4 +1,8 @@
-import { JobStatus, type Prisma } from "../../src/generated/prisma/client";
+import {
+	JobStatus,
+	type JobType,
+	type Prisma,
+} from "../../src/generated/prisma/client";
 import { prisma } from "../lib/prisma";
 import type { JobFilterQuery } from "../types/job.types";
 import logger from "../utils/logger";
@@ -50,7 +54,7 @@ export const jobRepository = {
 		const where: Prisma.JobWhereInput = {};
 
 		if (filters.jobType) {
-			where.jobType = filters.jobType as any; // Temporary fix or specific Enum if available
+			where.jobType = filters.jobType as JobType;
 		}
 
 		if (filters.location) {
@@ -149,10 +153,20 @@ export const jobRepository = {
 	},
 
 	updateStatus: async (id: string, status: JobStatus) => {
-		logger.info(`Updating job status ${id} => ${status}`);
 		return prisma.job.update({
 			where: { id },
 			data: { status },
+			include: {
+				company: {
+					select: {
+						id: true,
+						name: true,
+						companyName: true,
+						profilePicture: true,
+					},
+				},
+				_count: { select: { applications: true } },
+			},
 		});
 	},
 
@@ -178,7 +192,17 @@ export const jobRepository = {
 				skip,
 				take: limit,
 				orderBy: { createdAt: "desc" },
-				include: { _count: { select: { applications: true } } },
+				include: {
+					company: {
+						select: {
+							id: true,
+							name: true,
+							companyName: true,
+							profilePicture: true,
+						},
+					},
+					_count: { select: { applications: true } },
+				},
 			}),
 			prisma.job.count({ where: { companyId } }),
 		]);
