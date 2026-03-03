@@ -1,5 +1,8 @@
 import { useState } from "react";
 import "./ContactUs.scss";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
 
 const ContactUs = () => {
 	const [formData, setFormData] = useState({
@@ -59,7 +62,7 @@ const ContactUs = () => {
 						<h3>Contact Info</h3>
 						<form onSubmit={handleSubmit}>
 							<div className="input-row">
-								<input
+								<Input
 									type="text"
 									name="firstName"
 									placeholder="First Name"
@@ -67,7 +70,7 @@ const ContactUs = () => {
 									onChange={handleChange}
 									required
 								/>
-								<input
+								<Input
 									type="text"
 									name="lastName"
 									placeholder="Last Name"
@@ -76,7 +79,7 @@ const ContactUs = () => {
 									required
 								/>
 							</div>
-							<input
+							<Input
 								type="email"
 								name="email"
 								placeholder="Email Address"
@@ -84,7 +87,7 @@ const ContactUs = () => {
 								onChange={handleChange}
 								required
 							/>
-							<textarea
+							<Textarea
 								name="message"
 								placeholder="Your Message"
 								value={formData.message}
@@ -92,7 +95,7 @@ const ContactUs = () => {
 								rows={5}
 								required
 							/>
-							<button type="submit">Send Message</button>
+							<Button type="submit">Send Message</Button>
 						</form>
 					</div>
 				</div>

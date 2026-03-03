@@ -1,20 +1,11 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getAllUsers, updateUserStatus } from "@/api/admin";
-import { useAuth } from "@/context/AuthContext";
+import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/useAuth";
+import type { User } from "../../../server/types/auth.types";
 import styles from "./Dashboard.module.scss";
-
-interface User {
-	id: string;
-	name: string;
-	email: string;
-	role: string;
-	status: string;
-	createdAt: string;
-	location?: string;
-	phone?: string;
-	isEmailVerified: boolean;
-}
 
 type RoleFilter = "ALL" | "USER" | "HR" | "COMPANY" | "ADMIN";
 type StatusFilter = "ALL" | "ACTIVE" | "INACTIVE" | "BLOCKED";
@@ -22,94 +13,92 @@ type StatusFilter = "ALL" | "ACTIVE" | "INACTIVE" | "BLOCKED";
 export default function AdminUsers() {
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
-	const [users, setUsers] = useState<User[]>([]);
-	const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const queryClient = useQueryClient();
+
 	const [roleFilter, setRoleFilter] = useState<RoleFilter>("ALL");
 	const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
-	// Check if user is logged in and is admin
+	// 🔐 Auth Guard
 	useEffect(() => {
 		if (!user) {
 			navigate({ to: "/login" });
 			return;
 		}
 		if (user.role !== "ADMIN") {
-			alert("Access denied. Admin role required.");
 			navigate({ to: "/" });
 		}
 	}, [user, navigate]);
 
-	const fetchUsers = async () => {
-		setLoading(true);
-		try {
-			const response = await getAllUsers(1, 100); // Fetch more for client-side filtering
-			if (response.success) {
-				setUsers(response.data.users);
-			} else {
-				setError("Failed to load users");
-			}
-		} catch (err) {
-			console.error(err);
-			setError("Error connecting to server");
-		} finally {
-			setLoading(false);
-		}
-	};
+	// 📦 Fetch Users (ONLY ONE QUERY)
+	const {
+		data: users = [],
+		isLoading,
+		isError,
+	} = useQuery<User[]>({
+		queryKey: ["admin-users"],
+		queryFn: async () => {
+			const response = await getAllUsers(1, 100);
+			return response.data.users;
+		},
+		enabled: !!user && user.role === "ADMIN",
+	});
 
-	useEffect(() => {
-		fetchUsers();
-	}, []);
+	// 🔄 Update Status Mutation
+	const mutation = useMutation({
+		mutationFn: ({
+			userId,
+			newStatus,
+		}: {
+			userId: string;
+			newStatus: string;
+		}) => updateUserStatus(userId, newStatus),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+		},
+	});
 
-	// Apply filters
-	useEffect(() => {
-		let filtered = [...users];
-
-		if (roleFilter !== "ALL") {
-			filtered = filtered.filter((u) => u.role === roleFilter);
-		}
-
-		if (statusFilter !== "ALL") {
-			filtered = filtered.filter((u) => u.status === statusFilter);
-		}
-
-		setFilteredUsers(filtered);
+	// 🎯 Filtering
+	const filteredUsers = useMemo(() => {
+		return users.filter((u) => {
+			const roleMatch = roleFilter === "ALL" || u.role === roleFilter;
+			const statusMatch = statusFilter === "ALL" || u.status === statusFilter;
+			return roleMatch && statusMatch;
+		});
 	}, [users, roleFilter, statusFilter]);
 
-	const handleStatusChange = async (userId: string, newStatus: string) => {
-		try {
-			await updateUserStatus(userId, newStatus);
-			fetchUsers();
-		} catch (err) {
-			console.error("Failed to update user status", err);
-			alert("Failed to update user status");
-		}
-	};
+	// 📊 Stats
+	const stats = useMemo(() => {
+		return {
+			byRole: {
+				USER: users.filter((u) => u.role === "USER").length,
+				HR: users.filter((u) => u.role === "HR").length,
+				COMPANY: users.filter((u) => u.role === "COMPANY").length,
+				ADMIN: users.filter((u) => u.role === "ADMIN").length,
+			},
+			byStatus: {
+				ACTIVE: users.filter((u) => u.status === "ACTIVE").length,
+				INACTIVE: users.filter((u) => u.status === "INACTIVE").length,
+				BLOCKED: users.filter((u) => u.status === "BLOCKED").length,
+			},
+		};
+	}, [users]);
 
-	const formatDate = (date: string) => new Date(date).toLocaleDateString();
+	// 🕒 Date Formatter (handles both string & Date safely)
+	const formatDateTime = (date: string | Date) =>
+		new Date(date).toLocaleString("en-IN", {
+			year: "numeric",
+			month: "short",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
 
-	// Stats by role and status
-	const stats = {
-		byRole: {
-			USER: users.filter((u) => u.role === "USER").length,
-			HR: users.filter((u) => u.role === "HR").length,
-			COMPANY: users.filter((u) => u.role === "COMPANY").length,
-			ADMIN: users.filter((u) => u.role === "ADMIN").length,
-		},
-		byStatus: {
-			ACTIVE: users.filter((u) => u.status === "ACTIVE").length,
-			INACTIVE: users.filter((u) => u.status === "INACTIVE").length,
-			BLOCKED: users.filter((u) => u.status === "BLOCKED").length,
-		},
-	};
-
-	if (loading && users.length === 0) {
+	if (isLoading) {
 		return <div className={styles.loading}>Loading users...</div>;
 	}
 
-	if (error && users.length === 0) {
-		return <div className={styles.error}>{error}</div>;
+	if (isError) {
+		return <div className={styles.error}>Failed to load users</div>;
 	}
 
 	return (
@@ -124,10 +113,11 @@ export default function AdminUsers() {
 					<Link to="/admin/jobs">Jobs</Link>
 					<Link to="/admin/settings">Settings</Link>
 				</nav>
-				<button type="button" onClick={logout} className={styles.logoutBtn}>
+				<Button type="button" onClick={logout} className={styles.logoutBtn}>
 					Logout
-				</button>
+				</Button>
 			</aside>
+
 			<main className={styles.main}>
 				<header className={styles.header}>
 					<h1>Users Management</h1>
@@ -135,89 +125,52 @@ export default function AdminUsers() {
 						<span>Welcome, {user?.name || "Admin"}</span>
 					</div>
 				</header>
+
 				<div className={styles.content}>
-					{/* Filter Tabs */}
+					{/* Filters */}
 					<div className={styles.filterSection}>
 						<div className={styles.filterGroup}>
 							<h3>Filter by Role:</h3>
 							<div className={styles.filterTabs}>
-								<button
-									className={roleFilter === "ALL" ? styles.activeTab : ""}
-									onClick={() => setRoleFilter("ALL")}
-								>
-									All ({users.length})
-								</button>
-								<button
-									className={roleFilter === "USER" ? styles.activeTab : ""}
-									onClick={() => setRoleFilter("USER")}
-								>
-									Candidates ({stats.byRole.USER})
-								</button>
-								<button
-									className={roleFilter === "HR" ? styles.activeTab : ""}
-									onClick={() => setRoleFilter("HR")}
-								>
-									HR ({stats.byRole.HR})
-								</button>
-								<button
-									className={roleFilter === "COMPANY" ? styles.activeTab : ""}
-									onClick={() => setRoleFilter("COMPANY")}
-								>
-									Companies ({stats.byRole.COMPANY})
-								</button>
-								<button
-									className={roleFilter === "ADMIN" ? styles.activeTab : ""}
-									onClick={() => setRoleFilter("ADMIN")}
-								>
-									Admins ({stats.byRole.ADMIN})
-								</button>
+								{(
+									["ALL", "USER", "HR", "COMPANY", "ADMIN"] as RoleFilter[]
+								).map((role) => (
+									<Button
+										key={role}
+										className={roleFilter === role ? styles.activeTab : ""}
+										onClick={() => setRoleFilter(role)}
+									>
+										{role} {role !== "ALL" && `(${stats.byRole[role]})`}
+									</Button>
+								))}
 							</div>
 						</div>
 
 						<div className={styles.filterGroup}>
 							<h3>Filter by Status:</h3>
 							<div className={styles.filterTabs}>
-								<button
-									className={statusFilter === "ALL" ? styles.activeTab : ""}
-									onClick={() => setStatusFilter("ALL")}
-								>
-									All
-								</button>
-								<button
-									className={statusFilter === "ACTIVE" ? styles.activeTab : ""}
-									onClick={() => setStatusFilter("ACTIVE")}
-								>
-									Active ({stats.byStatus.ACTIVE})
-								</button>
-								<button
-									className={
-										statusFilter === "INACTIVE" ? styles.activeTab : ""
-									}
-									onClick={() => setStatusFilter("INACTIVE")}
-								>
-									Inactive ({stats.byStatus.INACTIVE})
-								</button>
-								<button
-									className={statusFilter === "BLOCKED" ? styles.activeTab : ""}
-									onClick={() => setStatusFilter("BLOCKED")}
-								>
-									Blocked ({stats.byStatus.BLOCKED})
-								</button>
+								{(
+									["ALL", "ACTIVE", "INACTIVE", "BLOCKED"] as StatusFilter[]
+								).map((status) => (
+									<Button
+										key={status}
+										className={statusFilter === status ? styles.activeTab : ""}
+										onClick={() => setStatusFilter(status)}
+									>
+										{status !== "ALL" &&
+											`(${
+												stats.byStatus[status as keyof typeof stats.byStatus]
+											})`}{" "}
+										{status}
+									</Button>
+								))}
 							</div>
 						</div>
 					</div>
 
+					{/* Table */}
 					<div className={styles.recentSection}>
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								marginBottom: "20px",
-							}}
-						>
-							<h2>Users ({filteredUsers.length})</h2>
-						</div>
+						<h2>Users ({filteredUsers.length})</h2>
 						<div className={styles.tableWrapper}>
 							<table className={styles.table}>
 								<thead>
@@ -237,9 +190,9 @@ export default function AdminUsers() {
 										<tr>
 											<td
 												colSpan={8}
-												style={{ textAlign: "center", padding: "20px" }}
+												style={{ textAlign: "center", padding: 20 }}
 											>
-												No users found for selected filters.
+												No users found.
 											</td>
 										</tr>
 									) : (
@@ -247,28 +200,19 @@ export default function AdminUsers() {
 											<tr key={u.id}>
 												<td>{u.name}</td>
 												<td>{u.email}</td>
-												<td>
-													<span
-														className={`${styles.badge} ${styles[`badge${u.role}`]}`}
-													>
-														{u.role}
-													</span>
-												</td>
-												<td>
-													<span
-														className={`${styles.badge} ${styles[`badge${u.status}`]}`}
-													>
-														{u.status}
-													</span>
-												</td>
+												<td>{u.role}</td>
+												<td>{u.status}</td>
 												<td>{u.isEmailVerified ? "✅" : "❌"}</td>
 												<td>{u.location || "-"}</td>
-												<td>{formatDate(u.createdAt)}</td>
+												<td>{formatDateTime(u.createdAt)}</td>
 												<td>
 													<select
 														value={u.status}
 														onChange={(e) =>
-															handleStatusChange(u.id, e.target.value)
+															mutation.mutate({
+																userId: u.id,
+																newStatus: e.target.value,
+															})
 														}
 														className={styles.actionSelect}
 													>

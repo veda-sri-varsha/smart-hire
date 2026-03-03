@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+
 import {
 	Area,
 	AreaChart,
@@ -16,11 +18,14 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+
 import { getDashboardStats } from "@/api/admin";
-import { useAuth } from "@/context/AuthContext";
+import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/useAuth";
+
 import styles from "./Dashboard.module.scss";
 
-interface DashboardStats {
+type DashboardStats = {
 	users: { total: number; active: number };
 	companies: { total: number; active: number };
 	hr: { total: number; active: number };
@@ -32,7 +37,6 @@ interface DashboardStats {
 		email: string;
 		createdAt: string;
 		status: string;
-		profilePicture?: string;
 	}[];
 	recentCompanies: {
 		id: string;
@@ -41,7 +45,6 @@ interface DashboardStats {
 		email: string;
 		createdAt: string;
 		status: string;
-		profilePicture?: string;
 	}[];
 	analytics: {
 		userRegistrations: { date: string; count: number }[];
@@ -49,56 +52,62 @@ interface DashboardStats {
 		jobsByStatus: { status: string; count: number }[];
 		usersByRole: { role: string; count: number }[];
 	};
-}
+};
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
 export default function AdminDashboard() {
 	const { user, logout } = useAuth();
-	const [stats, setStats] = useState<DashboardStats | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
 
-	useEffect(() => {
-		const fetchStats = async () => {
-			try {
-				const response = await getDashboardStats();
-				if (response.success) {
-					setStats(response.data);
-				} else {
-					setError("Failed to load statistics");
-				}
-			} catch (err) {
-				console.error(err);
-				setError("Error connecting to server");
-			} finally {
-				setLoading(false);
+	const {
+		data: stats,
+		isLoading,
+		isError,
+		refetch,
+	} = useQuery<DashboardStats>({
+		queryKey: ["admin-dashboard"],
+		queryFn: async () => {
+			const response = await getDashboardStats();
+			if (!response.success) {
+				throw new Error("Failed to fetch dashboard stats");
 			}
-		};
+			return response.data;
+		},
+		enabled: !!user && user.role === "ADMIN",
+	});
 
-		fetchStats();
-	}, []);
-
-	if (loading)
+	if (isLoading) {
 		return <div className={styles.loading}>Loading dashboard...</div>;
-	if (error) return <div className={styles.error}>{error}</div>;
+	}
+
+	if (isError || !stats) {
+		return (
+			<div className={styles.error}>
+				<p>Failed to load dashboard</p>
+				<Button onClick={() => refetch()}>Retry</Button>
+			</div>
+		);
+	}
+
+	const totalJobs = stats.jobs.active + stats.jobs.expired;
 
 	return (
 		<div className={styles.container}>
 			<aside className={styles.sidebar}>
 				<div className={styles.logo}>Smart Hire Admin</div>
 				<nav className={styles.nav}>
-					<a href="/admin" className={styles.active}>
+					<Link to="/admin" className={styles.active}>
 						Dashboard
-					</a>
-					<a href="/admin/users">Users</a>
-					<a href="/admin/jobs">Jobs</a>
-					<a href="/admin/settings">Settings</a>
+					</Link>
+					<Link to="/admin/users">Users</Link>
+					<Link to="/admin/jobs">Jobs</Link>
+					<Link to="/admin/settings">Settings</Link>
 				</nav>
-				<button type="button" onClick={logout} className={styles.logoutBtn}>
+				<Button onClick={logout} className={styles.logoutBtn}>
 					Logout
-				</button>
+				</Button>
 			</aside>
+
 			<main className={styles.main}>
 				<header className={styles.header}>
 					<h1>Dashboard</h1>
@@ -106,93 +115,44 @@ export default function AdminDashboard() {
 						<span>Welcome, {user?.name || "Admin"}</span>
 					</div>
 				</header>
+
 				<div className={styles.content}>
+					{/* Stats Cards */}
 					<div className={styles.statsGrid}>
-						<div className={styles.statCard}>
-							<h3>Users (Candidates)</h3>
-							<div className={styles.statDetails}>
-								<p>
-									Total:{" "}
-									<span className={styles.statValue}>{stats?.users.total}</span>
-								</p>
-								<p>
-									Active:{" "}
-									<span className={styles.statValue}>
-										{stats?.users.active}
-									</span>
-								</p>
-							</div>
-						</div>
-						<div className={styles.statCard}>
-							<h3>Companies</h3>
-							<div className={styles.statDetails}>
-								<p>
-									Total:{" "}
-									<span className={styles.statValue}>
-										{stats?.companies.total}
-									</span>
-								</p>
-								<p>
-									Active:{" "}
-									<span className={styles.statValue}>
-										{stats?.companies.active}
-									</span>
-								</p>
-							</div>
-						</div>
-						<div className={styles.statCard}>
-							<h3>HRs</h3>
-							<div className={styles.statDetails}>
-								<p>
-									Total:{" "}
-									<span className={styles.statValue}>{stats?.hr.total}</span>
-								</p>
-								<p>
-									Active:{" "}
-									<span className={styles.statValue}>{stats?.hr.active}</span>
-								</p>
-							</div>
-						</div>
-						<div className={styles.statCard}>
-							<h3>Jobs</h3>
-							<div className={styles.statDetails}>
-								<p>
-									Active:{" "}
-									<span className={styles.statValue}>{stats?.jobs.active}</span>
-								</p>
-								<p>
-									Expired:{" "}
-									<span className={styles.statValue}>
-										{stats?.jobs.expired}
-									</span>
-								</p>
-							</div>
-						</div>
-						<div className={styles.statCard}>
-							<h3>Applications</h3>
-							<div className={styles.statDetails}>
-								<p>
-									Total:{" "}
-									<span className={styles.statValue}>
-										{stats?.applications.total}
-									</span>
-								</p>
-								<p>
-									Unique Applicants:{" "}
-									<span className={styles.statValue}>
-										{stats?.applications.activeApplicants}
-									</span>
-								</p>
-							</div>
-						</div>
+						<StatCard
+							title="Users"
+							total={stats.users.total}
+							active={stats.users.active}
+						/>
+						<StatCard
+							title="Companies"
+							total={stats.companies.total}
+							active={stats.companies.active}
+						/>
+						<StatCard
+							title="HRs"
+							total={stats.hr.total}
+							active={stats.hr.active}
+						/>
+						<StatCard
+							title="Jobs"
+							total={totalJobs}
+							active={stats.jobs.active}
+							labelActive="Active"
+						/>
+						<StatCard
+							title="Applications"
+							total={stats.applications.total}
+							active={stats.applications.activeApplicants}
+							labelActive="Unique Applicants"
+						/>
 					</div>
 
-					{/* Charts Section */}
+					{/* Charts */}
 					<div className={styles.chartsGrid}>
-						<div className={styles.chartCard}>
-							<h3>Jobs by Status</h3>
+						<ChartCard title="Jobs by Status">
 							<ResponsiveContainer width="100%" height={300}>
-								<BarChart data={stats?.analytics.jobsByStatus}>
+								<BarChart data={stats.analytics.jobsByStatus}>
 									<CartesianGrid strokeDasharray="3 3" />
 									<XAxis dataKey="status" />
 									<YAxis />
@@ -201,33 +161,26 @@ export default function AdminDashboard() {
 									<Bar dataKey="count" fill="#3b82f6" />
 								</BarChart>
 							</ResponsiveContainer>
-						</div>
+						</ChartCard>
 
-						<div className={styles.chartCard}>
-							<h3>User Registrations (Last 7 Days)</h3>
+						<ChartCard title="User Registrations">
 							<ResponsiveContainer width="100%" height={300}>
-								<LineChart data={stats?.analytics.userRegistrations}>
+								<LineChart data={stats.analytics.userRegistrations}>
 									<CartesianGrid strokeDasharray="3 3" />
 									<XAxis dataKey="date" />
 									<YAxis />
 									<Tooltip />
 									<Legend />
-									<Line
-										type="monotone"
-										dataKey="count"
-										stroke="#10b981"
-										strokeWidth={2}
-									/>
+									<Line type="monotone" dataKey="count" stroke="#10b981" />
 								</LineChart>
 							</ResponsiveContainer>
-						</div>
+						</ChartCard>
 
-						<div className={styles.chartCard}>
-							<h3>Users by Role</h3>
+						<ChartCard title="Users by Role">
 							<ResponsiveContainer width="100%" height={300}>
 								<PieChart>
 									<Pie
-										data={stats?.analytics.usersByRole}
+										data={stats.analytics.usersByRole}
 										dataKey="count"
 										nameKey="role"
 										cx="50%"
@@ -235,23 +188,19 @@ export default function AdminDashboard() {
 										outerRadius={80}
 										label
 									>
-										{stats?.analytics.usersByRole.map((_, index) => (
-											<Cell
-												key={`cell-${index}`}
-												fill={COLORS[index % COLORS.length]}
-											/>
+										{stats.analytics.usersByRole.map((entry, i) => (
+											<Cell key={entry.role} fill={COLORS[i % COLORS.length]} />
 										))}
 									</Pie>
 									<Tooltip />
 									<Legend />
 								</PieChart>
 							</ResponsiveContainer>
-						</div>
+						</ChartCard>
 
-						<div className={styles.chartCard}>
-							<h3>Applications Trend (Last 7 Days)</h3>
+						<ChartCard title="Applications Trend">
 							<ResponsiveContainer width="100%" height={300}>
-								<AreaChart data={stats?.analytics.applicationsOverTime}>
+								<AreaChart data={stats.analytics.applicationsOverTime}>
 									<CartesianGrid strokeDasharray="3 3" />
 									<XAxis dataKey="date" />
 									<YAxis />
@@ -265,86 +214,51 @@ export default function AdminDashboard() {
 									/>
 								</AreaChart>
 							</ResponsiveContainer>
-						</div>
-					</div>
-
-					<div className={styles.recentSection}>
-						<h2>Recent Active Users (Candidates)</h2>
-						<div className={styles.tableWrapper}>
-							<table className={styles.table}>
-								<thead>
-									<tr>
-										<th>Name</th>
-										<th>Email</th>
-										<th>Joined</th>
-										<th>Status</th>
-									</tr>
-								</thead>
-								<tbody>
-									{stats?.recentUsers.length === 0 ? (
-										<tr>
-											<td colSpan={4}>No recent users found.</td>
-										</tr>
-									) : (
-										stats?.recentUsers.map((u) => (
-											<tr key={u.id}>
-												<td>{u.name}</td>
-												<td>{u.email}</td>
-												<td>{new Date(u.createdAt).toLocaleDateString()}</td>
-												<td>
-													<span
-														className={`${styles.badge} ${styles[u.status.toLowerCase()]}`}
-													>
-														{u.status}
-													</span>
-												</td>
-											</tr>
-										))
-									)}
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-					<div className={styles.recentSection}>
-						<h2>Recent Active Companies</h2>
-						<div className={styles.tableWrapper}>
-							<table className={styles.table}>
-								<thead>
-									<tr>
-										<th>Company Name</th>
-										<th>Contact Email</th>
-										<th>Joined</th>
-										<th>Status</th>
-									</tr>
-								</thead>
-								<tbody>
-									{stats?.recentCompanies.length === 0 ? (
-										<tr>
-											<td colSpan={4}>No recent companies found.</td>
-										</tr>
-									) : (
-										stats?.recentCompanies.map((c) => (
-											<tr key={c.id}>
-												<td>{c.companyName || c.name}</td>
-												<td>{c.email}</td>
-												<td>{new Date(c.createdAt).toLocaleDateString()}</td>
-												<td>
-													<span
-														className={`${styles.badge} ${styles[c.status.toLowerCase()]}`}
-													>
-														{c.status}
-													</span>
-												</td>
-											</tr>
-										))
-									)}
-								</tbody>
-							</table>
-						</div>
+						</ChartCard>
 					</div>
 				</div>
 			</main>
+		</div>
+	);
+}
+
+/* ---------------- Reusable Components ---------------- */
+
+function StatCard({
+	title,
+	total,
+	active,
+	labelActive = "Active",
+}: {
+	title: string;
+	total: number;
+	active: number;
+	labelActive?: string;
+}) {
+	return (
+		<div className={styles.statCard}>
+			<h3>{title}</h3>
+			<p>
+				Total: <strong>{total}</strong>
+			</p>
+			<p>
+				{labelActive}: <strong>{active}</strong>
+			</p>
+		</div>
+	);
+}
+
+function ChartCard({
+	title,
+	children,
+}: {
+	title: string;
+	children: React.ReactNode;
+}) {
+	return (
+		<div className={styles.chartCard}>
+			<h3>{title}</h3>
+			{children}
 		</div>
 	);
 }

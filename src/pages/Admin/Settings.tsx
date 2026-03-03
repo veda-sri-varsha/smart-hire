@@ -1,21 +1,48 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Label from "@/components/ui/Label";
+import { useAuth } from "@/context/useAuth";
 import styles from "./Dashboard.module.scss";
+
+type AdminSettingsState = {
+	siteName: string;
+	supportEmail: string;
+	maxApplicationsPerDay: number;
+	emailNotifications: boolean;
+	maintenanceMode: boolean;
+};
+
+const defaultSettings: AdminSettingsState = {
+	siteName: "Smart Hire",
+	supportEmail: "support@smarthire.com",
+	maxApplicationsPerDay: 10,
+	emailNotifications: true,
+	maintenanceMode: false,
+};
 
 export default function AdminSettings() {
 	const { user, logout } = useAuth();
-	const [settings, setSettings] = useState({
-		siteName: "Smart Hire",
-		supportEmail: "support@smarthire.com",
-		maxApplicationsPerDay: 10,
-		emailNotifications: true,
-		maintenanceMode: false,
-	});
+	const [settings, setSettings] = useState<AdminSettingsState>(defaultSettings);
+
+	const handleChange = <K extends keyof AdminSettingsState>(
+		key: K,
+		value: AdminSettingsState[K],
+	) => {
+		setSettings((prev) => ({
+			...prev,
+			[key]: value,
+		}));
+	};
 
 	const handleSave = () => {
-		// TODO: Implement settings save API
+		console.log("Saved settings:", settings);
 		alert("Settings saved successfully!");
+	};
+
+	const handleReset = () => {
+		setSettings(defaultSettings);
 	};
 
 	return (
@@ -30,10 +57,11 @@ export default function AdminSettings() {
 						Settings
 					</Link>
 				</nav>
-				<button type="button" onClick={logout} className={styles.logoutBtn}>
+				<Button type="button" onClick={logout} className={styles.logoutBtn}>
 					Logout
-				</button>
+				</Button>
 			</aside>
+
 			<main className={styles.main}>
 				<header className={styles.header}>
 					<h1>Settings</h1>
@@ -41,46 +69,47 @@ export default function AdminSettings() {
 						<span>Welcome, {user?.name || "Admin"}</span>
 					</div>
 				</header>
+
 				<div className={styles.content}>
 					<div className={styles.settingsSection}>
 						<div className={styles.settingsCard}>
 							<h2>General Settings</h2>
 							<div className={styles.settingsForm}>
 								<div className={styles.formGroup}>
-									<label htmlFor="siteName">Site Name</label>
-									<input
-										type="text"
+									<Label htmlFor="siteName">Site Name</Label>
+									<Input
 										id="siteName"
+										type="text"
 										value={settings.siteName}
-										onChange={(e) =>
-											setSettings({ ...settings, siteName: e.target.value })
-										}
+										onChange={(e) => handleChange("siteName", e.target.value)}
 									/>
 								</div>
+
 								<div className={styles.formGroup}>
-									<label htmlFor="supportEmail">Support Email</label>
-									<input
-										type="email"
+									<Label htmlFor="supportEmail">Support Email</Label>
+									<Input
 										id="supportEmail"
+										type="email"
 										value={settings.supportEmail}
 										onChange={(e) =>
-											setSettings({ ...settings, supportEmail: e.target.value })
+											handleChange("supportEmail", e.target.value)
 										}
 									/>
 								</div>
+
 								<div className={styles.formGroup}>
-									<label htmlFor="maxApplications">
+									<Label htmlFor="maxApplications">
 										Max Applications Per Day (per user)
-									</label>
-									<input
-										type="number"
+									</Label>
+									<Input
 										id="maxApplications"
+										type="number"
 										value={settings.maxApplicationsPerDay}
 										onChange={(e) =>
-											setSettings({
-												...settings,
-												maxApplicationsPerDay: Number(e.target.value),
-											})
+											handleChange(
+												"maxApplicationsPerDay",
+												Number(e.target.value),
+											)
 										}
 									/>
 								</div>
@@ -91,38 +120,33 @@ export default function AdminSettings() {
 							<h2>System Settings</h2>
 							<div className={styles.settingsForm}>
 								<div className={styles.formGroup}>
-									<label>
-										<input
+									<Label>
+										<Input
 											type="checkbox"
 											checked={settings.emailNotifications}
 											onChange={(e) =>
-												setSettings({
-													...settings,
-													emailNotifications: e.target.checked,
-												})
+												handleChange("emailNotifications", e.target.checked)
 											}
 										/>
 										<span>Enable Email Notifications</span>
-									</label>
+									</Label>
 								</div>
+
 								<div className={styles.formGroup}>
-									<label>
-										<input
+									<Label>
+										<Input
 											type="checkbox"
 											checked={settings.maintenanceMode}
 											onChange={(e) =>
-												setSettings({
-													...settings,
-													maintenanceMode: e.target.checked,
-												})
+												handleChange("maintenanceMode", e.target.checked)
 											}
 										/>
 										<span>Maintenance Mode</span>
-									</label>
+									</Label>
 									<small
 										style={{
 											display: "block",
-											marginTop: "8px",
+											marginTop: 8,
 											color: "#6b7280",
 										}}
 									>
@@ -133,16 +157,21 @@ export default function AdminSettings() {
 						</div>
 
 						<div className={styles.settingsActions}>
-							<button
+							<Button
 								type="button"
 								onClick={handleSave}
 								className={styles.saveBtn}
 							>
 								Save Settings
-							</button>
-							<button type="button" className={styles.cancelBtn}>
+							</Button>
+
+							<Button
+								type="button"
+								onClick={handleReset}
+								className={styles.cancelBtn}
+							>
 								Reset to Default
-							</button>
+							</Button>
 						</div>
 					</div>
 				</div>
