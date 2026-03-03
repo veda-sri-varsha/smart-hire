@@ -51,6 +51,8 @@ export type ContactUsRequest = {
 
 export type Role = "ADMIN" | "HR" | "USER" | "COMPANY";
 
+export type UserStatus = "ACTIVE" | "INACTIVE" | "BLOCKED";
+
 export type AuthUserResponse = {
 	id: string;
 	email: string;
@@ -63,6 +65,21 @@ export type AuthUserResponse = {
 	accessToken: string;
 	refreshToken: string;
 	sessionMessage?: string;
+};
+
+export type User = {
+	id: string;
+	name: string | null;
+	email: string;
+	role: Role;
+	status: UserStatus;
+	isEmailVerified: boolean;
+	profilePicture?: string | null;
+	resumeUrl?: string | null;
+	location?: string | null;
+	phone?: string | null;
+	createdAt: string;
+	updatedAt?: string;
 };
 
 // export type ApiResponse<T> = {
