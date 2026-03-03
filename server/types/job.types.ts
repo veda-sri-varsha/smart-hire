@@ -54,8 +54,8 @@ export type JobResponse = {
 	_count?: {
 		applications: number;
 	};
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 };
 
 export type PaginatedJobsResponse = {

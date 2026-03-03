@@ -6,7 +6,7 @@ import { applyToJob, checkApplicationStatus } from "@/api/applications";
 import { getJobById } from "@/api/jobs";
 import ApplyModal from "@/components/ApplyModal/ApplyModal";
 import Button from "@/components/ui/Button";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/useAuth";
 import type { JobResponse } from "../../../server/types/job.types";
 import styles from "./JobDetails.module.scss";
 

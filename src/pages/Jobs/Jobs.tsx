@@ -8,7 +8,7 @@ import ApplyModal from "@/components/ApplyModal/ApplyModal";
 import JobSidebar from "@/components/JobListing/JobSidebar";
 import Button from "@/components/ui/Button";
 import { companiesData } from "@/constants/Jobs";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/useAuth";
 import type {
 	JobFilterQuery,
 	JobResponse,
