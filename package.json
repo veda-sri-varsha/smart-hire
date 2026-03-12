@@ -9,6 +9,7 @@
 		"dev": "concurrently \"pnpm run server\" \"pnpm client\"",
 		"prisma:migrate": "prisma migrate dev",
 		"prisma:generate": "prisma generate",
+		"postinstall": "prisma generate",
 		"fix": "biome check . --write",
 		"check": "biome check .",
 		"lint": "biome lint .",
