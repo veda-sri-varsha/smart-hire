@@ -1,29 +1,11 @@
-import {
-	createContext,
-	type ReactNode,
-	useEffect,
-	useState,
-} from "react";
-
+import { type ReactNode, useEffect, useState } from "react";
 import type {
 	AuthUserResponse,
 	LoginRequest,
 	SignupRequest,
 } from "../../server/types/auth.types";
-
 import { login as apiLogin, signup as apiSignup } from "../api/auth";
-
-type AuthContextType = {
-	user: AuthUserResponse | null;
-	isLoading: boolean;
-	login: (data: LoginRequest) => Promise<AuthUserResponse>;
-	signup: (data: SignupRequest) => Promise<void>;
-	logout: () => void;
-	isAuthenticated: boolean;
-};
-
-export const AuthContext =
-	createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from "./Auth-Context";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<AuthUserResponse | null>(null);
@@ -49,9 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			const response = await apiLogin(data);
 
 			const userData =
-				response.data?.data?.user ??
-				response.data?.user ??
-				response.data;
+				response.data?.data?.user ?? response.data?.user ?? response.data;
 
 			setUser(userData);
 			localStorage.setItem("smart-hire-user", JSON.stringify(userData));
