@@ -2,7 +2,7 @@ import { JobIcon } from "../../Icons/Icons";
 import "./Header.scss";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/useAuth";
 import MenuToggleIcon from "@/Icons/MenuToggleIcon";
 import Button from "../ui/Button";
 
