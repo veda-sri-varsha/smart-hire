@@ -88,3 +88,12 @@ export type User = {
 //   data?: T;
 //   error?: string;
 // };
+
+export type AuthContextType = {
+	user: AuthUserResponse | null;
+	isLoading: boolean;
+	login: (data: LoginRequest) => Promise<AuthUserResponse>;
+	signup: (data: SignupRequest) => Promise<void>;
+	logout: () => void;
+	isAuthenticated: boolean;
+};

@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthProvider";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import styles from "./AuthCard.module.scss";
