@@ -13,10 +13,10 @@ import swaggerSpec from "./swagger";
 
 const app = express();
 
+import { checkAdmin } from "./lib/setup";
 import { errorHandler } from "./middleware/error.middleware";
 import { generalRateLimiter } from "./middleware/rate-limiter.middleware";
 import { securityMiddleware } from "./middleware/security.middleware";
-import { checkAdmin } from "./lib/setup";
 
 app.use(securityMiddleware);
 app.use(

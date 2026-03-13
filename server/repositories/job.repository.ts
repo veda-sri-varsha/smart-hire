@@ -3,10 +3,10 @@ import {
 	type JobType,
 	type Prisma,
 } from "../../src/generated/prisma/client";
+import { JOB_INCLUDE, JOB_MINIMAL_INCLUDE } from "../constants/prisma-includes";
 import { prisma } from "../lib/prisma";
 import type { JobFilterQuery } from "../types/job.types";
 import logger from "../utils/logger";
-import { JOB_INCLUDE, JOB_MINIMAL_INCLUDE } from "../constants/prisma-includes";
 
 export const jobRepository = {
 	create: async (data: Prisma.JobCreateInput) => {
@@ -82,12 +82,31 @@ export const jobRepository = {
 			];
 		}
 
+		if (filters.category) {
+			where.skills = {
+				contains: filters.category,
+				mode: "insensitive",
+			};
+		}
+
+		if (filters.title) {
+			where.title = {
+				contains: filters.title,
+				mode: "insensitive",
+			};
+		}
+
+		const sortField = filters.sortBy || "createdAt";
+		const sortOrder = filters.order || "desc";
+		const orderBy: any = {};
+		orderBy[sortField] = sortOrder;
+
 		const [jobs, total] = await Promise.all([
 			prisma.job.findMany({
 				where,
 				skip,
 				take: limit,
-				orderBy: { createdAt: "desc" },
+				orderBy,
 				include: JOB_MINIMAL_INCLUDE,
 			}),
 			prisma.job.count({ where }),

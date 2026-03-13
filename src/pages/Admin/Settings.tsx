@@ -143,13 +143,7 @@ export default function AdminSettings() {
 										/>
 										<span>Maintenance Mode</span>
 									</Label>
-									<small
-										style={{
-											display: "block",
-											marginTop: 8,
-											color: "#6b7280",
-										}}
-									>
+									<small className={styles.helperText}>
 										When enabled, only admins can access the site
 									</small>
 								</div>

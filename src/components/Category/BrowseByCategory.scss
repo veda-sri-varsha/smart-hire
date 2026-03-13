@@ -23,6 +23,12 @@
     max-width: 1200px;
     margin: 0 auto;
   }
+
+  .category-link {
+    text-decoration: none;
+    color: inherit;
+    display: block; // Ensure the link occupies the full card space
+  }
 }
 
 @media (max-width: 1024px) {

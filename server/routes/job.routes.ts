@@ -13,6 +13,7 @@ import {
 import { authMiddleware } from "../middleware/auth.middleware";
 import { generalRateLimiter } from "../middleware/rate-limiter.middleware";
 import { authorizeRoles } from "../middleware/role.middleware";
+import { jobService } from "../services/job.service";
 
 const router = Router();
 
@@ -20,6 +21,14 @@ const router = Router();
 router.get("/", generalRateLimiter, getAllJobs);
 router.get("/featured", generalRateLimiter, getFeaturedJobs);
 router.get("/search", generalRateLimiter, searchJobs);
+router.get("/locations", generalRateLimiter, async (_req, res) => {
+	const locations = await jobService.getUniqueLocations();
+	return res.json({ status: "success", data: locations });
+});
+router.get("/categories", generalRateLimiter, async (_req, res) => {
+	const categories = await jobService.getUniqueCategories();
+	return res.json({ status: "success", data: categories });
+});
 router.get("/:id", generalRateLimiter, getJobById);
 
 // Protected routes (COMPANY / HR / ADMIN)

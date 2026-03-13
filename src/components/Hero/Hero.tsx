@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { getCategories, getLocations } from "../../api/jobs";
 import {
 	AdobeIcon,
 	CompaniesIcon,
@@ -8,9 +11,23 @@ import {
 	UserIcon,
 } from "../../Icons/Icons";
 import Button from "../ui/Button";
+import Input from "../ui/Input";
+import Select from "../ui/Select";
 import styles from "./Hero.module.scss";
 
 export default function Hero() {
+	const navigate = useNavigate();
+
+	const { data: locations } = useQuery({
+		queryKey: ["locations"],
+		queryFn: getLocations,
+	});
+
+	const { data: categories } = useQuery({
+		queryKey: ["categories"],
+		queryFn: getCategories,
+	});
+
 	return (
 		<>
 			<section className={styles.hero}>
@@ -26,30 +43,41 @@ export default function Hero() {
 						className={styles.searchBox}
 						onSubmit={(e) => {
 							e.preventDefault();
-							const form = e.currentTarget;
-							const search = (
-								form.elements.namedItem("search") as HTMLInputElement
-							).value;
-							if (search) {
-								window.location.href = `/jobs?title=${encodeURIComponent(search)}`;
-							} else {
-								window.location.href = `/jobs`;
-							}
+							const formData = new FormData(e.currentTarget);
+							const search = formData.get("search")?.toString();
+							const location = formData.get("location")?.toString();
+							const category = formData.get("category")?.toString();
+
+							const params: Record<string, string> = {};
+							if (search) params.title = search;
+							if (location) params.location = location;
+							if (category) params.category = category;
+
+							navigate({
+								to: "/jobs",
+								search: params,
+							});
 						}}
 					>
-						<input name="search" placeholder="Job Title or Company" />
-						<select title="Location" name="location">
-							<option value="">Select Location</option>
-							<option value="New York">New York</option>
-							<option value="London">London</option>
-							<option value="Remote">Remote</option>
-						</select>
-						<select title="Category" name="category">
-							<option value="">Select Category</option>
-							<option value="Design">Design</option>
-							<option value="Engineering">Engineering</option>
-							<option value="Marketing">Marketing</option>
-						</select>
+						<Input name="search" placeholder="Job Title or Company" />
+						<Select
+							title="Location"
+							name="location"
+							options={[
+								{ value: "", label: "Select Location" },
+								...(locations?.map((loc) => ({ value: loc, label: loc })) ||
+									[]),
+							]}
+						/>
+						<Select
+							title="Category"
+							name="category"
+							options={[
+								{ value: "", label: "Select Category" },
+								...(categories?.map((cat) => ({ value: cat, label: cat })) ||
+									[]),
+							]}
+						/>
 						<Button type="submit">
 							<span>Search Job</span>
 						</Button>

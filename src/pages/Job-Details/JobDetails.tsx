@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { 
-	Briefcase, 
-	Clock, 
-	DollarSign, 
-	MapPin, 
-	User, 
-	GraduationCap, 
+import { useNavigate, useParams } from "@tanstack/react-router";
+import {
+	Bookmark,
+	Briefcase,
 	CheckCircle2,
+	Clock,
+	DollarSign,
 	Facebook,
-	Twitter,
+	GraduationCap,
 	Linkedin,
-	Bookmark
+	MapPin,
+	Twitter,
+	User,
 } from "lucide-react";
+import { useState } from "react";
 
 import { applyToJob, checkApplicationStatus } from "@/api/applications";
 import { getJobById, getJobs } from "@/api/jobs";
@@ -22,6 +22,36 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/useAuth";
 import type { JobResponse } from "../../../server/types/job.types";
 import styles from "./JobDetails.module.scss";
+
+/**
+ * Parse skills string → array of trimmed, non-empty strings.
+ * Handles comma-separated values like "React, Node.js, TypeScript".
+ */
+function parseSkills(skills: string): string[] {
+	return skills
+		.split(",")
+		.map((s) => s.trim())
+		.filter(Boolean);
+}
+
+/**
+ * Build a Google Maps embed URL from an arbitrary location string.
+ * Uses the /maps/embed/v1/place API in "q" (search) mode so it works
+ * without a Places API key – the free embed endpoint handles text search.
+ */
+function buildMapEmbedUrl(location: string): string {
+	const encoded = encodeURIComponent(location);
+	// Using the standard Maps embed with a text search query
+	return `https://maps.google.com/maps?q=${encoded}&t=m&z=14&output=embed&iwloc=near`;
+}
+
+/**
+ * Format job type enum value for display.
+ * FULL_TIME → Full Time, PART_TIME → Part Time, etc.
+ */
+function formatJobType(jobType: string): string {
+	return jobType.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 export default function JobDetails() {
 	const { jobId } = useParams({ from: "/jobs/$jobId" });
@@ -89,6 +119,25 @@ export default function JobDetails() {
 	if (isError || !job)
 		return <div className={styles.container}>Job not found.</div>;
 
+	// Derived dynamic data
+	const skillsList = parseSkills(job.skills);
+	const mapEmbedUrl = buildMapEmbedUrl(job.location);
+
+	// Tags: job type + first 3 skills + location (city part)
+	const locationCity = job.location.split(",")[0].trim();
+	const tags = [
+		formatJobType(job.jobType),
+		...skillsList.slice(0, 3),
+		locationCity,
+	].filter((v, i, arr) => arr.indexOf(v) === i); // deduplicate
+
+	// Category: use first skill as a proxy category (most descriptive)
+	const category = skillsList[0] || "General";
+
+	// Company name
+	const companyDisplayName =
+		job.company.companyName || job.company.name || "Unspecified Company";
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.pageBanner}>
@@ -99,43 +148,72 @@ export default function JobDetails() {
 				<div className={styles.leftColumn}>
 					<div className={styles.jobHeaderCard}>
 						<div className={styles.cardTop}>
-							<span className={styles.timeBadge}>10 min ago</span>
-							<button type="button" className={styles.bookmarkBtn}>
+							<span className={styles.timeBadge}>
+								{new Date(job.createdAt).toLocaleDateString("en-US", {
+									year: "numeric",
+									month: "short",
+									day: "numeric",
+								})}
+							</span>
+							<Button
+								type="button"
+								className={styles.bookmarkBtn}
+								variant="ghost"
+							>
 								<Bookmark size={24} />
-							</button>
+							</Button>
 						</div>
 
 						<div className={styles.companySection}>
 							<div className={styles.companyLogo}>
 								{job.company.profilePicture ? (
-									<img src={job.company.profilePicture || undefined} alt={job.company.name || "Company"} />
+									<img
+										src={job.company.profilePicture}
+										alt={companyDisplayName}
+									/>
 								) : (
-									<div className={styles.logoPlaceholder}>{(job.company.name || job.company.companyName || "C")[0]}</div>
+									<div className={styles.logoPlaceholder}>
+										{companyDisplayName[0].toUpperCase()}
+									</div>
 								)}
 							</div>
 							<div className={styles.jobTitleInfo}>
 								<h2>{job.title}</h2>
-								<p className={styles.companyName}>
-									{job.company.companyName || job.company.name || "Unspecified Company"}
-								</p>
+								<p className={styles.companyName}>{companyDisplayName}</p>
 							</div>
 						</div>
 
 						<div className={styles.metaInfo}>
 							<div className={styles.metaItem}>
-								<span className={styles.icon}><Briefcase size={20} /></span>
-								<span>Commerce</span>
+								<span className={styles.icon}>
+									<Briefcase size={20} />
+								</span>
+								<span>{category}</span>
 							</div>
 							<div className={styles.metaItem}>
-								<span className={styles.icon}><Clock size={20} /></span>
-								<span>{job.jobType.replace("_", " ")}</span>
+								<span className={styles.icon}>
+									<Clock size={20} />
+								</span>
+								<span>{formatJobType(job.jobType)}</span>
 							</div>
 							<div className={styles.metaItem}>
-								<span className={styles.icon}><DollarSign size={20} /></span>
-								<span>${job.salaryMin}-${job.salaryMax}</span>
+								<span className={styles.icon}>
+									<DollarSign size={20} />
+								</span>
+								<span>
+									{job.salaryMin != null && job.salaryMax != null
+										? `$${job.salaryMin.toLocaleString()} – $${job.salaryMax.toLocaleString()}`
+										: job.salaryMin != null
+											? `From $${job.salaryMin.toLocaleString()}`
+											: job.salaryMax != null
+												? `Up to $${job.salaryMax.toLocaleString()}`
+												: "Salary not specified"}
+								</span>
 							</div>
 							<div className={styles.metaItem}>
-								<span className={styles.icon}><MapPin size={20} /></span>
+								<span className={styles.icon}>
+									<MapPin size={20} />
+								</span>
 								<span>{job.location}</span>
 							</div>
 						</div>
@@ -144,37 +222,60 @@ export default function JobDetails() {
 					<div className={styles.contentSection}>
 						<h3>Job Description</h3>
 						<p>{job.description}</p>
-						
-						<h3>Key Responsibilities</h3>
-						<ul className={styles.checkList}>
-							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Et nunc ut tempus duis nisl sed massa. Ornare varius faucibus nisl vitae</li>
-							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Cras facilisis dignissim augue lorem amet adipiscing cursus fames mauris</li>
-							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Ornare varius faucibus nisl vitae vitae cras ornare. Cras facilisis dignissim</li>
-							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Tortor amet porta proin in. Orci imperdiet nisl dignissim pellentesque</li>
-						</ul>
 
-						<h3 style={{ marginTop: '2.5rem' }}>Professional Skills</h3>
-						<ul className={styles.checkList}>
-							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Et nunc ut tempus duis nisl sed massa. Ornare varius faucibus nisl</li>
-							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Ornare varius faucibus nisl vitae vitae cras ornare</li>
-							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Tortor amet porta proin in. Orci imperdiet nisl dignissim pellentesque</li>
-						</ul>
+						{skillsList.length > 0 && (
+							<>
+								<h3 className={styles.marginTop}>Required Skills</h3>
+								<ul className={styles.checkList}>
+									{skillsList.map((skill) => (
+										<li key={skill}>
+											<CheckCircle2
+												size={18}
+												className={styles.checkIcon}
+											/>
+											{skill}
+										</li>
+									))}
+								</ul>
+							</>
+						)}
 
-						<h3 style={{ marginTop: '2.5rem' }}>Tags:</h3>
+						<h3 className={styles.marginTop}>Tags:</h3>
 						<div className={styles.tags}>
-							<span className={styles.tag}>Full time</span>
-							<span className={styles.tag}>Commerce</span>
-							<span className={styles.tag}>New - York</span>
-							<span className={styles.tag}>Corporate</span>
-							<span className={styles.tag}>Location</span>
+							{tags.map((tag) => (
+								<span key={tag} className={styles.tag}>
+									{tag}
+								</span>
+							))}
 						</div>
 
 						<div className={styles.shareJob}>
 							<span>Share Job:</span>
 							<div className={styles.socialLinks}>
-								<a href="#"><Facebook size={20} /></a>
-								<a href="#"><Twitter size={20} /></a>
-								<a href="#"><Linkedin size={20} /></a>
+								<a
+									href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Share on Facebook"
+								>
+									<Facebook size={20} />
+								</a>
+								<a
+									href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(job.title)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Share on Twitter"
+								>
+									<Twitter size={20} />
+								</a>
+								<a
+									href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(job.title)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Share on LinkedIn"
+								>
+									<Linkedin size={20} />
+								</a>
 							</div>
 						</div>
 					</div>
@@ -195,49 +296,70 @@ export default function JobDetails() {
 							<h3>Job Overview</h3>
 							<div className={styles.overviewList}>
 								<div className={styles.overviewItem}>
-									<span className={styles.icon}><User size={20} /></span>
+									<span className={styles.icon}>
+										<User size={20} />
+									</span>
 									<div>
 										<p className={styles.label}>Job Title</p>
 										<p className={styles.value}>{job.title}</p>
 									</div>
 								</div>
 								<div className={styles.overviewItem}>
-									<span className={styles.icon}><Clock size={20} /></span>
+									<span className={styles.icon}>
+										<Clock size={20} />
+									</span>
 									<div>
 										<p className={styles.label}>Job Type</p>
-										<p className={styles.value}>{job.jobType.replace("_", " ")}</p>
+										<p className={styles.value}>{formatJobType(job.jobType)}</p>
 									</div>
 								</div>
 								<div className={styles.overviewItem}>
-									<span className={styles.icon}><Briefcase size={20} /></span>
+									<span className={styles.icon}>
+										<Briefcase size={20} />
+									</span>
 									<div>
 										<p className={styles.label}>Category</p>
-										<p className={styles.value}>Commerce</p>
+										<p className={styles.value}>{category}</p>
 									</div>
 								</div>
-								<div className={styles.overviewItem}>
-									<span className={styles.icon}><GraduationCap size={20} /></span>
-									<div>
-										<p className={styles.label}>Experience</p>
-										<p className={styles.value}>{job.experienceMin}-{job.experienceMax} Years</p>
+								{(job.experienceMin != null || job.experienceMax != null) && (
+									<div className={styles.overviewItem}>
+										<span className={styles.icon}>
+											<GraduationCap size={20} />
+										</span>
+										<div>
+											<p className={styles.label}>Experience</p>
+											<p className={styles.value}>
+												{job.experienceMin != null && job.experienceMax != null
+													? `${job.experienceMin}–${job.experienceMax} Years`
+													: job.experienceMin != null
+														? `${job.experienceMin}+ Years`
+														: `Up to ${job.experienceMax} Years`}
+											</p>
+										</div>
 									</div>
-								</div>
+								)}
 								<div className={styles.overviewItem}>
-									<span className={styles.icon}><GraduationCap size={20} /></span>
-									<div>
-										<p className={styles.label}>Degree</p>
-										<p className={styles.value}>Master</p>
-									</div>
-								</div>
-								<div className={styles.overviewItem}>
-									<span className={styles.icon}><DollarSign size={20} /></span>
+									<span className={styles.icon}>
+										<DollarSign size={20} />
+									</span>
 									<div>
 										<p className={styles.label}>Offered Salary</p>
-										<p className={styles.value}>${job.salaryMin}-${job.salaryMax}</p>
+										<p className={styles.value}>
+											{job.salaryMin != null && job.salaryMax != null
+												? `$${job.salaryMin.toLocaleString()} – $${job.salaryMax.toLocaleString()}`
+												: job.salaryMin != null
+													? `From $${job.salaryMin.toLocaleString()}`
+													: job.salaryMax != null
+														? `Up to $${job.salaryMax.toLocaleString()}`
+														: "Not specified"}
+										</p>
 									</div>
 								</div>
 								<div className={styles.overviewItem}>
-									<span className={styles.icon}><MapPin size={20} /></span>
+									<span className={styles.icon}>
+										<MapPin size={20} />
+									</span>
 									<div>
 										<p className={styles.label}>Location</p>
 										<p className={styles.value}>{job.location}</p>
@@ -245,8 +367,18 @@ export default function JobDetails() {
 								</div>
 							</div>
 
-							<div className={styles.mapPlaceholder} style={{ marginTop: '2rem' }}>
-								{/* Map integration would go here */}
+							{/* Google Maps embed using the job's actual location */}
+							<div className={styles.mapWrapper}>
+								<iframe
+									title={`Location: ${job.location}`}
+									src={mapEmbedUrl}
+									width="100%"
+									height="220"
+									style={{ border: 0, borderRadius: "12px" }}
+									allowFullScreen={false}
+									loading="lazy"
+									referrerPolicy="no-referrer-when-downgrade"
+								/>
 							</div>
 						</div>
 					</div>
@@ -258,7 +390,9 @@ export default function JobDetails() {
 							<input type="email" placeholder="Email Address" />
 							<input type="tel" placeholder="Phone Number" />
 							<textarea placeholder="Your Message"></textarea>
-							<button type="submit" className={styles.sendBtn}>Send Message</button>
+							<button type="submit" className={styles.sendBtn}>
+								Send Message
+							</button>
 						</form>
 					</div>
 				</div>
@@ -266,46 +400,86 @@ export default function JobDetails() {
 
 			<div className={styles.relatedJobs}>
 				<h2>Related Jobs</h2>
-				<p style={{ color: '#6b7280', marginBottom: '2rem' }}>
-					At ea lobortis pretium tincidunt amet lacus ut aenean aliquet
-				</p>
-				<div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-					{relatedJobs?.data.slice(0, 3).map((rJob: JobResponse) => (
-						<div key={rJob.id} className={styles.jobHeaderCard} style={{ padding: '1.5rem' }}>
-							<div className={styles.companySection} style={{ marginBottom: '1rem' }}>
-								<div className={styles.companyLogo} style={{ width: '48px', height: '48px' }}>
-									{rJob.company.profilePicture ? (
-										<img src={rJob.company.profilePicture || undefined} alt={rJob.company.name || "Company"} />
-									) : (
-										<div className={styles.logoPlaceholder}>{(rJob.company.name || "C")[0]}</div>
-									)}
+				<div className={styles.relatedJobsHeader}>
+					<p>Explore more opportunities that match your profile</p>
+				</div>
+				<div className={styles.relatedJobsList}>
+					{relatedJobs?.data.slice(0, 3).map((rJob: JobResponse) => {
+						const rCompanyName =
+							rJob.company.companyName ||
+							rJob.company.name ||
+							"Unspecified Company";
+						const rCategory = parseSkills(rJob.skills)[0] || "General";
+						return (
+							<div
+								key={rJob.id}
+								className={`${styles.jobHeaderCard} ${styles.relatedJobCard}`}
+							>
+								<div
+									className={`${styles.companySection} ${styles.relatedJobCompany}`}
+								>
+									<div className={`${styles.companyLogo} ${styles.logoSmall}`}>
+										{rJob.company.profilePicture ? (
+											<img
+												src={rJob.company.profilePicture}
+												alt={rCompanyName}
+											/>
+										) : (
+											<div className={styles.logoPlaceholder}>
+												{rCompanyName[0].toUpperCase()}
+											</div>
+										)}
+									</div>
+									<div
+										className={`${styles.jobTitleInfo} ${styles.jobTitleInfoSmall}`}
+									>
+										<h3>{rJob.title}</h3>
+										<p className={styles.companyName}>{rCompanyName}</p>
+									</div>
+									<div className={styles.relatedJobActions}>
+										<Button
+											variant="outline"
+											onClick={() =>
+												navigate({
+													to: "/jobs/$jobId",
+													params: { jobId: rJob.id },
+												})
+											}
+										>
+											Job Details
+										</Button>
+									</div>
 								</div>
-								<div className={styles.jobTitleInfo}>
-									<h3 style={{ fontSize: '1.25rem' }}>{rJob.title}</h3>
-									<p className={styles.companyName}>{rJob.company.companyName || rJob.company.name}</p>
-								</div>
-								<div style={{ marginLeft: 'auto' }}>
-									<Link to="/jobs/$jobId" params={{ jobId: rJob.id }}>
-										<Button variant="outline">Job Details</Button>
-									</Link>
+								<div
+									className={`${styles.metaInfo} ${styles.relatedJobMeta}`}
+								>
+									<div
+										className={`${styles.metaItem} ${styles.metaItemSmall}`}
+									>
+										<Briefcase size={16} /> {rCategory}
+									</div>
+									<div
+										className={`${styles.metaItem} ${styles.metaItemSmall}`}
+									>
+										<Clock size={16} /> {formatJobType(rJob.jobType)}
+									</div>
+									<div
+										className={`${styles.metaItem} ${styles.metaItemSmall}`}
+									>
+										<DollarSign size={16} />
+										{rJob.salaryMin != null && rJob.salaryMax != null
+											? ` $${rJob.salaryMin.toLocaleString()} – $${rJob.salaryMax.toLocaleString()}`
+											: " Not specified"}
+									</div>
+									<div
+										className={`${styles.metaItem} ${styles.metaItemSmall}`}
+									>
+										<MapPin size={16} /> {rJob.location}
+									</div>
 								</div>
 							</div>
-							<div className={styles.metaInfo} style={{ gap: '1rem 2rem' }}>
-								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
-									<Briefcase size={16} /> Commerce
-								</div>
-								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
-									<Clock size={16} /> {rJob.jobType.replace("_", " ")}
-								</div>
-								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
-									<DollarSign size={16} /> ${rJob.salaryMin}-${rJob.salaryMax}
-								</div>
-								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
-									<MapPin size={16} /> {rJob.location}
-								</div>
-							</div>
-						</div>
-					))}
+						);
+					})}
 				</div>
 			</div>
 

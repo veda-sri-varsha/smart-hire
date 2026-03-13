@@ -89,8 +89,12 @@ export const jobQuerySchema = z.object({
 	experienceMax: z.coerce.number().int().min(0).optional(),
 	skills: z.string().optional(),
 	search: z.string().optional(),
+	category: z.string().optional(),
+	title: z.string().optional(),
 	status: z.enum(["OPEN", "CLOSED"]).optional(),
 	companyId: z.string().uuid().optional(),
+	sortBy: z.string().optional(),
+	order: z.enum(["asc", "desc"]).optional(),
 });
 
 export type CreateJobInput = z.infer<typeof createJobSchema>;

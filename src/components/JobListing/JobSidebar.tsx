@@ -1,5 +1,7 @@
-import { useJobFilters } from "../../hooks/useJobFilters";
 import type { JobFilterQuery } from "../../../server/types/job.types";
+import { useJobFilters } from "../../hooks/useJobFilters";
+import Button from "../ui/Button";
+import Input from "../ui/Input";
 import styles from "./JobSidebar.module.scss";
 
 type JobSidebarProps = {
@@ -24,7 +26,7 @@ export default function JobSidebar({
 			<div className={styles.filterGroup}>
 				<h3>Search by Job Title</h3>
 				<div className={styles.inputWrapper}>
-					<input
+					<Input
 						type="text"
 						placeholder="Job title or company"
 						value={localFilters.search || ""}
@@ -37,7 +39,7 @@ export default function JobSidebar({
 			<div className={styles.filterGroup}>
 				<h3>Location</h3>
 				<div className={styles.inputWrapper}>
-					<input
+					<Input
 						type="text"
 						placeholder="Choose city"
 						value={localFilters.location || ""}
@@ -66,7 +68,9 @@ export default function JobSidebar({
 						</label>
 					))}
 				</div>
-				<button type="button" className={styles.showMore}>Show More</button>
+				<Button type="button" variant="outline" className={styles.showMore}>
+					Show More
+				</Button>
 			</div>
 
 			<div className={styles.filterGroup}>

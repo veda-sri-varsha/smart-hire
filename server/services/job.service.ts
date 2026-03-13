@@ -1,3 +1,4 @@
+import { prisma } from "../lib/prisma.ts";
 import { jobRepository } from "../repositories/job.repository";
 import type {
 	CreateJobRequest,
@@ -12,6 +13,31 @@ import logger from "../utils/logger";
 import { toPaginatedResponse } from "../utils/pagination";
 
 export const jobService = {
+	getUniqueLocations: async (): Promise<string[]> => {
+		const jobs = await prisma.job.findMany({
+			where: { status: "OPEN" },
+			select: { location: true },
+			distinct: ["location"],
+		});
+		return jobs.map((j) => j.location).filter(Boolean);
+	},
+
+	getUniqueCategories: async (): Promise<string[]> => {
+		// Categories are stored as 'skills' or we can extract from a specific field if exists.
+		// For now, let's assume 'skills' contains category-like tags or use a hardcoded fallback if empty.
+		const jobs = await prisma.job.findMany({
+			where: { status: "OPEN" },
+			select: { skills: true },
+			distinct: ["skills"],
+		});
+		const categories = new Set<string>();
+		jobs.forEach((j) => {
+			if (j.skills) {
+				j.skills.split(",").forEach((s) => categories.add(s.trim()));
+			}
+		});
+		return Array.from(categories);
+	},
 	createJob: async (
 		data: CreateJobRequest,
 		companyId: string,

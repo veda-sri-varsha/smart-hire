@@ -1,9 +1,8 @@
 import type { Prisma } from "../../src/generated/prisma/client";
+import { APPLICATION_INCLUDE } from "../constants/prisma-includes";
 import { prisma } from "../lib/prisma";
 import type { ApplicationFilterQuery } from "../types/application.types";
 import logger from "../utils/logger";
-
-import { APPLICATION_INCLUDE } from "../constants/prisma-includes";
 
 export const applicationRepository = {
 	create: async (data: {

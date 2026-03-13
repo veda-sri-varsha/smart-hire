@@ -74,7 +74,8 @@ export default function AdminJobs() {
 		}
 	};
 
-	const formatDate = (date: string | Date) => new Date(date).toLocaleDateString();
+	const formatDate = (date: string | Date) =>
+		new Date(date).toLocaleDateString();
 
 	if (loading) {
 		return <div className={styles.loading}>Loading jobs...</div>;
@@ -113,14 +114,7 @@ export default function AdminJobs() {
 
 				<div className={styles.content}>
 					<div className={styles.recentSection}>
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								marginBottom: "20px",
-							}}
-						>
+						<div className={styles.flexHeader}>
 							<h2>All Jobs ({pagination?.total ?? 0})</h2>
 						</div>
 
@@ -142,10 +136,7 @@ export default function AdminJobs() {
 								<tbody>
 									{jobs.length === 0 ? (
 										<tr>
-											<td
-												colSpan={8}
-												style={{ textAlign: "center", padding: 20 }}
-											>
+											<td colSpan={8} className={styles.centerText}>
 												No jobs found.
 											</td>
 										</tr>
@@ -156,10 +147,7 @@ export default function AdminJobs() {
 													<Link
 														to="/jobs/$jobId"
 														params={{ jobId: job.id }}
-														style={{
-															color: "#3b82f6",
-															textDecoration: "none",
-														}}
+														className={styles.jobLink}
 													>
 														{job.title}
 													</Link>

@@ -1,10 +1,10 @@
+import { useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useState } from "react";
 import type {
 	AuthUserResponse,
 	LoginRequest,
 	SignupRequest,
 } from "../../server/types/auth.types";
-import { useNavigate } from "@tanstack/react-router";
 import { login as apiLogin, signup as apiSignup } from "../api/auth";
 import { AuthContext } from "./AuthContext";
 

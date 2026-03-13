@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { applyToJob } from "@/api/applications";
 import { getJobs } from "@/api/jobs";
 import ApplyModal from "@/components/ApplyModal/ApplyModal";
 import JobSidebar from "@/components/JobListing/JobSidebar";
 import Button from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
 import { companiesData } from "@/constants/Jobs";
 import { useAuth } from "@/context/useAuth";
 import type {
@@ -16,7 +17,23 @@ import type {
 import "./Jobs.scss";
 
 const Jobs = () => {
-	const [filters, setFilters] = useState<JobFilterQuery>({});
+	const searchParams = useSearch({ from: "/jobs" }) as any;
+	const [filters, setFilters] = useState<JobFilterQuery>({
+		search: searchParams.title || "",
+		location: searchParams.location || "",
+		skills: searchParams.category || "",
+		sortBy: "createdAt",
+		order: "desc",
+	});
+
+	useEffect(() => {
+		setFilters((prev) => ({
+			...prev,
+			search: searchParams.title || "",
+			location: searchParams.location || "",
+			skills: searchParams.category || "",
+		}));
+	}, [searchParams]);
 	const [selectedJob, setSelectedJob] = useState<JobResponse | null>(null);
 	const [appliedJobs, setAppliedJobs] = useState<string[]>(() => {
 		const saved = localStorage.getItem("appliedJobs");
@@ -92,7 +109,7 @@ const Jobs = () => {
 			</div>
 
 			<div className="jobs-page__content">
-				<Button 
+				<Button
 					className="mobile-filter-toggle"
 					onClick={() => setShowFilters(!showFilters)}
 				>
@@ -100,18 +117,62 @@ const Jobs = () => {
 					<span className="icon">⚙️</span>
 				</Button>
 
-				<div className={`jobs-page__sidebar-wrapper ${showFilters ? 'show' : ''}`}>
+				<div
+					className={`jobs-page__sidebar-wrapper ${showFilters ? "show" : ""}`}
+				>
 					<JobSidebar filters={filters} onFilterChange={setFilters} />
 				</div>
 
 				<div className="jobs-page__list">
+					<div className="jobs-page__controls">
+						<h2>Showing {jobs.length} Jobs</h2>
+						<div className="jobs-page__sort">
+							<label htmlFor="sort">Sort by:</label>
+							<Select
+								id="sort"
+								value={`${filters.sortBy ?? "createdAt"}-${filters.order ?? "desc"}`}
+								onChange={(e) => {
+									const value = e.target.value;
+									// Split on the LAST dash to handle field names like "salaryMax"
+									const lastDash = value.lastIndexOf("-");
+									const field = value.substring(0, lastDash);
+									const order = value.substring(lastDash + 1);
+									setFilters((prev) => ({
+										...prev,
+										sortBy: field,
+										order: order as "asc" | "desc",
+									}));
+								}}
+								options={[
+									{ value: "createdAt-desc", label: "Newest" },
+									{ value: "createdAt-asc", label: "Oldest" },
+									{ value: "salaryMax-desc", label: "Salary: High to Low" },
+									{ value: "salaryMin-asc", label: "Salary: Low to High" },
+								]}
+							/>
+						</div>
+					</div>
+
 					{isLoading && <p>Loading jobs...</p>}
 					{isError && (
 						<p className="error-message">
 							{(error as Error)?.message || "Failed to load jobs."}
 						</p>
 					)}
-					{!isLoading && jobs.length === 0 && <p>No jobs found.</p>}
+					{!isLoading && jobs.length === 0 && (
+						<div className="jobs-page__no-results">
+							<p>No jobs found matching your criteria.</p>
+							<Button
+								className="back-btn"
+								onClick={() => {
+									setFilters({});
+									navigate({ to: "/jobs" });
+								}}
+							>
+								Back to Jobs
+							</Button>
+						</div>
+					)}
 
 					{jobs.map((job: JobResponse) => (
 						<div key={job.id} className="job-card">

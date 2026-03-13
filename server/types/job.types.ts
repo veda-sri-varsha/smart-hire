@@ -28,8 +28,12 @@ export type JobFilterQuery = {
 	experienceMax?: number;
 	skills?: string;
 	search?: string;
+	category?: string;
+	title?: string;
 	status?: "OPEN" | "CLOSED";
 	companyId?: string;
+	sortBy?: string;
+	order?: "asc" | "desc";
 };
 
 export type JobResponse = {

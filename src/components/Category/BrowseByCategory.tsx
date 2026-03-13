@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import {
 	Banknote,
 	Factory,
@@ -33,7 +34,14 @@ const BrowseByCategory = () => {
 
 			<div className="grid">
 				{categories.map((cat) => (
-					<CategoryCard key={cat.title} {...cat} />
+					<Link
+						key={cat.title}
+						to="/jobs"
+						search={{ category: cat.title }}
+						className="category-link"
+					>
+						<CategoryCard {...cat} />
+					</Link>
 				))}
 			</div>
 		</section>

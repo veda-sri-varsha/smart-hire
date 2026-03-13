@@ -2,9 +2,8 @@ import type {
 	ApplicationResponse,
 	// CreateApplicationRequest,
 } from "../../server/types/application.types";
-import apiClient from "./client";
-
 import type { ApiWrapper } from "../types/api";
+import apiClient from "./client";
 
 export const applyToJob = async (
 	formData: FormData,

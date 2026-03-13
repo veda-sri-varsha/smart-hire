@@ -188,10 +188,7 @@ export default function AdminUsers() {
 								<tbody>
 									{filteredUsers.length === 0 ? (
 										<tr>
-											<td
-												colSpan={8}
-												style={{ textAlign: "center", padding: 20 }}
-											>
+											<td colSpan={8} className={styles.centerText}>
 												No users found.
 											</td>
 										</tr>

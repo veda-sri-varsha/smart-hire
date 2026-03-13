@@ -137,6 +137,27 @@
     }
 }
 
+.flexHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.jobLink {
+    color: #3b82f6;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.centerText {
+    text-align: center;
+    padding: 20px;
+}
+
 .tableWrapper {
     overflow-x: auto;
 }
@@ -469,3 +490,9 @@
 .error {
     color: #ef4444;
 }
+
+.helperText {
+    display: block;
+    margin-top: 8px;
+    color: #6b7280;
+}

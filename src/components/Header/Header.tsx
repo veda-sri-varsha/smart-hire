@@ -34,7 +34,11 @@ const Header = () => {
 					/>
 				</Button>
 
-				<Link to="/" className="header__logo" onClick={() => setIsMenuOpen(false)}>
+				<Link
+					to="/"
+					className="header__logo"
+					onClick={() => setIsMenuOpen(false)}
+				>
 					<span className="header__logo-icon">
 						<JobIcon />
 					</span>

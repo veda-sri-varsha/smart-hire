@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Button from "../ui/Button";
+import Input from "../ui/Input";
 import Textarea from "../ui/Textarea";
 import styles from "./ApplyModal.module.scss";
 
@@ -156,14 +157,15 @@ export default function ApplyModal({
 			>
 				<div className={styles.header}>
 					<h2 id="modal-title">Apply for {jobTitle}</h2>
-					<button
+					<Button
 						type="button"
+						variant="ghost"
 						className={styles.closeBtn}
 						onClick={onClose}
 						aria-label="Close modal"
 					>
 						&times;
-					</button>
+					</Button>
 				</div>
 
 				<form onSubmit={handleSubmit} className={styles.form}>
@@ -179,11 +181,11 @@ export default function ApplyModal({
 							Resume <span className={styles.required}>*</span> (Required)
 						</label>
 
-						<input
+						<Input
 							id="resumeUpload"
 							type="file"
 							accept=".pdf,.doc,.docx"
-							hidden
+							className={styles.hiddenInput}
 							ref={fileInputRef}
 							onChange={(e) =>
 								e.target.files && handleFileSelect(e.target.files[0])
