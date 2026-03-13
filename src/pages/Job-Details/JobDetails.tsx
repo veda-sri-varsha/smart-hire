@@ -1,9 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { 
+	Briefcase, 
+	Clock, 
+	DollarSign, 
+	MapPin, 
+	User, 
+	GraduationCap, 
+	CheckCircle2,
+	Facebook,
+	Twitter,
+	Linkedin,
+	Bookmark
+} from "lucide-react";
 
 import { applyToJob, checkApplicationStatus } from "@/api/applications";
-import { getJobById } from "@/api/jobs";
+import { getJobById, getJobs } from "@/api/jobs";
 import ApplyModal from "@/components/ApplyModal/ApplyModal";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/useAuth";
@@ -27,6 +40,11 @@ export default function JobDetails() {
 			return getJobById(jobId);
 		},
 		enabled: !!jobId,
+	});
+
+	const { data: relatedJobs } = useQuery({
+		queryKey: ["relatedJobs"],
+		queryFn: () => getJobs({ limit: 3 }),
 	});
 
 	const { data: hasApplied } = useQuery<boolean, Error>({
@@ -77,94 +95,217 @@ export default function JobDetails() {
 				<h1>Job Details</h1>
 			</div>
 
-			<div className={styles.mainContent}>
-				<div className={styles.jobCard}>
-					<div className={styles.cardHeader}>
-						<span className={styles.timeBadge}>10 min ago</span>
-						<button type="button" className={styles.bookmarkBtn}>🔖</button>
+			<div className={styles.mainWrapper}>
+				<div className={styles.leftColumn}>
+					<div className={styles.jobHeaderCard}>
+						<div className={styles.cardTop}>
+							<span className={styles.timeBadge}>10 min ago</span>
+							<button type="button" className={styles.bookmarkBtn}>
+								<Bookmark size={24} />
+							</button>
+						</div>
+
+						<div className={styles.companySection}>
+							<div className={styles.companyLogo}>
+								{job.company.profilePicture ? (
+									<img src={job.company.profilePicture || undefined} alt={job.company.name || "Company"} />
+								) : (
+									<div className={styles.logoPlaceholder}>{(job.company.name || job.company.companyName || "C")[0]}</div>
+								)}
+							</div>
+							<div className={styles.jobTitleInfo}>
+								<h2>{job.title}</h2>
+								<p className={styles.companyName}>
+									{job.company.companyName || job.company.name || "Unspecified Company"}
+								</p>
+							</div>
+						</div>
+
+						<div className={styles.metaInfo}>
+							<div className={styles.metaItem}>
+								<span className={styles.icon}><Briefcase size={20} /></span>
+								<span>Commerce</span>
+							</div>
+							<div className={styles.metaItem}>
+								<span className={styles.icon}><Clock size={20} /></span>
+								<span>{job.jobType.replace("_", " ")}</span>
+							</div>
+							<div className={styles.metaItem}>
+								<span className={styles.icon}><DollarSign size={20} /></span>
+								<span>${job.salaryMin}-${job.salaryMax}</span>
+							</div>
+							<div className={styles.metaItem}>
+								<span className={styles.icon}><MapPin size={20} /></span>
+								<span>{job.location}</span>
+							</div>
+						</div>
 					</div>
 
-					<div className={styles.companyLogo}>
-						{job.company.profilePicture ? (
-							<img src={job.company.profilePicture} alt={job.company.name || "Company"} />
-						) : (
-							<div className={styles.logoPlaceholder}>{(job.company.name || job.company.companyName || "C")[0]}</div>
-						)}
-					</div>
+					<div className={styles.contentSection}>
+						<h3>Job Description</h3>
+						<p>{job.description}</p>
+						
+						<h3>Key Responsibilities</h3>
+						<ul className={styles.checkList}>
+							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Et nunc ut tempus duis nisl sed massa. Ornare varius faucibus nisl vitae</li>
+							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Cras facilisis dignissim augue lorem amet adipiscing cursus fames mauris</li>
+							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Ornare varius faucibus nisl vitae vitae cras ornare. Cras facilisis dignissim</li>
+							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Tortor amet porta proin in. Orci imperdiet nisl dignissim pellentesque</li>
+						</ul>
 
-					<div className={styles.jobTitleInfo}>
-						<h2>{job.title}</h2>
-						<p className={styles.companyName}>
-							{job.company.companyName || job.company.name || "Unspecified Company"}
-						</p>
-					</div>
+						<h3 style={{ marginTop: '2.5rem' }}>Professional Skills</h3>
+						<ul className={styles.checkList}>
+							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Et nunc ut tempus duis nisl sed massa. Ornare varius faucibus nisl</li>
+							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Ornare varius faucibus nisl vitae vitae cras ornare</li>
+							<li><CheckCircle2 size={18} className={styles.checkIcon} /> Tortor amet porta proin in. Orci imperdiet nisl dignissim pellentesque</li>
+						</ul>
 
-					<div className={styles.metaInfo}>
-						<div className={styles.metaItem}>
-							<span className={styles.icon}>🏨</span>
-							<span>Commerce</span>
+						<h3 style={{ marginTop: '2.5rem' }}>Tags:</h3>
+						<div className={styles.tags}>
+							<span className={styles.tag}>Full time</span>
+							<span className={styles.tag}>Commerce</span>
+							<span className={styles.tag}>New - York</span>
+							<span className={styles.tag}>Corporate</span>
+							<span className={styles.tag}>Location</span>
 						</div>
-						<div className={styles.metaItem}>
-							<span className={styles.icon}>🕒</span>
-							<span>{job.jobType.replace("_", " ")}</span>
-						</div>
-						<div className={styles.metaItem}>
-							<span className={styles.icon}>💰</span>
-							<span>${job.salaryMin}-${job.salaryMax}</span>
-						</div>
-						<div className={styles.metaItem}>
-							<span className={styles.icon}>📍</span>
-							<span>{job.location}</span>
+
+						<div className={styles.shareJob}>
+							<span>Share Job:</span>
+							<div className={styles.socialLinks}>
+								<a href="#"><Facebook size={20} /></a>
+								<a href="#"><Twitter size={20} /></a>
+								<a href="#"><Linkedin size={20} /></a>
+							</div>
 						</div>
 					</div>
-
-					<Button
-						variant="primary"
-						className={styles.applyBtn}
-						onClick={handleApplyClick}
-						disabled={hasApplied ?? false}
-					>
-						{hasApplied ? "Applied ✓" : "Apply Job"}
-					</Button>
 				</div>
 
-				<div className={styles.overviewSection}>
-					<h3>Job Overview</h3>
-					<div className={styles.overviewList}>
-						<div className={styles.overviewItem}>
-							<span className={styles.icon}>👤</span>
-							<div>
-								<p className={styles.label}>Job Title</p>
-								<p className={styles.value}>{job.title}</p>
+				<div className={styles.rightColumn}>
+					<div className={styles.sidebarCard}>
+						<Button
+							variant="primary"
+							className={styles.applyBtn}
+							onClick={handleApplyClick}
+							disabled={hasApplied ?? false}
+						>
+							{hasApplied ? "Applied ✓" : "Apply Job"}
+						</Button>
+
+						<div className={`${styles.sidebarCard} ${styles.overview}`}>
+							<h3>Job Overview</h3>
+							<div className={styles.overviewList}>
+								<div className={styles.overviewItem}>
+									<span className={styles.icon}><User size={20} /></span>
+									<div>
+										<p className={styles.label}>Job Title</p>
+										<p className={styles.value}>{job.title}</p>
+									</div>
+								</div>
+								<div className={styles.overviewItem}>
+									<span className={styles.icon}><Clock size={20} /></span>
+									<div>
+										<p className={styles.label}>Job Type</p>
+										<p className={styles.value}>{job.jobType.replace("_", " ")}</p>
+									</div>
+								</div>
+								<div className={styles.overviewItem}>
+									<span className={styles.icon}><Briefcase size={20} /></span>
+									<div>
+										<p className={styles.label}>Category</p>
+										<p className={styles.value}>Commerce</p>
+									</div>
+								</div>
+								<div className={styles.overviewItem}>
+									<span className={styles.icon}><GraduationCap size={20} /></span>
+									<div>
+										<p className={styles.label}>Experience</p>
+										<p className={styles.value}>{job.experienceMin}-{job.experienceMax} Years</p>
+									</div>
+								</div>
+								<div className={styles.overviewItem}>
+									<span className={styles.icon}><GraduationCap size={20} /></span>
+									<div>
+										<p className={styles.label}>Degree</p>
+										<p className={styles.value}>Master</p>
+									</div>
+								</div>
+								<div className={styles.overviewItem}>
+									<span className={styles.icon}><DollarSign size={20} /></span>
+									<div>
+										<p className={styles.label}>Offered Salary</p>
+										<p className={styles.value}>${job.salaryMin}-${job.salaryMax}</p>
+									</div>
+								</div>
+								<div className={styles.overviewItem}>
+									<span className={styles.icon}><MapPin size={20} /></span>
+									<div>
+										<p className={styles.label}>Location</p>
+										<p className={styles.value}>{job.location}</p>
+									</div>
+								</div>
 							</div>
-						</div>
-						<div className={styles.overviewItem}>
-							<span className={styles.icon}>🕒</span>
-							<div>
-								<p className={styles.label}>Job Type</p>
-								<p className={styles.value}>{job.jobType.replace("_", " ")}</p>
-							</div>
-						</div>
-						<div className={styles.overviewItem}>
-							<span className={styles.icon}>📁</span>
-							<div>
-								<p className={styles.label}>Category</p>
-								<p className={styles.value}>Commerce</p>
-							</div>
-						</div>
-						<div className={styles.overviewItem}>
-							<span className={styles.icon}>🎓</span>
-							<div>
-								<p className={styles.label}>Experience</p>
-								<p className={styles.value}>{job.experienceMin}-{job.experienceMax} Years</p>
+
+							<div className={styles.mapPlaceholder} style={{ marginTop: '2rem' }}>
+								{/* Map integration would go here */}
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<div className={styles.descriptionSection}>
-					<h3>Description</h3>
-					<p>{job.description}</p>
+					<div className={styles.sidebarCard}>
+						<h3>Send Us Message</h3>
+						<form className={styles.contactForm}>
+							<input type="text" placeholder="Full name" />
+							<input type="email" placeholder="Email Address" />
+							<input type="tel" placeholder="Phone Number" />
+							<textarea placeholder="Your Message"></textarea>
+							<button type="submit" className={styles.sendBtn}>Send Message</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<div className={styles.relatedJobs}>
+				<h2>Related Jobs</h2>
+				<p style={{ color: '#6b7280', marginBottom: '2rem' }}>
+					At ea lobortis pretium tincidunt amet lacus ut aenean aliquet
+				</p>
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+					{relatedJobs?.data.slice(0, 3).map((rJob: JobResponse) => (
+						<div key={rJob.id} className={styles.jobHeaderCard} style={{ padding: '1.5rem' }}>
+							<div className={styles.companySection} style={{ marginBottom: '1rem' }}>
+								<div className={styles.companyLogo} style={{ width: '48px', height: '48px' }}>
+									{rJob.company.profilePicture ? (
+										<img src={rJob.company.profilePicture || undefined} alt={rJob.company.name || "Company"} />
+									) : (
+										<div className={styles.logoPlaceholder}>{(rJob.company.name || "C")[0]}</div>
+									)}
+								</div>
+								<div className={styles.jobTitleInfo}>
+									<h3 style={{ fontSize: '1.25rem' }}>{rJob.title}</h3>
+									<p className={styles.companyName}>{rJob.company.companyName || rJob.company.name}</p>
+								</div>
+								<div style={{ marginLeft: 'auto' }}>
+									<Link to="/jobs/$jobId" params={{ jobId: rJob.id }}>
+										<Button variant="outline">Job Details</Button>
+									</Link>
+								</div>
+							</div>
+							<div className={styles.metaInfo} style={{ gap: '1rem 2rem' }}>
+								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
+									<Briefcase size={16} /> Commerce
+								</div>
+								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
+									<Clock size={16} /> {rJob.jobType.replace("_", " ")}
+								</div>
+								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
+									<DollarSign size={16} /> ${rJob.salaryMin}-${rJob.salaryMax}
+								</div>
+								<div className={styles.metaItem} style={{ fontSize: '0.9rem' }}>
+									<MapPin size={16} /> {rJob.location}
+								</div>
+							</div>
+						</div>
+					))}
 				</div>
 			</div>
 

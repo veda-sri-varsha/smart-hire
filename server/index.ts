@@ -21,7 +21,7 @@ import { checkAdmin } from "./lib/setup";
 app.use(securityMiddleware);
 app.use(
 	cors({
-		origin: ["http://localhost:5174", "https://smart-hire-bay.vercel.app"],
+		origin: ["http://localhost:5173", "https://smart-hire-bay.vercel.app"],
 		credentials: true,
 	}),
 );
