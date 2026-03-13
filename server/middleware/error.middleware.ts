@@ -42,5 +42,10 @@ export const errorHandler = (
 	}
 
 	// Return the actual error message during debugging
-	ApiResponse.error(error.message || "Internal server error").send(res, 500);
+	const isProd = process.env.NODE_ENV === "production";
+	ApiResponse.error(
+		isProd && error.name === "Error"
+			? "Internal server error"
+			: error.message || "Internal server error",
+	).send(res, 500);
 };

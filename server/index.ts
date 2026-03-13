@@ -16,13 +16,14 @@ const app = express();
 import { errorHandler } from "./middleware/error.middleware";
 import { generalRateLimiter } from "./middleware/rate-limiter.middleware";
 import { securityMiddleware } from "./middleware/security.middleware";
+import { checkAdmin } from "./lib/setup";
 
 app.use(securityMiddleware);
 app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://smart-hire-bay.vercel.app"],
-    credentials: true,
-  }),
+	cors({
+		origin: ["http://localhost:5174", "https://smart-hire-bay.vercel.app"],
+		credentials: true,
+	}),
 );
 
 app.use(express.json({ limit: "10kb" }));
@@ -30,44 +31,44 @@ app.use(express.json({ limit: "10kb" }));
 app.use(generalRateLimiter);
 
 app.get("/", (_req, res) => {
-  res.send("Backend is alive!");
+	res.send("Backend is alive!");
 });
 
 app.get("/health", async (_req, res) => {
-  const startTime = Date.now();
+	const startTime = Date.now();
 
-  const healthStatus = {
-    status: "healthy" as "healthy" | "unhealthy",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    server: {
-      status: "up" as "up" | "down",
-      responseTime: 0,
-    },
-    database: {
-      status: "connected" as "connected" | "disconnected",
-      responseTime: 0,
-      error: undefined as string | undefined,
-    },
-  };
+	const healthStatus = {
+		status: "healthy" as "healthy" | "unhealthy",
+		timestamp: new Date().toISOString(),
+		uptime: process.uptime(),
+		server: {
+			status: "up" as "up" | "down",
+			responseTime: 0,
+		},
+		database: {
+			status: "connected" as "connected" | "disconnected",
+			responseTime: 0,
+			error: undefined as string | undefined,
+		},
+	};
 
-  const dbStartTime = Date.now();
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    healthStatus.database.status = "connected";
-    healthStatus.database.responseTime = Date.now() - dbStartTime;
-  } catch (error) {
-    healthStatus.status = "unhealthy";
-    healthStatus.database.status = "disconnected";
-    healthStatus.database.responseTime = Date.now() - dbStartTime;
-    healthStatus.database.error =
-      error instanceof Error ? error.message : "Unknown database error";
-  }
+	const dbStartTime = Date.now();
+	try {
+		await prisma.$queryRaw`SELECT 1`;
+		healthStatus.database.status = "connected";
+		healthStatus.database.responseTime = Date.now() - dbStartTime;
+	} catch (error) {
+		healthStatus.status = "unhealthy";
+		healthStatus.database.status = "disconnected";
+		healthStatus.database.responseTime = Date.now() - dbStartTime;
+		healthStatus.database.error =
+			error instanceof Error ? error.message : "Unknown database error";
+	}
 
-  healthStatus.server.responseTime = Date.now() - startTime;
+	healthStatus.server.responseTime = Date.now() - startTime;
 
-  const statusCode = healthStatus.status === "healthy" ? 200 : 503;
-  res.status(statusCode).json(healthStatus);
+	const statusCode = healthStatus.status === "healthy" ? 200 : 503;
+	res.status(statusCode).json(healthStatus);
 });
 
 app.use("/users", userRoutes);
@@ -83,35 +84,6 @@ app.use(errorHandler);
 
 const PORT = config.PORT;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Backend running on http://0.0.0.0:${PORT}`);
-  checkAdmin();
+	console.log(`Backend running on http://0.0.0.0:${PORT}`);
+	void checkAdmin();
 });
-
-async function checkAdmin() {
-  try {
-    console.log("Checking admin users on startup...");
-    const admins = await prisma.user.findMany({
-      where: { role: "ADMIN" },
-    });
-
-    if (admins.length > 0) {
-      for (const admin of admins) {
-        console.log(
-          `Found Admin: ${admin.email}, Verified: ${admin.isEmailVerified}`,
-        );
-        if (!admin.isEmailVerified) {
-          console.log(`Verifying email for admin: ${admin.email}`);
-          await prisma.user.update({
-            where: { id: admin.id },
-            data: { isEmailVerified: true },
-          });
-          console.log(`Verified email for admin: ${admin.email}`);
-        }
-      }
-    } else {
-      console.log("No admin users found.");
-    }
-  } catch (error) {
-    console.error("Error checking admins:", error);
-  }
-}

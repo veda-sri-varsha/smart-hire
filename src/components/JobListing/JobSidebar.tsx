@@ -1,80 +1,23 @@
-import { useEffect, useState } from "react";
+import { useJobFilters } from "../../hooks/useJobFilters";
 import type { JobFilterQuery } from "../../../server/types/job.types";
 import styles from "./JobSidebar.module.scss";
 
-interface JobSidebarProps {
+type JobSidebarProps = {
 	filters: JobFilterQuery;
 	onFilterChange: (filters: JobFilterQuery) => void;
-}
+};
 
 export default function JobSidebar({
 	filters,
 	onFilterChange,
 }: JobSidebarProps) {
-	// Local state for immediate UI feedback and debouncing
-	const [search, setSearch] = useState(filters.search || "");
-	const [location, setLocation] = useState(filters.location || "");
-	const [salaryMin, setSalaryMin] = useState(filters.salaryMin || 0);
-
-	// Sync local state with props if props change externally (reset)
-	useEffect(() => {
-		setSearch(filters.search || "");
-		setLocation(filters.location || "");
-		setSalaryMin(filters.salaryMin || 0);
-	}, [filters]);
-
-	// Debounce updates to parent
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			if (search !== (filters.search || "")) {
-				onFilterChange({ ...filters, search: search || undefined });
-			}
-		}, 500);
-		return () => clearTimeout(timer);
-	}, [search, filters, onFilterChange]);
-
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			if (location !== (filters.location || "")) {
-				onFilterChange({ ...filters, location: location || undefined });
-			}
-		}, 500);
-		return () => clearTimeout(timer);
-	}, [location, filters, onFilterChange]);
-
-	const handleSalaryChange = (value: number) => {
-		setSalaryMin(value);
-		// Debounce or immediate? Slider can be noisy. Let's debounce.
-		setTimeout(() => {
-			onFilterChange({ ...filters, salaryMin: value || undefined });
-		}, 500);
-		// Note: We're not clearing this timeout, which is a bit buggy if rapid changes.
-		// Better to use a specific useEffect for salary too.
-	};
-
-	// Use effect for salary to handle debounce properly
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			if (salaryMin !== (filters.salaryMin || 0)) {
-				onFilterChange({ ...filters, salaryMin: salaryMin || undefined });
-			}
-		}, 500);
-		return () => clearTimeout(timer);
-	}, [salaryMin, filters, onFilterChange]);
-
-	const handleJobTypeChange = (type: string) => {
-		// Toggle logic or single select? Backend schema says `jobType: z.string().optional()`.
-		// So checking a box should set it. If already set, uncheck it?
-		const newType = filters.jobType === type ? undefined : type;
-		onFilterChange({ ...filters, jobType: newType });
-	};
-
-	const handleTagClick = (tag: string) => {
-		// Toggle tag. Backend supports substring match.
-		// Simplest is to just set 'skills' to the tag.
-		const newSkills = filters.skills === tag ? undefined : tag;
-		onFilterChange({ ...filters, skills: newSkills });
-	};
+	const {
+		localFilters,
+		handleSearchChange,
+		handleLocationChange,
+		handleJobTypeToggle,
+		// handleTagToggle,
+	} = useJobFilters(filters, onFilterChange);
 
 	return (
 		<aside className={styles.sidebar}>
@@ -83,9 +26,9 @@ export default function JobSidebar({
 				<div className={styles.inputWrapper}>
 					<input
 						type="text"
-						placeholder="Job Title or Company"
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
+						placeholder="Job title or company"
+						value={localFilters.search || ""}
+						onChange={(e) => handleSearchChange(e.target.value)}
 					/>
 					<span className={styles.icon}>🔍</span>
 				</div>
@@ -96,82 +39,77 @@ export default function JobSidebar({
 				<div className={styles.inputWrapper}>
 					<input
 						type="text"
-						placeholder="City or Zip Code"
-						value={location}
-						onChange={(e) => setLocation(e.target.value)}
+						placeholder="Choose city"
+						value={localFilters.location || ""}
+						onChange={(e) => handleLocationChange(e.target.value)}
 					/>
 					<span className={styles.icon}>📍</span>
 				</div>
 			</div>
 
-			{/* Category section removed as it doesn't map to backend data */}
+			<div className={styles.filterGroup}>
+				<h3>Category</h3>
+				<div className={styles.checkboxList}>
+					{[
+						{ label: "Commerce", count: 10 },
+						{ label: "Telecommunications", count: 10 },
+						{ label: "Hotels & Tourism", count: 10 },
+						{ label: "Education", count: 10 },
+						{ label: "Financial Services", count: 10 },
+					].map((cat) => (
+						<label key={cat.label} className={styles.checkbox}>
+							<div className={styles.checkboxLeft}>
+								<input type="checkbox" />
+								<span>{cat.label}</span>
+							</div>
+							<span className={styles.count}>{cat.count}</span>
+						</label>
+					))}
+				</div>
+				<button type="button" className={styles.showMore}>Show More</button>
+			</div>
 
 			<div className={styles.filterGroup}>
 				<h3>Job Type</h3>
 				<div className={styles.checkboxList}>
 					{[
-						{ label: "Full Time", value: "FULL_TIME" },
-						{ label: "Part Time", value: "PART_TIME" },
-						{ label: "Internship", value: "INTERNSHIP" },
-						{ label: "Freelance", value: "FREELANCE" },
-						{ label: "Contract", value: "CONTRACT" },
+						{ label: "Full Time", value: "FULL_TIME", count: 10 },
+						{ label: "Part Time", value: "PART_TIME", count: 10 },
+						{ label: "Freelance", value: "FREELANCE", count: 10 },
+						{ label: "Seasonal", value: "SEASONAL", count: 10 },
+						{ label: "Fixed-Price", value: "FIXED_PRICE", count: 10 },
 					].map((type) => (
 						<label key={type.value} className={styles.checkbox}>
-							<input
-								type="checkbox"
-								checked={filters.jobType === type.value}
-								onChange={() => handleJobTypeChange(type.value)}
-							/>
-							<span>{type.label}</span>
+							<div className={styles.checkboxLeft}>
+								<input
+									type="checkbox"
+									checked={localFilters.jobType === type.value}
+									onChange={() => handleJobTypeToggle(type.value)}
+								/>
+								<span>{type.label}</span>
+							</div>
+							<span className={styles.count}>{type.count}</span>
 						</label>
 					))}
 				</div>
 			</div>
 
 			<div className={styles.filterGroup}>
-				<div className={styles.salaryHeader}>
-					<h3>Min Salary</h3>
-					<span>${salaryMin}/m</span>
-				</div>
-				<input
-					type="range"
-					min="0"
-					max="20000"
-					step="1000"
-					value={salaryMin}
-					onChange={(e) => handleSalaryChange(Number(e.target.value))}
-					className={styles.rangeInput}
-				/>
-			</div>
-
-			<div className={styles.filterGroup}>
-				<h3>Tags</h3>
-				<div className={styles.tags}>
+				<h3>Experience Level</h3>
+				<div className={styles.checkboxList}>
 					{[
-						"marketing",
-						"design",
-						"ui/ux",
-						"digital",
-						"programming", // Fixed typo "programing"
-						"web-design",
-					].map((tag) => (
-						<button
-							type="button"
-							key={tag}
-							className={`${styles.tag} ${filters.skills === tag ? styles.active : ""}`}
-							onClick={() => handleTagClick(tag)}
-							style={{
-								backgroundColor: filters.skills === tag ? "#007bff" : "#f0f0f0",
-								color: filters.skills === tag ? "#fff" : "#333",
-								border: "none",
-								padding: "5px 10px",
-								borderRadius: "15px",
-								cursor: "pointer",
-								margin: "5px",
-							}}
-						>
-							{tag}
-						</button>
+						{ label: "No-experience", count: 10 },
+						{ label: "Fresher", count: 10 },
+						{ label: "Intermediate", count: 10 },
+						{ label: "Expert", count: 10 },
+					].map((exp) => (
+						<label key={exp.label} className={styles.checkbox}>
+							<div className={styles.checkboxLeft}>
+								<input type="checkbox" />
+								<span>{exp.label}</span>
+							</div>
+							<span className={styles.count}>{exp.count}</span>
+						</label>
 					))}
 				</div>
 			</div>

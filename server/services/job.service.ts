@@ -9,6 +9,7 @@ import type {
 } from "../types/job.types";
 import CustomError from "../utils/customError";
 import logger from "../utils/logger";
+import { toPaginatedResponse } from "../utils/pagination";
 
 export const jobService = {
 	createJob: async (
@@ -35,17 +36,13 @@ export const jobService = {
 	getAllJobs: async (
 		filters: JobFilterQuery,
 	): Promise<PaginatedJobsResponse> => {
-		if (!filters.companyId) filters.status = "OPEN";
 		const result = await jobRepository.findMany(filters);
-		return {
-			jobs: result.jobs as JobResponse[],
-			pagination: {
-				page: result.page,
-				limit: result.limit,
-				total: result.total,
-				totalPages: result.totalPages,
-			},
-		};
+		return toPaginatedResponse(
+			result.data as JobResponse[],
+			result.total,
+			result.page,
+			result.limit,
+		);
 	},
 
 	getCompanyJobs: async (
@@ -54,15 +51,12 @@ export const jobService = {
 		limit = 10,
 	): Promise<PaginatedJobsResponse> => {
 		const result = await jobRepository.findByCompanyId(companyId, page, limit);
-		return {
-			jobs: result.jobs as JobResponse[],
-			pagination: {
-				page: result.page,
-				limit: result.limit,
-				total: result.total,
-				totalPages: result.totalPages,
-			},
-		};
+		return toPaginatedResponse(
+			result.data as JobResponse[],
+			result.total,
+			result.page,
+			result.limit,
+		);
 	},
 
 	updateJob: async (
@@ -121,14 +115,11 @@ export const jobService = {
 			page,
 			limit,
 		});
-		return {
-			jobs: result.jobs as JobResponse[],
-			pagination: {
-				page: result.page,
-				limit: result.limit,
-				total: result.total,
-				totalPages: result.totalPages,
-			},
-		};
+		return toPaginatedResponse(
+			result.data as JobResponse[],
+			result.total,
+			result.page,
+			result.limit,
+		);
 	},
 };

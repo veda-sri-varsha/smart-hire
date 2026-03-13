@@ -8,6 +8,7 @@ import type {
 } from "../types/application.types";
 import CustomError from "../utils/customError";
 import logger from "../utils/logger";
+import { toPaginatedResponse } from "../utils/pagination";
 
 export const applicationService = {
 	createApplication: async (
@@ -87,16 +88,12 @@ export const applicationService = {
 			page,
 			limit,
 		);
-
-		return {
-			applications: result.applications,
-			pagination: {
-				page: result.page,
-				limit: result.limit,
-				total: result.total,
-				totalPages: result.totalPages,
-			},
-		};
+		return toPaginatedResponse(
+			result.data as ApplicationResponse[],
+			result.total,
+			result.page,
+			result.limit,
+		);
 	},
 
 	getJobApplications: async (
@@ -116,16 +113,12 @@ export const applicationService = {
 		}
 
 		const result = await applicationRepository.findByJobId(jobId, page, limit);
-
-		return {
-			applications: result.applications,
-			pagination: {
-				page: result.page,
-				limit: result.limit,
-				total: result.total,
-				totalPages: result.totalPages,
-			},
-		};
+		return toPaginatedResponse(
+			result.data as ApplicationResponse[],
+			result.total,
+			result.page,
+			result.limit,
+		);
 	},
 
 	updateApplicationStatus: async (

@@ -4,12 +4,14 @@ import type {
 	LoginRequest,
 	SignupRequest,
 } from "../../server/types/auth.types";
+import { useNavigate } from "@tanstack/react-router";
 import { login as apiLogin, signup as apiSignup } from "../api/auth";
 import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<AuthUserResponse | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const storedUser = localStorage.getItem("smart-hire-user");
@@ -58,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	const logout = () => {
 		setUser(null);
 		localStorage.removeItem("smart-hire-user");
-		window.location.href = "/login";
+		navigate({ to: "/login" });
 	};
 
 	return (

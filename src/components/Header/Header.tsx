@@ -27,19 +27,19 @@ const Header = () => {
 	return (
 		<header className={`header ${!isHome ? "header--dark" : ""}`}>
 			<div className="header__container">
-				<div className="header__logo">
-					<span className="header__logo-icon">
-						<JobIcon />
-					</span>
-					<span className="header__logo-text">Smart Hire</span>
-				</div>
-
 				<Button className="header__toggle" onClick={toggleMenu}>
 					<MenuToggleIcon
 						isOpen={isMenuOpen}
 						title={isMenuOpen ? "Close menu" : "Open menu"}
 					/>
 				</Button>
+
+				<Link to="/" className="header__logo" onClick={() => setIsMenuOpen(false)}>
+					<span className="header__logo-icon">
+						<JobIcon />
+					</span>
+					<span className="header__logo-text">Smart Hire</span>
+				</Link>
 
 				<nav className={`header__nav ${isMenuOpen ? "header__nav--open" : ""}`}>
 					<Link to="/" onClick={() => setIsMenuOpen(false)}>

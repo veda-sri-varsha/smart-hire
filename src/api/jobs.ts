@@ -5,12 +5,7 @@ import type {
 } from "../../server/types/job.types";
 import apiClient from "./client";
 
-// Backend wraps responses in: { success: true, message: '...', data: {...} }
-interface ApiWrapper<T> {
-	success: boolean;
-	message?: string;
-	data: T;
-}
+import type { ApiWrapper } from "../types/api";
 
 export const getJobs = async (
 	filters?: JobFilterQuery,

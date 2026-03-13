@@ -2,13 +2,9 @@ import type {
 	ApplicationResponse,
 	// CreateApplicationRequest,
 } from "../../server/types/application.types";
-import apiClient, { getAuthHeader } from "./client";
+import apiClient from "./client";
 
-interface ApiWrapper<T> {
-	success: boolean;
-	message?: string;
-	data: T;
-}
+import type { ApiWrapper } from "../types/api";
 
 export const applyToJob = async (
 	formData: FormData,
@@ -18,7 +14,6 @@ export const applyToJob = async (
 		formData,
 		{
 			headers: {
-				...getAuthHeader(),
 				"Content-Type": "multipart/form-data",
 			},
 		},
@@ -32,9 +27,6 @@ export const checkApplicationStatus = async (
 ): Promise<boolean> => {
 	const response = await apiClient.get<ApiWrapper<{ hasApplied: boolean }>>(
 		`/applications/check/${jobId}`,
-		{
-			headers: getAuthHeader(),
-		},
 	);
 	return response.data.data.hasApplied;
 };

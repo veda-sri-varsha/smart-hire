@@ -21,6 +21,15 @@
     color: #fff;
     letter-spacing: -2px;
   }
+
+  @media (max-width: 768px) {
+    padding: 60px 20px;
+    
+    h1 {
+      font-size: 2.25rem;
+      letter-spacing: -1px;
+    }
+  }
 }
 
 .about-intro {
@@ -31,6 +40,16 @@
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 32px;
+    text-align: center;
+    padding: 60px 20px;
+
+    h2 {
+      font-size: 1.75rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
   }
 
   h2 {
@@ -58,6 +77,10 @@
     font-size: 42px;
     font-weight: 700;
     margin-bottom: 16px;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
   }
 
   .subtitle {
@@ -108,6 +131,12 @@
   }
 }
 
+.video-section {
+  @media (max-width: 768px) {
+     padding: 60px 16px;
+  }
+}
+
 .video-card {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200') center/cover;
   border-radius: 32px;
@@ -115,6 +144,11 @@
   text-align: center;
   color: #fff;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    padding: 60px 20px;
+    border-radius: 24px;
+  }
 
   .play-btn {
     width: 80px;
@@ -139,6 +173,11 @@
     font-size: 48px;
     line-height: 1.1;
     font-weight: 700;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+      margin: 30px 0 40px;
+    }
   }
 
   .video-footer {
@@ -155,6 +194,8 @@
     @media (max-width: 768px) {
       flex-direction: column;
       gap: 24px;
+      align-items: center;
+      padding: 24px;
     }
 
     div {
@@ -181,7 +222,11 @@
 .faq-section {
   text-align: center;
   background-color: #fff;
-  padding: 120px 0;
+  padding: 120px 16px;
+
+  @media (max-width: 768px) {
+    padding: 60px 16px;
+  }
 
   .subtitle {
     margin: 16px 0 64px;
@@ -223,12 +268,22 @@
     gap: 24px;
     cursor: pointer;
 
+    @media (max-width: 768px) {
+        padding: 20px 16px;
+        gap: 12px;
+    }
+
     .num {
       color: #00b894;
       font-weight: 800;
       font-size: 22px;
-      min-width: 48px;
+      min-width: 40px;
       opacity: 0.8;
+      
+      @media (max-width: 768px) {
+          font-size: 1.25rem;
+          min-width: 30px;
+      }
     }
 
     .text {
@@ -237,6 +292,10 @@
       font-size: 19px;
       font-weight: 600;
       color: #111;
+
+      @media (max-width: 768px) {
+          font-size: 1rem;
+      }
     }
 
     .icon {
@@ -252,13 +311,22 @@
     text-align: left;
     line-height: 1.7;
     font-size: 17px;
+
+    @media (max-width: 768px) {
+        padding: 0 16px 24px 58px;
+        font-size: 0.9rem;
+    }
   }
 }
 
 .best-section {
   text-align: center;
   background: white;
-  padding-bottom: 140px;
+  padding: 0 16px 140px;
+
+  @media (max-width: 768px) {
+      padding-bottom: 80px;
+  }
 
   h2 {
     font-size: 52px;
@@ -266,12 +334,21 @@
     letter-spacing: -2px;
     font-weight: 800;
     line-height: 1.1;
+
+    @media (max-width: 768px) {
+        font-size: 2rem;
+    }
   }
 
   p {
     color: #666;
     margin: 0 0 80px;
     font-size: 20px;
+
+    @media (max-width: 768px) {
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+    }
   }
 
   .best-points {
@@ -284,6 +361,7 @@
     @media (max-width: 768px) {
       grid-template-columns: repeat(2, 1fr);
       padding: 0 20px;
+      gap: 16px;
     }
 
     @media (max-width: 480px) {
@@ -300,6 +378,10 @@
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 
+      @media (max-width: 768px) {
+          padding: 30px 16px;
+      }
+
       &:hover {
         transform: translateY(-8px);
         border-color: #00b894;
@@ -309,4 +391,4 @@
       }
     }
   }
-}
+}

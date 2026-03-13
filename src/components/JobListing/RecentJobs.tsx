@@ -10,8 +10,8 @@ export default function RecentJobs() {
 	useEffect(() => {
 		const fetchRecent = async () => {
 			try {
-				const data = await getJobs({ limit: 4 });
-				setJobs(data.jobs.slice(0, 4));
+				const res = await getJobs({ limit: 4 });
+				setJobs(res.data.slice(0, 4));
 			} catch (error) {
 				console.error("Failed to fetch recent jobs", error);
 			}

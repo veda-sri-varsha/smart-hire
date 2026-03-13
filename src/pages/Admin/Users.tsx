@@ -38,7 +38,7 @@ export default function AdminUsers() {
 		queryKey: ["admin-users"],
 		queryFn: async () => {
 			const response = await getAllUsers(1, 100);
-			return response.data.users;
+			return response.data.data;
 		},
 		enabled: !!user && user.role === "ADMIN",
 	});

@@ -1,11 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import "./Card.scss";
 
-interface Props {
+type Props = {
 	title: string;
 	jobs: number;
 	icon: LucideIcon;
-}
+};
 
 export const CategoryCard = ({ title, jobs, icon: Icon }: Props) => {
 	return (

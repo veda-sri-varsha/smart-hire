@@ -76,62 +76,95 @@ export default function JobDetails() {
 			<div className={styles.pageBanner}>
 				<h1>Job Details</h1>
 			</div>
+
 			<div className={styles.mainContent}>
-				<div className={styles.header}>
-					<div className={styles.headerContent}>
-						<h1>{job.title}</h1>
-						<div className={styles.meta}>
-							<span className={styles.type}>
-								{job.jobType.replace("_", " ")}
-							</span>
-							<span className={styles.salary}>
-								${job.salaryMin} - ${job.salaryMax}
-							</span>
-							<span className={styles.location}>{job.location}</span>
+				<div className={styles.jobCard}>
+					<div className={styles.cardHeader}>
+						<span className={styles.timeBadge}>10 min ago</span>
+						<button type="button" className={styles.bookmarkBtn}>🔖</button>
+					</div>
+
+					<div className={styles.companyLogo}>
+						{job.company.profilePicture ? (
+							<img src={job.company.profilePicture} alt={job.company.name || "Company"} />
+						) : (
+							<div className={styles.logoPlaceholder}>{(job.company.name || job.company.companyName || "C")[0]}</div>
+						)}
+					</div>
+
+					<div className={styles.jobTitleInfo}>
+						<h2>{job.title}</h2>
+						<p className={styles.companyName}>
+							{job.company.companyName || job.company.name || "Unspecified Company"}
+						</p>
+					</div>
+
+					<div className={styles.metaInfo}>
+						<div className={styles.metaItem}>
+							<span className={styles.icon}>🏨</span>
+							<span>Commerce</span>
+						</div>
+						<div className={styles.metaItem}>
+							<span className={styles.icon}>🕒</span>
+							<span>{job.jobType.replace("_", " ")}</span>
+						</div>
+						<div className={styles.metaItem}>
+							<span className={styles.icon}>💰</span>
+							<span>${job.salaryMin}-${job.salaryMax}</span>
+						</div>
+						<div className={styles.metaItem}>
+							<span className={styles.icon}>📍</span>
+							<span>{job.location}</span>
 						</div>
 					</div>
+
 					<Button
 						variant="primary"
 						className={styles.applyBtn}
 						onClick={handleApplyClick}
-						disabled={hasApplied ?? false} // boolean type
+						disabled={hasApplied ?? false}
 					>
-						{hasApplied ? "Applied ✓" : "Apply Now"}
+						{hasApplied ? "Applied ✓" : "Apply Job"}
 					</Button>
 				</div>
 
-				<div className={styles.content}>
-					<section>
-						<h2>Description</h2>
-						<p>{job.description}</p>
-					</section>
+				<div className={styles.overviewSection}>
+					<h3>Job Overview</h3>
+					<div className={styles.overviewList}>
+						<div className={styles.overviewItem}>
+							<span className={styles.icon}>👤</span>
+							<div>
+								<p className={styles.label}>Job Title</p>
+								<p className={styles.value}>{job.title}</p>
+							</div>
+						</div>
+						<div className={styles.overviewItem}>
+							<span className={styles.icon}>🕒</span>
+							<div>
+								<p className={styles.label}>Job Type</p>
+								<p className={styles.value}>{job.jobType.replace("_", " ")}</p>
+							</div>
+						</div>
+						<div className={styles.overviewItem}>
+							<span className={styles.icon}>📁</span>
+							<div>
+								<p className={styles.label}>Category</p>
+								<p className={styles.value}>Commerce</p>
+							</div>
+						</div>
+						<div className={styles.overviewItem}>
+							<span className={styles.icon}>🎓</span>
+							<div>
+								<p className={styles.label}>Experience</p>
+								<p className={styles.value}>{job.experienceMin}-{job.experienceMax} Years</p>
+							</div>
+						</div>
+					</div>
+				</div>
 
-					<section>
-						<h2>Details</h2>
-						<ul>
-							<li>
-								<strong>Company:</strong>{" "}
-								{job.company.companyName || job.company.name || "N/A"}
-							</li>
-							<li>
-								<strong>Experience:</strong> {job.experienceMin} -{" "}
-								{job.experienceMax} years
-							</li>
-							<li>
-								<strong>Posted:</strong>{" "}
-								{new Date(job.createdAt).toLocaleDateString()}
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Skills</h2>
-						<ul>
-							{job.skills.split(",").map((skill: string) => (
-								<li key={skill}>{skill.trim()}</li>
-							))}
-						</ul>
-					</section>
+				<div className={styles.descriptionSection}>
+					<h3>Description</h3>
+					<p>{job.description}</p>
 				</div>
 			</div>
 

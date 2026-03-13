@@ -3,11 +3,11 @@ import styles from "./Button.module.scss";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "outline" | "ghost";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 	children: ReactNode;
 	fullWidth?: boolean;
 	variant?: ButtonVariant;
-}
+};
 
 export default function Button({
 	children,

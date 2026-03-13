@@ -25,6 +25,7 @@ const Jobs = () => {
 
 	const { isAuthenticated } = useAuth();
 	const navigate = useNavigate();
+	const [showFilters, setShowFilters] = useState(false);
 
 	// Fetch jobs with TanStack Query
 	const {
@@ -34,7 +35,7 @@ const Jobs = () => {
 		error,
 	} = useQuery<JobResponse[]>({
 		queryKey: ["jobs", filters],
-		queryFn: () => getJobs(filters).then((res) => res.jobs),
+		queryFn: () => getJobs(filters).then((res) => res.data),
 	});
 
 	const handleApplyClick = (job: JobResponse) => {
@@ -91,7 +92,17 @@ const Jobs = () => {
 			</div>
 
 			<div className="jobs-page__content">
-				<JobSidebar filters={filters} onFilterChange={setFilters} />
+				<Button 
+					className="mobile-filter-toggle"
+					onClick={() => setShowFilters(!showFilters)}
+				>
+					<span>Filters</span>
+					<span className="icon">⚙️</span>
+				</Button>
+
+				<div className={`jobs-page__sidebar-wrapper ${showFilters ? 'show' : ''}`}>
+					<JobSidebar filters={filters} onFilterChange={setFilters} />
+				</div>
 
 				<div className="jobs-page__list">
 					{isLoading && <p>Loading jobs...</p>}

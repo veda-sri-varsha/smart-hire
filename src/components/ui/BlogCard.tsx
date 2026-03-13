@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import "./BlogCard.scss";
 
-interface Props {
+type Props = {
 	date: string;
 	title: string;
 	tag: string;
-}
+};
 
 const BlogCard = ({ date, title }: Props) => {
 	return (

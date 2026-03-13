@@ -3,36 +3,7 @@ import { prisma } from "../lib/prisma";
 import type { ApplicationFilterQuery } from "../types/application.types";
 import logger from "../utils/logger";
 
-const applicationInclude = {
-	user: {
-		select: {
-			id: true,
-			name: true,
-			email: true,
-			phone: true,
-			profilePicture: true,
-			resumeUrl: true,
-		},
-	},
-	job: {
-		select: {
-			id: true,
-			title: true,
-			location: true,
-			jobType: true,
-			companyId: true,
-			company: {
-				select: {
-					id: true,
-					name: true,
-					companyName: true,
-					profilePicture: true,
-					email: true,
-				},
-			},
-		},
-	},
-};
+import { APPLICATION_INCLUDE } from "../constants/prisma-includes";
 
 export const applicationRepository = {
 	create: async (data: {
@@ -51,14 +22,14 @@ export const applicationRepository = {
 				coverLetter: data.coverLetter,
 				status: "APPLIED",
 			},
-			include: applicationInclude,
+			include: APPLICATION_INCLUDE,
 		});
 	},
 
 	findById: async (id: string) => {
 		return prisma.application.findUnique({
 			where: { id },
-			include: applicationInclude,
+			include: APPLICATION_INCLUDE,
 		});
 	},
 
@@ -88,13 +59,13 @@ export const applicationRepository = {
 				skip,
 				take: limit,
 				orderBy: { appliedAt: "desc" },
-				include: applicationInclude,
+				include: APPLICATION_INCLUDE,
 			}),
 			prisma.application.count({ where }),
 		]);
 
 		return {
-			applications,
+			data: applications,
 			total,
 			page,
 			limit,
@@ -111,13 +82,13 @@ export const applicationRepository = {
 				skip,
 				take: limit,
 				orderBy: { appliedAt: "desc" },
-				include: applicationInclude,
+				include: APPLICATION_INCLUDE,
 			}),
 			prisma.application.count({ where: { jobId } }),
 		]);
 
 		return {
-			applications,
+			data: applications,
 			total,
 			page,
 			limit,
@@ -134,13 +105,13 @@ export const applicationRepository = {
 				skip,
 				take: limit,
 				orderBy: { appliedAt: "desc" },
-				include: applicationInclude,
+				include: APPLICATION_INCLUDE,
 			}),
 			prisma.application.count({ where: { userId } }),
 		]);
 
 		return {
-			applications,
+			data: applications,
 			total,
 			page,
 			limit,
@@ -163,7 +134,7 @@ export const applicationRepository = {
 		return prisma.application.update({
 			where: { id },
 			data: { status },
-			include: applicationInclude,
+			include: APPLICATION_INCLUDE,
 		});
 	},
 

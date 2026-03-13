@@ -52,7 +52,7 @@ export type ApplicationResponse = {
 };
 
 export type PaginatedApplicationsResponse = {
-	applications: ApplicationResponse[];
+	data: ApplicationResponse[];
 	pagination: {
 		page: number;
 		limit: number;

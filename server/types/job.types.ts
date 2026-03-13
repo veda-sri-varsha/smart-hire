@@ -54,12 +54,12 @@ export type JobResponse = {
 	_count?: {
 		applications: number;
 	};
-	createdAt: string;
-	updatedAt: string;
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 export type PaginatedJobsResponse = {
-	jobs: JobResponse[];
+	data: JobResponse[];
 	pagination: {
 		page: number;
 		limit: number;

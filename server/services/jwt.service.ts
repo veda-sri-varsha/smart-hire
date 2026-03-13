@@ -2,15 +2,15 @@ import jwt from "jsonwebtoken";
 import config from "../config/index";
 import CustomError from "../utils/customError";
 
-interface TokenPayload {
+type TokenPayload = {
 	id: string;
 	role: string;
-}
+};
 
-interface ResetTokenPayload {
+type ResetTokenPayload = {
 	id: string;
 	type: "reset";
-}
+};
 
 export const signAccessToken = (payload: TokenPayload): string => {
 	return jwt.sign(payload, config.JWT_ACCESS_SECRET, {

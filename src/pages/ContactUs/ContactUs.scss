@@ -8,9 +8,17 @@
     padding: 80px 20px;
 
     h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #ccc;
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      padding: 60px 16px;
+      
+      h1 {
+        font-size: 2rem;
+      }
     }
   }
 
@@ -19,42 +27,67 @@
     justify-content: center;
     align-items: flex-start;
     gap: 50px;
-    padding: 60px 20px;
+    padding: 80px 20px;
     flex-wrap: wrap;
     max-width: 1200px;
     margin: 0 auto;
+
+    @media (max-width: 768px) {
+      padding: 60px 20px;
+      gap: 40px;
+      text-align: center;
+    }
 
     .contact-left {
       flex: 1;
       min-width: 300px;
 
       h2 {
-        font-size: 1.8rem;
+        font-size: 2.25rem;
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
+        line-height: 1.2;
+
+        @media (max-width: 768px) {
+            font-size: 1.75rem;
+        }
       }
 
       p {
-        font-size: 1rem;
-        margin-bottom: 30px;
-        line-height: 1.6;
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+        line-height: 1.7;
+        color: #4b5563;
       }
 
       .contact-info {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 32px;
+
+        @media (max-width: 480px) {
+            grid-template-columns: 1fr;
+        }
 
         div {
+            @media (max-width: 768px) {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
           strong {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #111;
           }
 
           p {
-            font-size: 0.9rem;
-            color: #555;
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin: 0;
           }
         }
       }
@@ -63,26 +96,38 @@
     .contact-right {
       flex: 1;
       min-width: 300px;
+      width: 100%;
 
       .contact-form-card {
-        background-color: #eaf4f4; // light card color
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        background-color: #f0fdfa;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        border: 1px solid #ccfbf1;
+
+        @media (max-width: 768px) {
+            padding: 30px 20px;
+        }
 
         h3 {
-          font-size: 1.3rem;
-          margin-bottom: 20px;
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: 24px;
+          text-align: center;
         }
 
         form {
           display: flex;
           flex-direction: column;
-          gap: 15px;
+          gap: 20px;
 
           .input-row {
             display: flex;
-            gap: 10px;
+            gap: 16px;
+
+            @media (max-width: 480px) {
+                flex-direction: column;
+            }
 
             input {
               flex: 1;
@@ -91,24 +136,33 @@
 
           input,
           textarea {
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 0.95rem;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            font-size: 1rem;
+            background: #fff;
+
+            &:focus {
+                outline: none;
+                border-color: #00bfa5;
+                box-shadow: 0 0 0 4px rgba(0, 191, 165, 0.1);
+            }
           }
 
           button {
-            padding: 12px;
+            padding: 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             background-color: #00bfa5;
             color: #fff;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.2s;
 
             &:hover {
               background-color: #009e8f;
+              transform: translateY(-2px);
             }
           }
         }
@@ -126,6 +180,14 @@
       height: 500px;
       border: none;
       filter: grayscale(0.2);
+    }
+    
+    @media (max-width: 768px) {
+      margin-top: 40px;
+      
+      iframe {
+        height: 300px;
+      }
     }
   }
 

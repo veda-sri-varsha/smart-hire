@@ -54,24 +54,28 @@
 
 @media (max-width: 768px) {
   .news-blog {
-    padding: 48px 20px;
+    padding: 48px 16px;
 
     .header {
       flex-direction: column;
       gap: 12px;
 
       .view-all {
-        margin-top: 0;
+        margin-top: 8px;
+        font-weight: 600;
+        display: inline-block;
       }
     }
 
     .tags {
+      justify-content: right;
+      margin-bottom: 32px;
       flex-wrap: wrap;
     }
 
     .blog-grid {
       grid-template-columns: 1fr;
-      gap: 32px;
+      gap: 24px;
     }
   }
 }

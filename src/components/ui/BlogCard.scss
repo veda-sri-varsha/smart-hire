@@ -22,4 +22,24 @@
     text-decoration: none;
     font-weight: 500;
   }
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    
+    .date {
+        font-size: 12px;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    a {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
 }

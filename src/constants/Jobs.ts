@@ -1,4 +1,4 @@
-export interface Job {
+export type Job = {
 	id: number;
 	title: string;
 	type: "Full-time" | "Part-time" | "Contract" | "Internship";
@@ -9,7 +9,7 @@ export interface Job {
 	description: string;
 	postedAt: string;
 	tags?: string[];
-}
+};
 
 export const jobsData: Job[] = [
 	{

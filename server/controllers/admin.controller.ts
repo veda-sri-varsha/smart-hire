@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import ApiResponse from "../utils/api-response";
 import logger from "../utils/logger";
+import { toPaginatedResponse } from "../utils/pagination";
 
 export const getDashboardStats = async (_req: Request, res: Response) => {
 	try {
@@ -200,15 +201,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 		res.json({
 			success: true,
-			data: {
-				users,
-				pagination: {
-					total,
-					page,
-					limit,
-					totalPages: Math.ceil(total / limit),
-				},
-			},
+			data: toPaginatedResponse(users, total, page, limit),
 		});
 	} catch (error) {
 		logger.error("Error fetching users", { error });
@@ -253,15 +246,7 @@ export const getAllJobs = async (req: Request, res: Response) => {
 
 		res.json({
 			success: true,
-			data: {
-				jobs,
-				pagination: {
-					total,
-					page,
-					limit,
-					totalPages: Math.ceil(total / limit),
-				},
-			},
+			data: toPaginatedResponse(jobs, total, page, limit),
 		});
 	} catch (error: any) {
 		logger.error("Error fetching jobs", {

@@ -45,7 +45,7 @@ export default function AdminJobs() {
 				);
 			}
 
-			setJobs(response.data.jobs);
+			setJobs(response.data.data);
 			setPagination(response.data.pagination);
 		} catch (err) {
 			console.error("Error fetching jobs:", err);
@@ -74,7 +74,7 @@ export default function AdminJobs() {
 		}
 	};
 
-	const formatDate = (date: string) => new Date(date).toLocaleDateString();
+	const formatDate = (date: string | Date) => new Date(date).toLocaleDateString();
 
 	if (loading) {
 		return <div className={styles.loading}>Loading jobs...</div>;

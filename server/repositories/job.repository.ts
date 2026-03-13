@@ -6,23 +6,14 @@ import {
 import { prisma } from "../lib/prisma";
 import type { JobFilterQuery } from "../types/job.types";
 import logger from "../utils/logger";
+import { JOB_INCLUDE, JOB_MINIMAL_INCLUDE } from "../constants/prisma-includes";
 
 export const jobRepository = {
 	create: async (data: Prisma.JobCreateInput) => {
 		logger.info("Creating new job");
 		return prisma.job.create({
 			data,
-			include: {
-				company: {
-					select: {
-						id: true,
-						name: true,
-						companyName: true,
-						profilePicture: true,
-					},
-				},
-				_count: { select: { applications: true } },
-			},
+			include: JOB_MINIMAL_INCLUDE,
 		});
 	},
 
@@ -30,19 +21,7 @@ export const jobRepository = {
 		logger.info(`Fetching job by id ${id}`);
 		return prisma.job.findUnique({
 			where: { id },
-			include: {
-				company: {
-					select: {
-						id: true,
-						name: true,
-						companyName: true,
-						profilePicture: true,
-						email: true,
-						companyWebsite: true,
-					},
-				},
-				_count: { select: { applications: true } },
-			},
+			include: JOB_INCLUDE,
 		});
 	},
 
@@ -109,23 +88,13 @@ export const jobRepository = {
 				skip,
 				take: limit,
 				orderBy: { createdAt: "desc" },
-				include: {
-					company: {
-						select: {
-							id: true,
-							name: true,
-							companyName: true,
-							profilePicture: true,
-						},
-					},
-					_count: { select: { applications: true } },
-				},
+				include: JOB_MINIMAL_INCLUDE,
 			}),
 			prisma.job.count({ where }),
 		]);
 
 		return {
-			jobs,
+			data: jobs,
 			total,
 			page,
 			limit,
@@ -138,17 +107,7 @@ export const jobRepository = {
 		return prisma.job.update({
 			where: { id },
 			data,
-			include: {
-				company: {
-					select: {
-						id: true,
-						name: true,
-						companyName: true,
-						profilePicture: true,
-					},
-				},
-				_count: { select: { applications: true } },
-			},
+			include: JOB_MINIMAL_INCLUDE,
 		});
 	},
 
@@ -156,17 +115,7 @@ export const jobRepository = {
 		return prisma.job.update({
 			where: { id },
 			data: { status },
-			include: {
-				company: {
-					select: {
-						id: true,
-						name: true,
-						companyName: true,
-						profilePicture: true,
-					},
-				},
-				_count: { select: { applications: true } },
-			},
+			include: JOB_MINIMAL_INCLUDE,
 		});
 	},
 
@@ -192,23 +141,13 @@ export const jobRepository = {
 				skip,
 				take: limit,
 				orderBy: { createdAt: "desc" },
-				include: {
-					company: {
-						select: {
-							id: true,
-							name: true,
-							companyName: true,
-							profilePicture: true,
-						},
-					},
-					_count: { select: { applications: true } },
-				},
+				include: JOB_MINIMAL_INCLUDE,
 			}),
 			prisma.job.count({ where: { companyId } }),
 		]);
 
 		return {
-			jobs,
+			data: jobs,
 			total,
 			page,
 			limit,
@@ -221,17 +160,7 @@ export const jobRepository = {
 			where: { status: JobStatus.OPEN },
 			take: limit,
 			orderBy: { createdAt: "desc" },
-			include: {
-				company: {
-					select: {
-						id: true,
-						name: true,
-						companyName: true,
-						profilePicture: true,
-					},
-				},
-				_count: { select: { applications: true } },
-			},
+			include: JOB_MINIMAL_INCLUDE,
 		});
 	},
 };

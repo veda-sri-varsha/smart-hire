@@ -58,18 +58,24 @@ export default function Hero() {
 					<div className={styles.stats}>
 						<div>
 							<CompanyIcon />
-							<span>25,850</span>
-							<p>Jobs</p>
+							<div className={styles.statText}>
+								<span>25,850</span>
+								<p>Jobs</p>
+							</div>
 						</div>
 						<div>
 							<UserIcon />
-							<span>10,250</span>
-							<p>Candidates</p>
+							<div className={styles.statText}>
+								<span>10,250</span>
+								<p>Candidates</p>
+							</div>
 						</div>
 						<div>
 							<CompaniesIcon />
-							<span>18,400</span>
-							<p>Companies</p>
+							<div className={styles.statText}>
+								<span>18,400</span>
+								<p>Companies</p>
+							</div>
 						</div>
 					</div>
 				</div>

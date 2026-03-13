@@ -5,9 +5,9 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import styles from "./AuthCard.module.scss";
 
-interface AuthCardProps {
+type AuthCardProps = {
 	initialMode?: "login" | "register";
-}
+};
 
 export default function AuthCard({ initialMode = "login" }: AuthCardProps) {
 	const [mode, setMode] = useState<"login" | "register">(initialMode);
@@ -50,7 +50,7 @@ export default function AuthCard({ initialMode = "login" }: AuthCardProps) {
 			navigate({ to: "/" });
 		} catch (err) {
 			console.error("Auth error:", err);
-			const message = "Authentication failed. Please check your credentials.";
+			const message = "Authentication failed. Invaild credentials.";
 			setError(message);
 		} finally {
 			setLoading(false);

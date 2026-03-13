@@ -11,10 +11,10 @@ import type { Role } from "../types/auth.types";
 import CustomError from "../utils/customError";
 import logger from "../utils/logger";
 
-interface ClientInfo {
+type ClientInfo = {
 	ip?: string;
 	userAgent?: string;
-}
+};
 
 const generateOtp = (): string => {
 	return Math.floor(100000 + Math.random() * 900000).toString();

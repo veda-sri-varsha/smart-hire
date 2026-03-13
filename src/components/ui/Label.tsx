@@ -1,9 +1,9 @@
 import styles from "./Label.module.scss";
 
-interface LabelProps {
+type LabelProps = {
 	htmlFor?: string;
 	children: React.ReactNode;
-}
+};
 
 export default function Label({ htmlFor, children }: LabelProps) {
 	return (

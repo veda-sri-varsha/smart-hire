@@ -3,12 +3,12 @@ import Button from "../ui/Button";
 import Textarea from "../ui/Textarea";
 import styles from "./ApplyModal.module.scss";
 
-interface ApplyModalProps {
+type ApplyModalProps = {
 	jobTitle: string;
 	isOpen: boolean;
 	onClose: () => void;
 	onSubmit: (data: { resumeFile: File; coverLetter?: string }) => Promise<void>;
-}
+};
 
 export default function ApplyModal({
 	jobTitle,

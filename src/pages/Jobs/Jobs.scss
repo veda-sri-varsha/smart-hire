@@ -3,10 +3,10 @@
     background-color: #000;
     color: #fff;
     text-align: center;
-    padding: 80px 20px;
+    padding: 60px 20px;
     max-width: 100%;
     box-sizing: border-box;
-    width: 100vw;
+    width: 100%;
 
     .jobs-page__title {
       font-size: 2.5rem;
@@ -35,6 +35,10 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+  }
+
+  .mobile-filter-toggle {
+    display: none;
   }
 
   .error-message {
@@ -142,8 +146,50 @@
         }
       }
     }
+  }
 
-    @media (max-width: 768px) {
+  @media (max-width: 768px) {
+    &__header {
+      padding: 40px 20px;
+      .jobs-page__title {
+        font-size: 2rem;
+      }
+    }
+
+    &__content {
+      margin: 1.5rem auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mobile-filter-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      background-color: #00bfa5;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 12px;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+
+      .icon {
+        font-size: 1.2rem;
+      }
+    }
+
+    .jobs-page__sidebar-wrapper {
+      display: none;
+      width: 100%;
+      &.show {
+        display: block;
+      }
+    }
+
+    .job-card {
       flex-direction: column;
       align-items: flex-start;
       gap: 1.5rem;
@@ -151,9 +197,7 @@
 
       &__actions {
         width: 100%;
-
-        .apply-btn,
-        .view-btn {
+        .apply-btn, .view-btn {
           width: 100%;
         }
       }
@@ -195,7 +239,8 @@
     padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    width: 260px;
+    width: 100%;
+    max-width: 260px;
     text-align: center;
     transition: transform 0.2s;
     border: 1px solid #e2e8f0;
@@ -234,6 +279,19 @@
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    margin-top: 4rem;
+    padding: 3rem 1rem;
+    
+    &__title {
+      font-size: 1.75rem;
+    }
+
+    .company-card {
+      max-width: 100%;
     }
   }
 }

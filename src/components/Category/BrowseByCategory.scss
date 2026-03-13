@@ -27,20 +27,38 @@
 
 @media (max-width: 1024px) {
   .browse-category {
-    padding: 60px 24px;
-  }
+    padding: 80px 24px;
 
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 }
 
 @media (max-width: 640px) {
   .browse-category {
-    padding: 40px 16px;
-  }
+    padding: 60px 20px;
+    background: #f0fdfc; // Cleaner light mint
 
-  .grid {
-    grid-template-columns: 1fr;
+    h2 {
+      font-size: 1.85rem; // Slightly smaller to avoid being overwhelming
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      margin-bottom: 40px;
+      opacity: 0.8;
+      line-height: 1.5;
+      padding: 0 10px;
+    }
+
+    .grid {
+      grid-template-columns: 1fr; // Single column
+      gap: 20px;
+      padding: 0;
+    }
   }
 }

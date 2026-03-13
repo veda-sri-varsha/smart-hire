@@ -3,12 +3,12 @@ import * as jwtService from "../services/jwt.service";
 import ApiResponse from "../utils/api-response";
 import logger from "../utils/logger";
 
-export interface AuthRequest extends Request {
+export type AuthRequest = Request & {
 	user?: {
 		id: string;
 		role: "ADMIN" | "HR" | "USER" | "COMPANY";
 	};
-}
+};
 
 export const authMiddleware = async (
 	req: AuthRequest,

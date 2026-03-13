@@ -49,4 +49,37 @@
       color: #fff;
     }
   }
+
+  @media (max-width: 640px) {
+    border-radius: 32px; // Match image
+    padding: 48px 32px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+
+    .icon-wrapper {
+      background: none;
+      width: auto;
+      height: auto;
+      margin-bottom: 32px;
+      
+      svg {
+        width: 48px;
+        height: 48px;
+        stroke-width: 1.5px;
+      }
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      letter-spacing: -0.5px;
+    }
+
+    span {
+      font-size: 14px;
+      padding: 8px 20px;
+      border-radius: 12px; // Rectangular pill look
+      font-weight: 600;
+    }
+  }
 }

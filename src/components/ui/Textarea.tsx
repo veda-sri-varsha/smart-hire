@@ -1,11 +1,11 @@
 import type { TextareaHTMLAttributes } from "react";
 import styles from "./Textarea.module.scss";
 
-interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
 	label?: string;
 	error?: string;
 	fullWidth?: boolean;
-}
+};
 
 export default function Textarea({
 	label,
