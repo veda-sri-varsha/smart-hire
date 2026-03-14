@@ -71,7 +71,7 @@
 
 // Raw input/select inside the search box — fill the wrapper div
 .searchBox input,
-.searchBox .custom-select {
+.searchBox :global(.custom-select) {
   flex: 1;
   width: 100%;
   height: 100%;
@@ -231,11 +231,14 @@
     flex-direction: column;
     height: auto;
     border-radius: 32px; // Match image
-    padding: 1.5rem; // Reduced from 2.5rem for better space usage
-    gap: 0.5rem; // Add explicit gap between wrappers
+    padding: 1.5rem;
+    padding-bottom: 2rem; // Extra space for the button shadow/bottom
+    gap: 0.5rem;
     background: #ffffff;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     max-width: 100%;
+    position: relative;
+    z-index: 10;
 
     > div {
       flex: none;
@@ -243,6 +246,7 @@
       width: 100%;
       border-right: none;
       border-bottom: 1.5px solid #e5e7eb;
+      position: relative; // Establish stacking context for dropdowns
       
       &:last-of-type {
         border-bottom: none;
@@ -250,18 +254,17 @@
     }
 
     input,
-    .custom-select {
+    :global(.custom-select) {
       width: 100%;
       background: transparent;
       height: 3.5rem;
       border: none;
-      // border-bottom: 1.5px solid #bdc3c7; // Moved to parent wrapper for consistency
       border-radius: 0;
       padding: 0;
       font-size: 1rem;
       color: #2c3e50;
       font-weight: 500;
-      margin-bottom: 0; // Handled by gap/border on wrapper
+      margin-bottom: 0;
 
       &::placeholder {
         color: #7f8c8d;
@@ -272,9 +275,11 @@
       }
     }
 
-    .custom-select {
+    :global(.custom-select) {
+      z-index: 20; // Ensure it's above other inputs when open
+      
       span:last-child {
-        margin-right: -0.5rem; // fine tune icon alignment
+        margin-right: -0.5rem;
       }
     }
 
@@ -291,6 +296,8 @@
       gap: 0.75rem;
       color: #ffffff;
       font-weight: 700;
+      position: relative;
+      z-index: 1; // Keep button below open dropdowns
     }
   }
 
