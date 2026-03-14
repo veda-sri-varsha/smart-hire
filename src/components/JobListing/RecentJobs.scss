@@ -92,25 +92,20 @@
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      list-style: none;
       padding: 0;
       margin: 0;
-      margin-top: 0.5rem;
+      margin-top: 1rem; // Add a bit more spacing from description
 
-      li {
-        font-size: 0.9rem;
-        color: #475569;
+      .meta-item {
+        font-size: 0.95rem;
+        color: #64748b;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        font-weight: 500;
 
-        &::before {
-          content: "•";
-          color: #cbd5e1;
-        }
-
-        &:first-child::before {
-          display: none;
+        svg {
+          color: #00bfa5; // Match Hero teal
         }
       }
     }
@@ -126,11 +121,97 @@
       cursor: pointer;
       white-space: nowrap;
       height: fit-content;
-
       &:hover {
         background: #0891b2;
       }
     }
+  }
+}
+
+.recent-jobs {
+  .job-skeleton-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid transparent;
+    margin-bottom: 1.5rem;
+
+    .skeleton-time {
+      width: 80px;
+      height: 1.25rem;
+      background: #f1f5f9;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    .job-skeleton-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+
+      @media (max-width: 640px) {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    .skeleton-info {
+      flex: 1;
+
+      .skeleton-title {
+        width: 60%;
+        height: 1.25rem;
+        background: #f1f5f9;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        animation: pulse 1.5s infinite;
+      }
+
+      .skeleton-subtitle {
+        width: 40%;
+        height: 0.9rem;
+        background: #f1f5f9;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        animation: pulse 1.5s infinite;
+      }
+
+      .skeleton-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        div {
+          width: 80px;
+          height: 0.9rem;
+          background: #f1f5f9;
+          border-radius: 4px;
+          animation: pulse 1.5s infinite;
+        }
+      }
+    }
+
+    .skeleton-button {
+      width: 120px;
+      height: 2.5rem;
+      background: #f1f5f9;
+      border-radius: 8px;
+      animation: pulse 1.5s infinite;
+
+      @media (max-width: 640px) {
+        width: 100%;
+        margin-top: 1rem;
+      }
+    }
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
   }
 }
 
@@ -151,30 +232,36 @@
       }
 
       .view-all {
-        align-self: center;
+        display: none;
       }
     }
 
     .job-card {
-      padding: 1.25rem;
+      padding: 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      border-bottom: 8px solid #f8fafc; // Adds standard mobile separating margin if list
+
+      .time {
+        display: none; // Match screenshot (no extra time badge)
+      }
 
       .job-main {
         flex-direction: column;
         align-items: stretch;
-        gap: 1.25rem;
+        gap: 1.5rem;
       }
 
       .job-btn {
         width: 100%;
+        padding: 1rem;
       }
 
       .meta {
-        flex-direction: column;
-        gap: 0.5rem;
-
-        li::before {
-          display: none;
-        }
+        flex-direction: column; // Stack icons vertically
+        gap: 1.1rem; // Figma has generous spacing
       }
     }
   }

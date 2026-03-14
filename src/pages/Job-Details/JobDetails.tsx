@@ -115,7 +115,65 @@ export default function JobDetails() {
 		}
 	};
 
-	if (isLoading) return <div className={styles.container}>Loading...</div>;
+	if (isLoading) {
+		return (
+			<div className={`${styles.container} ${styles.skeletonPage}`}>
+				<div className={styles.skeletonBanner}></div>
+				<div className={styles.mainWrapper}>
+					<div className={styles.leftColumn}>
+						<div className={styles.skeletonCard}>
+							<div className={styles.skeletonTop}>
+								<div className={styles.skeletonBadge}></div>
+								<div className={styles.skeletonCircle}></div>
+							</div>
+							<div className={styles.skeletonCompany}>
+								<div className={styles.skeletonLogo}></div>
+								<div className={styles.skeletonTextGroup}>
+									<div className={styles.skeletonTitle}></div>
+									<div className={styles.skeletonSubtitle}></div>
+								</div>
+							</div>
+							<div className={styles.skeletonMeta}>
+								<div />
+								<div />
+								<div />
+								<div />
+							</div>
+						</div>
+						<div className={styles.skeletonCard}>
+							<div className={styles.skeletonSectionTitle}></div>
+							<div className={styles.skeletonDescription}>
+								<div />
+								<div />
+								<div />
+								<div />
+								<div />
+							</div>
+						</div>
+					</div>
+					<div className={styles.rightColumn}>
+						<div className={styles.skeletonCard}>
+							<div className={styles.skeletonButton}></div>
+							<div
+								className={[styles.skeletonCard, styles.skeletonOverview].join(
+									" ",
+								)}
+							>
+								<div className={styles.skeletonSectionTitle}></div>
+								<div className={styles.skeletonOverviewItems}>
+									<div />
+									<div />
+									<div />
+									<div />
+									<div />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 	if (isError || !job)
 		return <div className={styles.container}>Job not found.</div>;
 
@@ -229,10 +287,7 @@ export default function JobDetails() {
 								<ul className={styles.checkList}>
 									{skillsList.map((skill) => (
 										<li key={skill}>
-											<CheckCircle2
-												size={18}
-												className={styles.checkIcon}
-											/>
+											<CheckCircle2 size={18} className={styles.checkIcon} />
 											{skill}
 										</li>
 									))}
@@ -450,30 +505,20 @@ export default function JobDetails() {
 										</Button>
 									</div>
 								</div>
-								<div
-									className={`${styles.metaInfo} ${styles.relatedJobMeta}`}
-								>
-									<div
-										className={`${styles.metaItem} ${styles.metaItemSmall}`}
-									>
+								<div className={`${styles.metaInfo} ${styles.relatedJobMeta}`}>
+									<div className={`${styles.metaItem} ${styles.metaItemSmall}`}>
 										<Briefcase size={16} /> {rCategory}
 									</div>
-									<div
-										className={`${styles.metaItem} ${styles.metaItemSmall}`}
-									>
+									<div className={`${styles.metaItem} ${styles.metaItemSmall}`}>
 										<Clock size={16} /> {formatJobType(rJob.jobType)}
 									</div>
-									<div
-										className={`${styles.metaItem} ${styles.metaItemSmall}`}
-									>
+									<div className={`${styles.metaItem} ${styles.metaItemSmall}`}>
 										<DollarSign size={16} />
 										{rJob.salaryMin != null && rJob.salaryMax != null
 											? ` $${rJob.salaryMin.toLocaleString()} – $${rJob.salaryMax.toLocaleString()}`
 											: " Not specified"}
 									</div>
-									<div
-										className={`${styles.metaItem} ${styles.metaItemSmall}`}
-									>
+									<div className={`${styles.metaItem} ${styles.metaItemSmall}`}>
 										<MapPin size={16} /> {rJob.location}
 									</div>
 								</div>

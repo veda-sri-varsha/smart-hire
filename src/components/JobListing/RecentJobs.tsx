@@ -1,19 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import "./RecentJobs.scss";
+import { Briefcase, Clock, MapPin, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getJobs } from "@/api/jobs";
 import type { JobResponse } from "../../../server/types/job.types";
 
 export default function RecentJobs() {
 	const [jobs, setJobs] = useState<JobResponse[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		const fetchRecent = async () => {
+			setIsLoading(true);
 			try {
 				const res = await getJobs({ limit: 4 });
 				setJobs(res.data.slice(0, 4));
 			} catch (error) {
 				console.error("Failed to fetch recent jobs", error);
+			} finally {
+				setIsLoading(false);
 			}
 		};
 		fetchRecent();
@@ -46,12 +51,26 @@ export default function RecentJobs() {
 									<h3>{job.title}</h3>
 									<p>{job.company.companyName || job.company.name}</p>
 
-									<ul className="meta">
-										<li>{job.jobType.replace("_", " ")}</li>
-										<li>${job.salaryMin}/yr</li>{" "}
-										{/* Assuming annual for demo, matches Figma often */}
-										<li>{job.location}</li>
-									</ul>
+									<div className="meta">
+										<div className="meta-item">
+											<Briefcase size={18} />
+											<span>{job.jobType.replace("_", " ")}</span>
+										</div>
+										<div className="meta-item">
+											<Clock size={18} />
+											<span>Full time</span>
+										</div>
+										<div className="meta-item">
+											<Wallet size={18} />
+											<span>
+												${job.salaryMin}-${job.salaryMax}
+											</span>
+										</div>
+										<div className="meta-item">
+											<MapPin size={18} />
+											<span>{job.location}</span>
+										</div>
+									</div>
 								</div>
 
 								<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
@@ -62,8 +81,30 @@ export default function RecentJobs() {
 							</div>
 						</div>
 					))}
-					{jobs.length === 0 && (
-						<p className="no-jobs">Loading recent opportunities...</p>
+					{isLoading && (
+						<>
+							{Array.from({ length: 4 }).map((_, i) => (
+								<div key={i} className="job-skeleton-card">
+									<div className="skeleton-time" />
+									<div className="job-skeleton-main">
+										<div className="skeleton-info">
+											<div className="skeleton-title" />
+											<div className="skeleton-subtitle" />
+											<div className="skeleton-meta">
+												<div />
+												<div />
+												<div />
+												<div />
+											</div>
+										</div>
+										<div className="skeleton-button" />
+									</div>
+								</div>
+							))}
+						</>
+					)}
+					{!isLoading && jobs.length === 0 && (
+						<p className="no-jobs">No recent opportunities found.</p>
 					)}
 				</div>
 			</div>

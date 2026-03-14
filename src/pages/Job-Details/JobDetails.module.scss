@@ -467,3 +467,148 @@
 		gap: 0.4rem;
 	}
 }
+@keyframes pulse {
+	0% { opacity: 0.6; }
+	50% { opacity: 1; }
+	100% { opacity: 0.6; }
+}
+
+.skeletonPage {
+	.skeletonBanner {
+		height: 280px;
+		background: #111827;
+		width: 100%;
+		animation: pulse 1.5s infinite;
+	}
+
+	.skeletonCard {
+		background: #fff;
+		border-radius: 20px;
+		padding: 2.5rem;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+		margin-bottom: 2rem;
+
+		&.skeletonOverview {
+			background: #f0fdfa;
+			padding: 2rem;
+		}
+	}
+
+	.skeletonTop {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+
+		.skeletonBadge {
+			width: 100px;
+			height: 1.5rem;
+			background: #f1f5f9;
+			border-radius: 8px;
+			animation: pulse 1.5s infinite;
+		}
+
+		.skeletonCircle {
+			width: 32px;
+			height: 32px;
+			background: #f1f5f9;
+			border-radius: 50%;
+			animation: pulse 1.5s infinite;
+		}
+	}
+
+	.skeletonCompany {
+		display: flex;
+		gap: 1.5rem;
+		align-items: center;
+		margin-bottom: 2rem;
+
+		.skeletonLogo {
+			width: 64px;
+			height: 64px;
+			background: #f1f5f9;
+			border-radius: 12px;
+			animation: pulse 1.5s infinite;
+		}
+
+		.skeletonTextGroup {
+			flex: 1;
+			.skeletonTitle {
+				width: 60%;
+				height: 2rem;
+				background: #f1f5f9;
+				margin-bottom: 0.5rem;
+				border-radius: 8px;
+				animation: pulse 1.5s infinite;
+			}
+			.skeletonSubtitle {
+				width: 30%;
+				height: 1.1rem;
+				background: #f1f5f9;
+				border-radius: 6px;
+				animation: pulse 1.5s infinite;
+			}
+		}
+	}
+
+	.skeletonMeta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem 2.5rem;
+
+		div {
+			width: 120px;
+			height: 1.25rem;
+			background: #f1f5f9;
+			border-radius: 6px;
+			animation: pulse 1.5s infinite;
+		}
+	}
+
+	.skeletonSectionTitle {
+		width: 40%;
+		height: 1.5rem;
+		background: #f1f5f9;
+		margin-bottom: 1.5rem;
+		border-radius: 8px;
+		animation: pulse 1.5s infinite;
+	}
+
+	.skeletonDescription {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+
+		div {
+			width: 100%;
+			height: 1rem;
+			background: #f1f5f9;
+			border-radius: 4px;
+			animation: pulse 1.5s infinite;
+
+			&:last-child { width: 70%; }
+		}
+	}
+
+	.skeletonButton {
+		width: 100%;
+		height: 3.5rem;
+		background: #f1f5f9;
+		border-radius: 12px;
+		margin-bottom: 2rem;
+		animation: pulse 1.5s infinite;
+	}
+
+	.skeletonOverviewItems {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+
+		div {
+			width: 80%;
+			height: 2.5rem;
+			background: #e6fafa;
+			border-radius: 8px;
+			animation: pulse 1.5s infinite;
+		}
+	}
+}

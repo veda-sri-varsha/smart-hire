@@ -135,6 +135,30 @@
       transform: translateY(-2px);
     }
 
+    /* Hide Mobile only elements on Desktop */
+    &__mobile-top,
+    &__mobile-company,
+    .mobile-meta,
+    .mobile-actions {
+      display: none;
+    }
+
+    &__logo {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    &__info-wrapper {
+      flex: 1;
+      display: flex;
+      gap: 1.5rem;
+    }
+
     &__info {
       flex: 1;
     }
@@ -146,7 +170,7 @@
       margin: 0 0 0.5rem 0;
     }
 
-    &__meta {
+    .desktop-meta {
       display: flex;
       gap: 0.5rem;
       color: #64748b;
@@ -160,7 +184,7 @@
       }
     }
 
-    &__tags {
+    .desktop-tags {
       display: flex;
       gap: 0.5rem;
       margin-top: 1rem;
@@ -179,47 +203,134 @@
       gap: 1rem;
       align-items: center;
 
-      .view-btn {
-        background: transparent;
-        color: #0aa89e;
-        border: 1px solid #0aa89e;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
+      .desktop-actions {
+        display: flex;
+        gap: 1rem;
+
+        .view-btn {
+          background: transparent;
+          color: #0aa89e;
+          border: 1px solid #0aa89e;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .apply-btn {
+          background-color: #0aa89e;
+          color: #fff;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 600;
+          white-space: nowrap;
+          cursor: pointer;
+          transition: background 0.2s;
+
+          &:hover:not(:disabled) {
+            background-color: #089188;
+          }
+
+          &.applied {
+            background-color: #6ee7b7;
+            color: #065f46;
+            cursor: default;
+          }
+
+          &:disabled {
+            opacity: 0.7;
+            cursor: default;
+          }
+        }
+      }
+    }
+
+    .job-skeleton-card {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #fff;
+      margin-bottom: 1.5rem;
+      align-items: center;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .apply-btn {
-        background-color: #0aa89e;
-        color: #fff;
-        padding: 0.75rem 1.5rem;
+      .skeleton-logo {
+        width: 56px;
+        height: 56px;
         border-radius: 8px;
-        font-weight: 600;
-        white-space: nowrap;
-        cursor: pointer;
-        transition: background 0.2s;
+        background: #f1f5f9;
+        flex-shrink: 0;
+        animation: pulse 1.5s infinite;
+      }
 
-        &:hover:not(:disabled) {
-          background-color: #089188;
-        }
+      .skeleton-content {
+        flex: 1;
+        width: 100%;
+      }
 
-        &.applied {
-          background-color: #6ee7b7;
-          color: #065f46;
-          cursor: default;
-        }
+      .skeleton-title {
+        width: 40%;
+        height: 1.25rem;
+        background: #f1f5f9;
+        margin-bottom: 0.75rem;
+        border-radius: 6px;
+        animation: pulse 1.5s infinite;
+      }
 
-        &:disabled {
-          opacity: 0.7;
-          cursor: default;
+      .skeleton-company {
+        width: 25%;
+        height: 0.95rem;
+        background: #f1f5f9;
+        margin-bottom: 1rem;
+        border-radius: 6px;
+        animation: pulse 1.5s infinite;
+      }
+
+      .skeleton-meta {
+        display: flex;
+        gap: 1.5rem;
+        width: 100%;
+
+        div {
+          width: 80px;
+          height: 0.9rem;
+          background: #f1f5f9;
+          border-radius: 4px;
+          animation: pulse 1.5s infinite;
         }
       }
+
+      .skeleton-button {
+        width: 120px;
+        height: 2.5rem;
+        background: #f1f5f9;
+        border-radius: 8px;
+        animation: pulse 1.5s infinite;
+
+        @media (max-width: 768px) {
+          width: 100%;
+          margin-top: 1rem;
+        }
+      }
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
     }
   }
 
   @media (max-width: 768px) {
     &__header {
       padding: 40px 20px;
+
       .jobs-page__title {
         font-size: 2rem;
       }
@@ -229,6 +340,38 @@
       margin: 1.5rem auto;
       display: flex;
       flex-direction: column;
+    }
+
+    &__controls {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: none;
+      padding-bottom: 0;
+
+      .mobile-showing-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .jobs-page__sort {
+        gap: 0.5rem;
+
+        label {
+          display: none;
+        }
+
+        select {
+          font-size: 0.85rem;
+          padding: 0.35rem 1.5rem 0.35rem 0.75rem;
+          border: 1px solid #cbd5e1;
+          color: #475569;
+        }
+      }
     }
 
     .mobile-filter-toggle {
@@ -253,6 +396,7 @@
     .jobs-page__sidebar-wrapper {
       display: none;
       width: 100%;
+
       &.show {
         display: block;
       }
@@ -263,11 +407,102 @@
       align-items: flex-start;
       gap: 1.5rem;
       padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 1rem; // Replace gap behavior to ensure visual separation
+
+      /* Hide Desktop Elements */
+      .desktop-meta,
+      .desktop-tags,
+      .desktop-actions {
+        display: none;
+      }
+
+      /* Show Mobile Elements */
+      &__mobile-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 0.5rem;
+
+        .time {
+          font-size: 0.75rem;
+          color: #0ea5a4;
+          background: #e6fafa;
+          padding: 0.25rem 0.5rem;
+          border-radius: 6px;
+        }
+
+        .bookmark-icon {
+          color: #64748b;
+        }
+      }
+
+      &__logo {
+        display: block;
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-bottom: 1rem;
+      }
+
+      &__info-wrapper {
+        display: block;
+        width: 100%;
+      }
+
+      &__title {
+        font-size: 1.25rem;
+        margin: 0 0 0.25rem 0;
+        color: #0f172a;
+      }
+
+      &__mobile-company {
+        display: block;
+        color: #0f172a;
+        font-size: 0.95rem;
+        margin: 0 0 1rem 0;
+      }
+
+      .mobile-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+
+        .meta-item {
+          font-size: 0.95rem;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 500;
+
+          svg {
+            color: #00bfa5;
+          }
+        }
+      }
 
       &__actions {
         width: 100%;
-        .apply-btn, .view-btn {
+
+        .mobile-actions {
+          display: block;
           width: 100%;
+
+          .full-view-btn {
+            width: 100%;
+            background: #0ea5a4;
+            color: #ffffff;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+          }
         }
       }
     }
@@ -354,7 +589,7 @@
   @media (max-width: 768px) {
     margin-top: 4rem;
     padding: 3rem 1rem;
-    
+
     &__title {
       font-size: 1.75rem;
     }

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { Search } from "lucide-react";
 import { getCategories, getLocations } from "../../api/jobs";
 import {
 	AdobeIcon,
@@ -14,7 +15,6 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import styles from "./Hero.module.scss";
-import { Search } from "lucide-react";
 
 export default function Hero() {
 	const navigate = useNavigate();
@@ -112,10 +112,18 @@ export default function Hero() {
 			</section>
 			<section className={styles.logoStrip}>
 				<div className={styles.logoContainer}>
-					<Spotify />
-					<SlackIcon />
-					<AdobeIcon />
-					<LinearIcon />
+					<div className={styles.logoTrack}>
+						<Spotify />
+						<SlackIcon />
+						<AdobeIcon />
+						<LinearIcon />
+						<div className={styles.mobileOnlyLogos}>
+							<Spotify />
+							<SlackIcon />
+							<AdobeIcon />
+							<LinearIcon />
+						</div>
+					</div>
 				</div>
 			</section>
 		</>

@@ -60,7 +60,7 @@
   font-weight: 600;
 
   // Wrapper divs from Input/Select UI components — make them stretch
-  > div {
+  >div {
     flex: 1;
     height: 100%;
     display: block; // changed from flex to allow inner elements full height
@@ -85,7 +85,7 @@
   color: #374151;
   font-weight: 500;
   margin: 0; // reset
-  
+
   &:focus,
   &.open {
     box-shadow: none;
@@ -93,12 +93,13 @@
   }
 }
 
-.searchBox > div:first-child input {
+.searchBox>div:first-child input {
   border-radius: 1rem 0 0 1rem;
 }
 
 .searchBox .custom-select {
   cursor: pointer;
+
   // override icon spacing locally
   span:last-child {
     color: #7f8c8d;
@@ -136,6 +137,7 @@
   display: flex;
   justify-content: center;
   gap: 3rem;
+  
 
   div {
     display: flex;
@@ -174,11 +176,23 @@
   padding: 0 1rem;
 }
 
-.logo {
-  height: 26px;
-  width: auto;
-  opacity: 0.95;
-  filter: brightness(0) invert(1);
+// On desktop, the track behaves like the old container
+.logoTrack {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  svg {
+    height: 26px;
+    width: auto;
+    opacity: 0.95;
+    filter: brightness(0) invert(1);
+  }
+}
+
+.mobileOnlyLogos {
+  display: none; // hidden on desktop
 }
 
 
@@ -279,6 +293,7 @@
     padding-bottom: 2rem;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    display: none;
 
     &::-webkit-scrollbar {
       display: none;
@@ -330,15 +345,37 @@
   }
 
   .logoContainer {
+    padding: 0; // Let the track scroll to edges
+    margin: 0;
+    width: 100%;
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-    opacity: 0.7;
-    filter: brightness(0) invert(1);
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  .logoTrack {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3rem;
+    padding: 0 1rem;
+    width: max-content;
+    animation: scrollLogos 20s linear infinite;
 
     svg {
       height: 20px;
+      opacity: 0.7;
+      filter: brightness(0) invert(1);
+      flex-shrink: 0;
     }
   }
+
+  .mobileOnlyLogos {
+    display: contents; // Treat duplicates as siblings in the track
+  }
+}
+
+@keyframes scrollLogos {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }

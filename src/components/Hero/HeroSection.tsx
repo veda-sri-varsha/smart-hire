@@ -1,3 +1,4 @@
+import Button from "../ui/Button";
 import "./HeroSection.scss";
 
 const HeroSection = () => {
@@ -5,23 +6,28 @@ const HeroSection = () => {
 		<section className="hero">
 			{/* Top Content */}
 			<div className="hero-top">
-				<h1>
-					Good Life Begins With <br />A Good Company
-				</h1>
+				<div className="hero-top-content">
+					<h1>
+						Good Life Begins With <br />A Good Company
+					</h1>
 
-				<p>
-					Lorem ipsum dolor sit amet consectetur. Nulla ipsum cursus augue
-					gravida erat nisi. Nisl mauris viverra et arcu.
-				</p>
+					<p>
+						Ultricies purus dolor viverra mi laoreet at cursus justo. Ultricies
+						purus diam egestas amet faucibus tempor blandit. Elit velit mauris
+						aliquam est diam. Leo sagittis consectetur diam morbi erat aenean.
+						Vulputate praesent congue faucibus in euismod feugiat euismod
+						volutpat...
+					</p>
 
-				<div className="hero-buttons">
-					<button type="button" className="primary">
-						Search Job
-					</button>
+					<div className="hero-buttons">
+						<Button type="button" variant="primary">
+							Search Job
+						</Button>
 
-					<button type="button" className="secondary">
-						Learn more
-					</button>
+						<Button type="button" variant="ghost" className="learn-more">
+							Learn more
+						</Button>
+					</div>
 				</div>
 			</div>
 
@@ -29,26 +35,45 @@ const HeroSection = () => {
 			<div className="hero-stats">
 				<div>
 					<h3>12k+</h3>
-					<p>Clients worldwide</p>
+					<h4>Clients worldwide</h4>
+					<p>
+						At eu lobortis pretium tincidunt amet lacus ut aenean aliquet.
+						Blandit a massa elementum...
+					</p>
 				</div>
 				<div>
 					<h3>20k+</h3>
-					<p>Active resume</p>
+					<h4>Active resume</h4>
+					<p>
+						At eu lobortis pretium tincidunt amet lacus ut aenean aliquet.
+						Blandit a massa elementum...
+					</p>
 				</div>
 				<div>
 					<h3>18k+</h3>
-					<p>Companies</p>
+					<h4>Compnies</h4>
+					<p>
+						At eu lobortis pretium tincidunt amet lacus ut aenean aliquet.
+						Blandit a massa elementum...
+					</p>
 				</div>
 			</div>
 
 			{/* CTA Card */}
 			<div className="hero-cta">
-				<h2>Create A Better Future For Yourself</h2>
-				<p>
-					Lorem ipsum dolor sit amet consectetur. Nulla ipsum cursus augue
-					gravida erat nisi.
-				</p>
-				<button type="button">Search Job</button>
+				<div className="cta-content">
+					<h2>
+						Create A Better <br />
+						Future For Yourself
+					</h2>
+					<p>
+						At eu lobortis pretium tincidunt amet lacus ut aenean aliquet.
+						Blandit a massa elementum id scelerisque rhoncus...
+					</p>
+					<Button type="button" variant="primary">
+						Search Job
+					</Button>
+				</div>
 			</div>
 		</section>
 	);

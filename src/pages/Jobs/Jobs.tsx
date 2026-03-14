@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { Bookmark, Briefcase, Clock, MapPin, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { applyToJob } from "@/api/applications";
@@ -114,7 +115,6 @@ const Jobs = () => {
 					onClick={() => setShowFilters(!showFilters)}
 				>
 					<span>Filters</span>
-					<span className="icon">⚙️</span>
 				</Button>
 
 				<div
@@ -125,7 +125,9 @@ const Jobs = () => {
 
 				<div className="jobs-page__list">
 					<div className="jobs-page__controls">
-						<h2>Showing {jobs.length} Jobs</h2>
+						<h2 className="mobile-showing-text">
+							Showing 1-{jobs.length} of {jobs.length}results
+						</h2>
 						<div className="jobs-page__sort">
 							<label htmlFor="sort">Sort by:</label>
 							<Select
@@ -152,8 +154,26 @@ const Jobs = () => {
 							/>
 						</div>
 					</div>
-
-					{isLoading && <p>Loading jobs...</p>}
+					{isLoading && (
+						<div className="job-skeleton-list">
+							{Array.from({ length: 5 }).map((_, i) => (
+								<div key={i} className="job-skeleton-card">
+									<div className="skeleton-logo"></div>
+									<div className="skeleton-content">
+										<div className="skeleton-title"></div>
+										<div className="skeleton-company"></div>
+										<div className="skeleton-meta">
+											<div />
+											<div />
+											<div />
+											<div />
+										</div>
+									</div>
+									<div className="skeleton-button"></div>
+								</div>
+							))}
+						</div>
+					)}{" "}
 					{isError && (
 						<p className="error-message">
 							{(error as Error)?.message || "Failed to load jobs."}
@@ -173,42 +193,102 @@ const Jobs = () => {
 							</Button>
 						</div>
 					)}
-
 					{jobs.map((job: JobResponse) => (
 						<div key={job.id} className="job-card">
-							<div className="job-card__info">
-								<h2 className="job-card__title">{job.title}</h2>
-								<div className="job-card__meta">
-									<span>{job.jobType.replace("_", " ")}</span>
-									<span>•</span>
-									<span>{job.location}</span>
-									<span>•</span>
-									<span className="job-card__salary">
-										${job.salaryMin} - ${job.salaryMax}
-									</span>
-								</div>
-								<div className="job-card__tags">
-									{job.skills.split(",").map((skill: string) => (
-										<span key={skill} className="tag">
-											{skill.trim()}
+							{/* --- NEW MOBILE TOP ROW --- */}
+							<div className="job-card__mobile-top">
+								<span className="time">
+									{new Date(job.createdAt).toLocaleDateString()}
+								</span>
+								<Bookmark className="bookmark-icon" size={20} />
+							</div>
+
+							<div className="job-card__info-wrapper">
+								{/* Mobile Logo */}
+								<img
+									src={job.company?.profilePicture || "/default-logo.png"}
+									alt="logo"
+									className="job-card__logo"
+								/>
+
+								<div className="job-card__info">
+									<h2 className="job-card__title">{job.title}</h2>
+
+									{/* Mobile Company Name */}
+									<p className="job-card__mobile-company">
+										{job.company?.companyName ||
+											job.company?.name ||
+											"Company Name"}
+									</p>
+
+									{/* Desktop Meta */}
+									<div className="job-card__meta desktop-meta">
+										<span>{job.jobType.replace("_", " ")}</span>
+										<span>•</span>
+										<span>{job.location}</span>
+										<span>•</span>
+										<span className="job-card__salary">
+											${job.salaryMin} - ${job.salaryMax}
 										</span>
-									))}
+									</div>
+
+									{/* Mobile Meta */}
+									<div className="job-card__meta mobile-meta">
+										<div className="meta-item">
+											<Briefcase size={18} />
+											<span>{job.jobType.replace("_", " ")}</span>
+										</div>
+										<div className="meta-item">
+											<Clock size={18} />
+											<span>Full time</span>
+										</div>
+										<div className="meta-item">
+											<Wallet size={18} />
+											<span>
+												${job.salaryMin} - ${job.salaryMax}
+											</span>
+										</div>
+										<div className="meta-item">
+											<MapPin size={18} />
+											<span>{job.location}</span>
+										</div>
+									</div>
+
+									{/* Tags only visible on Desktop */}
+									<div className="job-card__tags desktop-tags">
+										{job.skills.split(",").map((skill: string) => (
+											<span key={skill} className="tag">
+												{skill.trim()}
+											</span>
+										))}
+									</div>
 								</div>
 							</div>
+
 							<div className="job-card__actions">
-								<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
-									<Button type="button" className="view-btn">
-										View Details
+								<div className="desktop-actions">
+									<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
+										<Button type="button" className="view-btn">
+											View Details
+										</Button>
+									</Link>
+									<Button
+										type="button"
+										className={`apply-btn ${appliedJobs.includes(job.id) ? "applied" : ""}`}
+										onClick={() => handleApplyClick(job)}
+										disabled={appliedJobs.includes(job.id)}
+									>
+										{appliedJobs.includes(job.id) ? "Applied ✓" : "Apply Now"}
 									</Button>
-								</Link>
-								<Button
-									type="button"
-									className={`apply-btn ${appliedJobs.includes(job.id) ? "applied" : ""}`}
-									onClick={() => handleApplyClick(job)}
-									disabled={appliedJobs.includes(job.id)}
-								>
-									{appliedJobs.includes(job.id) ? "Applied ✓" : "Apply Now"}
-								</Button>
+								</div>
+
+								<div className="mobile-actions">
+									<Link to="/jobs/$jobId" params={{ jobId: job.id }}>
+										<Button type="button" className="full-view-btn">
+											Job Details
+										</Button>
+									</Link>
+								</div>
 							</div>
 						</div>
 					))}

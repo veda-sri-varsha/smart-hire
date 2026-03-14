@@ -1,5 +1,5 @@
-import type { SelectHTMLAttributes, ChangeEvent } from "react";
-import { useState, useRef, useEffect } from "react";
+import type { ChangeEvent, SelectHTMLAttributes } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./Select.module.scss";
 
 type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "onChange"> & {
@@ -26,7 +26,9 @@ export default function Select({
 	...props
 }: SelectProps) {
 	const [isOpen, setIsOpen] = useState(false);
-	const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? "");
+	const [internalValue, setInternalValue] = useState(
+		value ?? defaultValue ?? "",
+	);
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -37,7 +39,10 @@ export default function Select({
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+			if (
+				containerRef.current &&
+				!containerRef.current.contains(event.target as Node)
+			) {
 				setIsOpen(false);
 			}
 		};
