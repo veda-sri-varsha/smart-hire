@@ -14,6 +14,7 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import styles from "./Hero.module.scss";
+import { Search } from "lucide-react";
 
 export default function Hero() {
 	const navigate = useNavigate();
@@ -79,6 +80,7 @@ export default function Hero() {
 							]}
 						/>
 						<Button type="submit">
+							<Search size={20} />
 							<span>Search Job</span>
 						</Button>
 					</form>
