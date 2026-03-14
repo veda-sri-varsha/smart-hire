@@ -41,23 +41,24 @@ export default function Hero() {
 		"New York, USA",
 	];
 
-	const DEFAULT_CATEGORIES = [
-		"Software Engineering",
-		"Frontend Development",
-		"Backend Development",
-		"Full Stack Development",
-		"Mobile App Development",
+	const DEFAULT_SKILLS = [
+		"React",
+		"Node.js",
+		"TypeScript",
+		"JavaScript",
+		"Python",
+		"Java",
+		"AWS",
+		"SQL",
 		"UI/UX Design",
-		"Data Science",
-		"Product Management",
-		"Digital Marketing",
+		"Project Management",
 	];
 
 	const locations = Array.from(
 		new Set([...DEFAULT_LOCATIONS, ...(locationsData || [])]),
 	);
-	const categories = Array.from(
-		new Set([...DEFAULT_CATEGORIES, ...(categoriesData || [])]),
+	const skills = Array.from(
+		new Set([...DEFAULT_SKILLS, ...(categoriesData || [])]),
 	);
 
 	return (
@@ -78,13 +79,15 @@ export default function Hero() {
 							const formData = new FormData(e.currentTarget);
 							const search = formData.get("search")?.toString();
 							const location = formData.get("location")?.toString();
-							const category = formData.get("category")?.toString();
+							const category = formData.get("skills")?.toString();
 
 							const params: Record<string, string> = {};
-							if (search) params.title = search;
-							if (location) params.location = location;
-							if (category) params.category = category;
+							if (search && search.trim()) params.title = search.trim();
+							// Only add location/skills if they are not the default empty value
+							if (location && location !== "Select Location") params.location = location;
+							if (category && category !== "Select Skill") params.skills = category;
 
+							console.log("Navigating with params:", params);
 							navigate({
 								to: "/jobs",
 								search: params,
@@ -103,12 +106,12 @@ export default function Hero() {
 							]}
 						/>
 						<Select
-							id="category-select"
-							title="Category"
-							name="category"
+							id="skills-select"
+							title="Skills"
+							name="skills"
 							options={[
-								{ value: "", label: "Select Category" },
-								...(categories?.map((cat) => ({ value: cat, label: cat })) ||
+								{ value: "", label: "Select Skill" },
+								...(skills?.map((skill) => ({ value: skill, label: skill })) ||
 									[]),
 							]}
 						/>

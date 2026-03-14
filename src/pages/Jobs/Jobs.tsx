@@ -22,7 +22,7 @@ const Jobs = () => {
 	const [filters, setFilters] = useState<JobFilterQuery>({
 		search: searchParams.title || "",
 		location: searchParams.location || "",
-		skills: searchParams.category || "",
+		skills: searchParams.skills || searchParams.category || "",
 		sortBy: "createdAt",
 		order: "desc",
 	});
@@ -32,7 +32,7 @@ const Jobs = () => {
 			...prev,
 			search: searchParams.title || "",
 			location: searchParams.location || "",
-			skills: searchParams.category || "",
+			skills: searchParams.skills || searchParams.category || "",
 		}));
 	}, [searchParams]);
 	const [selectedJob, setSelectedJob] = useState<JobResponse | null>(null);

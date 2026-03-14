@@ -38,7 +38,7 @@ export const jobRepository = {
 
 		if (filters.location) {
 			where.location = {
-				contains: filters.location,
+				equals: filters.location,
 				mode: "insensitive",
 			};
 		}
@@ -59,9 +59,11 @@ export const jobRepository = {
 			where.experienceMax = { lte: filters.experienceMax };
 		}
 
-		if (filters.skills) {
+		// Both 'skills' and 'category' filters map to the skills field in DB
+		const skillsFilter = filters.skills || filters.category;
+		if (skillsFilter) {
 			where.skills = {
-				contains: filters.skills,
+				contains: skillsFilter,
 				mode: "insensitive",
 			};
 		}
@@ -82,12 +84,6 @@ export const jobRepository = {
 			];
 		}
 
-		if (filters.category) {
-			where.skills = {
-				contains: filters.category,
-				mode: "insensitive",
-			};
-		}
 
 		if (filters.title) {
 			where.title = {
