@@ -62,6 +62,7 @@ export default function Hero() {
 					>
 						<Input name="search" placeholder="Job Title or Company" />
 						<Select
+							id="location-select"
 							title="Location"
 							name="location"
 							options={[
@@ -71,6 +72,7 @@ export default function Hero() {
 							]}
 						/>
 						<Select
+							id="category-select"
 							title="Category"
 							name="category"
 							options={[

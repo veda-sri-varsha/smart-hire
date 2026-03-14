@@ -231,11 +231,23 @@
     flex-direction: column;
     height: auto;
     border-radius: 32px; // Match image
-    padding: 2.5rem 1.75rem;
-    gap: 0;
+    padding: 1.5rem; // Reduced from 2.5rem for better space usage
+    gap: 0.5rem; // Add explicit gap between wrappers
     background: #ffffff;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     max-width: 100%;
+
+    > div {
+      flex: none;
+      height: auto;
+      width: 100%;
+      border-right: none;
+      border-bottom: 1.5px solid #e5e7eb;
+      
+      &:last-of-type {
+        border-bottom: none;
+      }
+    }
 
     input,
     .custom-select {
@@ -243,13 +255,13 @@
       background: transparent;
       height: 3.5rem;
       border: none;
-      border-bottom: 1.5px solid #bdc3c7; // Subtle gray line
+      // border-bottom: 1.5px solid #bdc3c7; // Moved to parent wrapper for consistency
       border-radius: 0;
       padding: 0;
       font-size: 1rem;
       color: #2c3e50;
       font-weight: 500;
-      margin-bottom: 1rem;
+      margin-bottom: 0; // Handled by gap/border on wrapper
 
       &::placeholder {
         color: #7f8c8d;
@@ -271,7 +283,7 @@
       height: 4rem;
       border-radius: 12px;
       font-size: 1.1rem;
-      margin-top: 1.5rem;
+      margin-top: 1rem;
       background: #00bfa5;
       display: flex;
       align-items: center;
