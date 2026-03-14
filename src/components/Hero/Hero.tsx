@@ -19,15 +19,46 @@ import styles from "./Hero.module.scss";
 export default function Hero() {
 	const navigate = useNavigate();
 
-	const { data: locations } = useQuery({
+	const { data: locationsData } = useQuery({
 		queryKey: ["locations"],
 		queryFn: getLocations,
 	});
 
-	const { data: categories } = useQuery({
+	const { data: categoriesData } = useQuery({
 		queryKey: ["categories"],
 		queryFn: getCategories,
 	});
+
+	const DEFAULT_LOCATIONS = [
+		"Remote",
+		"Bangalore, India",
+		"Hyderabad, India",
+		"Delhi NCR, India",
+		"Mumbai, India",
+		"Chennai, India",
+		"Singapore",
+		"London, UK",
+		"New York, USA",
+	];
+
+	const DEFAULT_CATEGORIES = [
+		"Software Engineering",
+		"Frontend Development",
+		"Backend Development",
+		"Full Stack Development",
+		"Mobile App Development",
+		"UI/UX Design",
+		"Data Science",
+		"Product Management",
+		"Digital Marketing",
+	];
+
+	const locations = Array.from(
+		new Set([...DEFAULT_LOCATIONS, ...(locationsData || [])]),
+	);
+	const categories = Array.from(
+		new Set([...DEFAULT_CATEGORIES, ...(categoriesData || [])]),
+	);
 
 	return (
 		<>

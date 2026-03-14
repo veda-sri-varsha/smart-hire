@@ -23,7 +23,7 @@
 }
 
 .select {
-	padding: 0.8rem 1rem;
+	padding: 0.8rem 1.25rem;
 	border: 1px solid #e5e7eb;
 	border-radius: 8px;
 	background: #fff;
@@ -65,21 +65,22 @@
 
 .dropdown {
 	position: absolute;
-	top: calc(100% + 4px);
+	top: calc(100% + 8px); // More breathing room
 	left: 0;
 	width: 100%;
-	max-height: 250px;
+	max-height: 300px;
 	overflow-y: auto;
 	background: #fff;
-	border: 1px solid #e5e7eb;
-	border-radius: 8px;
-	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-		0 4px 6px -2px rgba(0, 0, 0, 0.05);
-	z-index: 50;
+	border: 1px solid #f1f5f9;
+	border-radius: 14px;
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+		0 8px 10px -6px rgba(0, 0, 0, 0.05);
+	z-index: 100; // Ensure it's very top
 	list-style: none;
-	padding: 0.5rem 0;
+	padding: 0.6rem;
 	margin: 0;
 	font-family: inherit;
+	animation: slideDown 0.2s ease-out;
 
     &::-webkit-scrollbar {
         width: 6px;
@@ -91,20 +92,38 @@
 }
 
 .option {
-	padding: 0.75rem 1rem;
+	padding: 0.8rem 1rem;
+	border-radius: 8px; // Rounded options for modern feel
 	cursor: pointer;
 	font-size: 0.95rem;
-	color: #374151;
-	transition: background 0.15s ease;
+	color: #475569;
+	transition: all 0.15s ease;
+	margin-bottom: 2px;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
 
 	&:hover {
-		background: #f3f4f6;
+		background: #f1f5f9;
+		color: #1e293b;
 	}
 
 	&.selected {
 		background: #e6fafa;
 		color: #0aa89e;
-		font-weight: 600;
+		font-weight: 700;
+	}
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
 

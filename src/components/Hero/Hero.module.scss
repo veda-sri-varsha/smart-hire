@@ -24,25 +24,29 @@
 .content {
   position: relative;
   z-index: 2;
-  max-width: 56rem;
+  max-width: 64rem; // Slightly wider
   margin: 0 auto;
-  padding-top: 11.25rem;
+  padding-top: 10rem;
   text-align: center;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  font-family: 'Figtree';
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  font-family: 'Figtree', sans-serif;
 
   h1 {
-    font-size: 3.5rem; // 56px
-    font-weight: 600;
+    font-size: 4rem; // Larger 64px
+    font-weight: 800; // Extra Bold
     color: #ffffff;
     line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
   }
 
   p {
-    font-size: 1.128rem; // 18px
-    color: #d1d5db;
-    margin-bottom: 2.5rem;
+    font-size: 1.25rem; // 20px
+    color: #cbd5e1;
+    max-width: 42rem;
+    margin: 0 auto 3.5rem;
+    line-height: 1.6;
   }
 }
 
@@ -110,25 +114,31 @@
 .searchBox button[type="submit"] {
   flex-shrink: 0;
   height: 100%;
-  padding: 0 2rem;
+  padding: 0 2.5rem; // Slightly more padding
   color: #ffffff;
   background: #0aa89e;
   border: none;
-  border-radius: 0 1rem 1rem 0; // match the parent's right corner radius
+  border-radius: 0 12px 12px 0; // Modern radius
   outline: none;
   cursor: pointer;
-  font-size: 0.895rem;
+  font-size: 0.95rem; // Slightly larger
   font-weight: 700;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
   white-space: nowrap;
 
-  // Reset Button component's inline-flex so it fills height properly
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
 
   &:hover {
     background: #0d9488;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(10, 168, 158, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
