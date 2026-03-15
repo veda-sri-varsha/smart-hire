@@ -79,13 +79,13 @@ export default function Hero() {
 							const formData = new FormData(e.currentTarget);
 							const search = formData.get("search")?.toString();
 							const location = formData.get("location")?.toString();
-							const category = formData.get("skills")?.toString();
+							const skills = formData.get("skills")?.toString();
 
 							const params: Record<string, string> = {};
 							if (search && search.trim()) params.title = search.trim();
-							// Only add location/skills if they are not the default empty value
-							if (location && location !== "Select Location") params.location = location;
-							if (category && category !== "Select Skill") params.skills = category;
+							if (location && location !== "Select Location")
+								params.location = location;
+							if (skills && skills !== "Select Skill") params.skills = skills;
 
 							console.log("Navigating with params:", params);
 							navigate({

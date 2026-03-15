@@ -14,9 +14,9 @@ export const createApplicationSchema = z.object({
 	resumeUrl: z.string().url("Invalid resume URL").optional(),
 	coverLetter: z
 		.string()
-		.min(10, "Cover letter must be at least 10 characters")
 		.max(2000, "Cover letter must not exceed 2000 characters")
-		.optional(),
+		.optional()
+		.or(z.literal("")),
 });
 
 export const updateApplicationStatusSchema = z.object({

@@ -104,8 +104,8 @@ export default function ApplyModal({
 			return;
 		}
 
-		if (coverLetter && (coverLetter.length < 10 || coverLetter.length > 2000)) {
-			setError("Cover letter must be between 10 and 2000 characters");
+		if (coverLetter && coverLetter.length > 2000) {
+			setError("Cover letter must not exceed 2000 characters");
 			return;
 		}
 
@@ -114,32 +114,21 @@ export default function ApplyModal({
 		try {
 			await onSubmit({
 				resumeFile,
-				coverLetter: coverLetter || undefined,
+				coverLetter: coverLetter.trim() || undefined,
 			});
 
 			setResumeFile(null);
 			setCoverLetter("");
 			onClose();
-		} catch (err) {
+		} catch (err: any) {
 			let errorMessage = "Failed to submit application. Please try again.";
-
 			if (err instanceof Error) {
 				errorMessage = err.message;
-			} else if (typeof err === "object" && err !== null && "response" in err) {
-				const response = (
-					err as {
-						response?: {
-							data?: Record<string, unknown>;
-						};
-					}
-				).response;
-				if (response?.data?.error) {
-					errorMessage = String(response.data.error);
-				} else if (response?.data?.message) {
-					errorMessage = String(response.data.message);
-				}
+			} else if (err?.response?.data?.error) {
+				errorMessage = String(err.response.data.error);
+			} else if (err?.response?.data?.message) {
+				errorMessage = String(err.response.data.message);
 			}
-
 			setError(errorMessage);
 		} finally {
 			setIsSubmitting(false);
@@ -156,7 +145,10 @@ export default function ApplyModal({
 				aria-labelledby="modal-title"
 			>
 				<div className={styles.header}>
-					<h2 id="modal-title">Apply for {jobTitle}</h2>
+					<div className={styles.headerContent}>
+						<h2 id="modal-title">Apply for Job</h2>
+						<p className={styles.jobTitle}>{jobTitle}</p>
+					</div>
 					<Button
 						type="button"
 						variant="ghost"
@@ -164,7 +156,19 @@ export default function ApplyModal({
 						onClick={onClose}
 						aria-label="Close modal"
 					>
-						&times;
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							<line x1="18" y1="6" x2="6" y2="18"></line>
+							<line x1="6" y1="6" x2="18" y2="18"></line>
+						</svg>
 					</Button>
 				</div>
 
@@ -191,6 +195,7 @@ export default function ApplyModal({
 								e.target.files && handleFileSelect(e.target.files[0])
 							}
 							aria-label="Upload resume"
+							style={{ display: "none" }}
 						/>
 
 						<button
@@ -263,20 +268,20 @@ export default function ApplyModal({
 					{/* Cover Letter - Optional */}
 					<div className={styles.field}>
 						<Textarea
-							label="Cover Letter (Optional)"
+							label="Cover Letter"
 							id="coverLetter"
-							placeholder="Tell the employer why you're a great fit for this role..."
+							placeholder="Tell the employer why you're a great fit for this role (optional)..."
 							value={coverLetter}
 							onChange={(e) => setCoverLetter(e.target.value)}
 							rows={6}
 							maxLength={2000}
 						/>
-						<span className={styles.hint}>
-							{coverLetter.length}/2000 characters
-							{coverLetter.length > 0 &&
-								coverLetter.length < 10 &&
-								" (minimum 10 characters)"}
-						</span>
+						<div className={styles.fieldFooter}>
+							<span className={styles.optionalText}>Optional</span>
+							<span className={styles.charCount}>
+								{coverLetter.length}/2000
+							</span>
+						</div>
 					</div>
 
 					<div className={styles.actions}>

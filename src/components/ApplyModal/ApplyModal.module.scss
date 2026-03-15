@@ -56,43 +56,50 @@
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 2rem 2.5rem 1.5rem;
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 
+    .headerContent {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
     h2 {
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        font-size: 1.6rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: #0f172a;
         margin: 0;
-        letter-spacing: -0.03em;
-        line-height: 1.2;
+        letter-spacing: -0.02em;
+    }
+
+    .jobTitle {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin: 0;
+        font-weight: 500;
     }
 }
 
 .closeBtn {
     background: rgba(241, 245, 249, 0.5);
     border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    border-radius: 12px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
     color: #64748b;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-        background: rgba(226, 232, 240, 0.8);
-        color: #0f172a;
-        transform: scale(1.05);
-    }
-    
-    &:active {
-        transform: scale(0.95);
+        background: #fee2e2;
+        color: #ef4444;
+        transform: rotate(90deg);
     }
 }
 
@@ -100,7 +107,7 @@
     padding: 2rem 2.5rem 2.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
+    gap: 2rem;
 }
 
 .error {
@@ -164,12 +171,23 @@
     }
 }
 
-.hint {
-    display: block;
+.fieldFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 0.6rem;
+}
+
+.optionalText {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.charCount {
     font-size: 0.85rem;
     color: #64748b;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .actions {
@@ -256,8 +274,8 @@
 
 .dropZone {
     border: 2px dashed #cbd5e1;
-    border-radius: 16px;
-    padding: 2.5rem 2rem;
+    border-radius: 20px;
+    padding: 3rem 2rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -265,33 +283,40 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 180px;
+    min-height: 200px;
     margin-top: 0.5rem;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(10, 168, 158, 0.05) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
 
     &:hover {
         border-color: #0aa89e;
         background: #f0fdfa;
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        
+        &::after { opacity: 1; }
     }
 
     &.dragging {
         border-color: #0aa89e;
         background: #ecfdf5;
         box-shadow: 0 0 0 4px rgba(10, 168, 158, 0.15);
-        transform: scale(1.02);
+        transform: scale(1.01);
     }
 
     &.filled {
         border-color: #0aa89e;
         border-style: solid;
-        background: #f0fdfa;
-        box-shadow: 0 4px 12px rgba(10, 168, 158, 0.08);
-    }
-
-    &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(10, 168, 158, 0.2);
-        border-color: #0aa89e;
+        background: #ffffff;
+        box-shadow: 0 10px 25px -5px rgba(10, 168, 158, 0.1);
     }
 }
 
@@ -299,71 +324,86 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
+    animation: modalSlideUp 0.3s ease-out;
 }
 
 .checkIcon {
-    color: #0aa89e;
-    width: 44px;
-    height: 44px;
-    padding: 8px;
-    background: #ccfbf1;
-    border-radius: 50%;
+    color: #ffffff;
+    width: 56px;
+    height: 56px;
+    padding: 12px;
+    background: #0aa89e;
+    border-radius: 16px;
+    box-shadow: 0 8px 16px rgba(10, 168, 158, 0.2);
 }
 
 .fileName {
-    font-size: 1.05rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: #0f172a;
     word-break: break-all;
     max-width: 90%;
 }
 
 .fileSize {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #64748b;
-    font-weight: 500;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
 }
 
 .uploadPrompt {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .uploadIcon {
     color: #94a3b8;
     width: 48px;
     height: 48px;
-    transition: color 0.3s ease;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
     
     .dropZone:hover & {
         color: #0aa89e;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(10, 168, 158, 0.15);
     }
 }
 
 .dragText {
     margin: 0;
-    color: #334155;
-    font-size: 1rem;
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 500;
 
     strong {
         display: block;
-        margin-bottom: 0.35rem;
-        color: #0f172a;
-        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+        font-size: 1.15rem;
+        font-weight: 700;
     }
 }
 
 .clickText {
     color: #0aa89e;
-    font-weight: 600;
+    font-weight: 700;
+    background: rgba(10, 168, 158, 0.08);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
     transition: all 0.2s;
 
     .dropZone:hover & {
-        text-decoration: underline;
-        text-underline-offset: 4px;
+        background: rgba(10, 168, 158, 0.15);
     }
 }
 

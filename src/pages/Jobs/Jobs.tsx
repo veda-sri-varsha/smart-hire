@@ -30,7 +30,7 @@ const Jobs = () => {
 	useEffect(() => {
 		setFilters((prev) => ({
 			...prev,
-			search: searchParams.title || "",
+			search: searchParams.title || searchParams.search || "",
 			location: searchParams.location || "",
 			skills: searchParams.skills || searchParams.category || "",
 		}));
@@ -214,8 +214,7 @@ const Jobs = () => {
 								<div className="job-card__info">
 									<h2 className="job-card__title">{job.title}</h2>
 
-									{/* Mobile Company Name */}
-									<p className="job-card__mobile-company">
+									<p className="job-card__company">
 										{job.company?.companyName ||
 											job.company?.name ||
 											"Company Name"}
@@ -223,13 +222,22 @@ const Jobs = () => {
 
 									{/* Desktop Meta */}
 									<div className="job-card__meta desktop-meta">
-										<span>{job.jobType.replace("_", " ")}</span>
-										<span>•</span>
-										<span>{job.location}</span>
-										<span>•</span>
-										<span className="job-card__salary">
-											${job.salaryMin} - ${job.salaryMax}
-										</span>
+										<div className="meta-item">
+											<Briefcase size={18} />
+											<span style={{ textTransform: "capitalize" }}>
+												{job.jobType.toLowerCase().replace("_", " ")}
+											</span>
+										</div>
+										<div className="meta-item">
+											<Wallet size={18} />
+											<span className="job-card__salary">
+												${job.salaryMin} - ${job.salaryMax}
+											</span>
+										</div>
+										<div className="meta-item">
+											<MapPin size={18} />
+											<span>{job.location}</span>
+										</div>
 									</div>
 
 									{/* Mobile Meta */}

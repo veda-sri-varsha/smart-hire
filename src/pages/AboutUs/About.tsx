@@ -2,15 +2,15 @@ import { useState } from "react";
 import "./About.scss";
 import Button from "@/components/ui/Button";
 import { faqs } from "@/constants/faqs";
-import { 
-	User, 
-	FileText, 
-	Briefcase, 
-	CheckCircle2, 
-	Smile, 
-	FileEdit, 
-	Building2, 
-	Star, 
+import {
+	User,
+	FileText,
+	Briefcase,
+	CheckCircle2,
+	Smile,
+	FileEdit,
+	Building2,
+	Star,
 	ArrowRight
 } from "lucide-react";
 
@@ -25,15 +25,18 @@ export default function About() {
 
 			<section className="about-intro container">
 				<div className="intro-left">
-					<h2>Et nunc ut tempus duis nisl sed massa</h2>
+					<h2>Empowering Innovation Through Modern Technology</h2>
 				</div>
 				<div className="intro-right">
 					<p>
-						Nunc sed e nisl purus. Nibh dis faucibus proin lacus tristique. 
-						Sit congue non vitae odio sit erat in. Felis eu ultrices a sed massa. 
-						Commodo fringilla sed tempor risus laoreet ultricies ipsum. 
-						Habitasse morbi faucibus in iaculis lectus. Nisi enim feugiat enim volutpat. 
-						Sem quis viverra viverra odio mauris nunc.
+						We are committed to building innovative and reliable digital solutions
+						that help people and businesses grow. Our focus is on creating
+						user-friendly platforms, scalable applications, and modern web
+						experiences that solve real-world problems.
+
+						By combining creativity, technology, and performance-driven
+						development, we aim to deliver products that are efficient,
+						accessible, and designed for the future.
 					</p>
 				</div>
 			</section>
@@ -42,7 +45,7 @@ export default function About() {
 				<div className="how-it-works-header">
 					<h2>How it works</h2>
 					<p className="subtitle">
-						At eu lobortis pretium tincidunt amet lacus ut aenean aliquet. 
+						At eu lobortis pretium tincidunt amet lacus ut aenean aliquet.
 						Blandit a massa elementum id scelerisque rhoncus...
 					</p>
 				</div>
@@ -171,7 +174,7 @@ export default function About() {
 							With The Best
 						</h2>
 						<p>
-							Ultricies purus dolor viverra mi laoreet at cursus justo. 
+							Ultricies purus dolor viverra mi laoreet at cursus justo.
 							Ultrices purus diam egestas amet faucibus tempor blandit.
 						</p>
 						<div className="best-grid">
